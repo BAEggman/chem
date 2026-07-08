@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4efe4">
+<title>화학 9단원 · 산·염기와 완충 — 파일럿 카드덱</title>
+<!--
+  화학 학습 허브 파일럿 (→ baeggman/hwahak 편입 대상)
+  · 단일 index.html · 외부 의존성 0 (완전 오프라인, GitHub Pages 배포용)
+  · 저장 키 격리: chem_u9_acidbase_v1  (localStorage; 차단 시 in-memory 폴백 — 절대 크래시 안 함)
+  · SRS-lite: 경락 허브의 3·7·30일 간격반복 계승 + "찍음(운으로 맞음)" 플래그
+  · §5.4 준수: 이 덱은 재인·인출(사실·관계·변별·함정)만. 다단계 계산은 의도적 제외.
+  · 색/변수는 --hh-* 이름으로 정의 → HubHome 편입 시 값만 오버라이드하면 됨.
+-->
+<style>
+:root{
+  --hh-bg:#f3eee2; --hh-card:#fbf8f0; --hh-pan:#f0e8d8; --hh-pan2:#efe6d3;
+  --hh-ink:#2c261e; --hh-dim:#6c6252; --hh-mut:#877c69; --hh-faint:#a89c86;
+  --hh-line:#ddd2be; --hh-line2:#eae2d3;
+  --hh-gold:#a9791f; --hh-gold-s:#f3e6c6;
+  --hh-jade:#3c7568; --hh-jade-s:#dcece7;
+  --hh-azure:#356388; --hh-azure-s:#dbe6ef;
+  --hh-cinnabar:#a83a2c; --hh-cinnabar-s:#f4dcd6;
+  --hh-ok:#3c7568; --hh-no:#a83a2c;
+  --hh-shadow:0 6px 22px rgba(44,38,30,.10), 0 1px 3px rgba(44,38,30,.08);
+  --hh-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
+  --hh-mono:ui-monospace,'SF Mono','Menlo','Consolas',monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--hh-bg);color:var(--hh-ink);font-family:var(--hh-sans);
+  line-height:1.6;font-size:16px;touch-action:manipulation}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+header{margin:2px 0 12px}
+h1{font-size:19px;letter-spacing:-.02em;margin:0}
+h1 .u{font-family:var(--hh-mono);color:var(--hh-gold);font-weight:800;margin-right:6px}
+.tagline{color:var(--hh-mut);font-size:12.5px;margin:3px 0 0}
+
+/* stat chips */
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 10px}
+.chip{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:999px;
+  padding:5px 11px;font-size:12px;color:var(--hh-dim);box-shadow:var(--hh-shadow)}
+.chip b{color:var(--hh-ink);font-family:var(--hh-mono)}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--hh-pan);border:1px solid var(--hh-line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--hh-dim);font:inherit;font-size:12.5px;
+  padding:6px 11px;cursor:pointer}
+.seg button.on{background:var(--hh-card);color:var(--hh-ink);font-weight:700;box-shadow:inset 0 0 0 1px var(--hh-line)}
+select{font:inherit;font-size:13px;color:var(--hh-ink);background:var(--hh-card);
+  border:1px solid var(--hh-line);border-radius:9px;padding:6px 9px}
+.lchip{font-family:var(--hh-mono);font-size:11px;font-weight:700;border:1px solid;border-radius:999px;
+  padding:3px 9px;cursor:pointer;background:var(--hh-card);opacity:.5}
+.lchip.on{opacity:1}
+.l-L1{color:var(--hh-jade);border-color:var(--hh-jade)}
+.l-L2{color:var(--hh-azure);border-color:var(--hh-azure)}
+.l-L4{color:var(--hh-gold);border-color:var(--hh-gold)}
+.l-L6{color:var(--hh-cinnabar);border-color:var(--hh-cinnabar)}
+
+/* card */
+.card{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:18px;
+  box-shadow:var(--hh-shadow);padding:20px 20px 18px;min-height:340px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hh-line)}
+.card.l-L1::before{background:var(--hh-jade)} .card.l-L2::before{background:var(--hh-azure)}
+.card.l-L4::before{background:var(--hh-gold)} .card.l-L6::before{background:var(--hh-cinnabar)}
+.cmeta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--hh-mono);font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;color:#fff}
+.badge.l-L1{background:var(--hh-jade)} .badge.l-L2{background:var(--hh-azure)}
+.badge.l-L4{background:var(--hh-gold)} .badge.l-L6{background:var(--hh-cinnabar)}
+.topic{font-size:12px;color:var(--hh-mut);font-weight:600}
+.src{font-family:var(--hh-mono);font-size:10.5px;color:var(--hh-faint);margin-left:auto}
+.front{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.5;color:var(--hh-ink)}
+.front .em{color:var(--hh-cinnabar)}
+.divider{height:1px;background:var(--hh-line2);margin:16px 0}
+.back{font-size:16.5px;line-height:1.62;color:var(--hh-ink);white-space:pre-wrap}
+.back .k{color:var(--hh-jade);font-weight:700}
+.back .x{color:var(--hh-cinnabar);font-weight:700}
+.trapribbon{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;
+  color:var(--hh-cinnabar);background:var(--hh-cinnabar-s);border:1px solid #e6bfb6;
+  border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.spacer{flex:1}
+
+/* reveal / rate */
+.reveal{margin-top:16px;width:100%;border:0;border-radius:12px;padding:13px;
+  background:var(--hh-ink);color:var(--hh-card);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.lkaxis{display:flex;justify-content:space-between;margin-top:16px;margin-bottom:6px;
+  font-size:10.5px;color:var(--hh-faint)}
+.lkaxis span:nth-child(2){color:var(--hh-mut);font-weight:600}
+.rate5{display:flex;gap:6px}
+.rate5 button{flex:1;border:1px solid var(--hh-line);border-radius:12px;padding:9px 3px 8px;
+  background:var(--hh-card);font:inherit;cursor:pointer;color:var(--hh-dim);
+  display:flex;flex-direction:column;align-items:center;gap:1px}
+.rate5 button b{font-family:var(--hh-mono);font-size:18px;line-height:1.05}
+.rate5 button .lab{font-size:12px;font-weight:700;margin-top:2px}
+.rate5 button .sub{font-size:9.5px;font-weight:600;color:var(--hh-faint);text-align:center}
+.rate5 button:active{transform:translateY(1px)}
+.lk1,.lk1 b{color:var(--hh-cinnabar)}
+.lk2,.lk2 b{color:#b0602a}
+.lk3,.lk3 b{color:var(--hh-mut)}
+.lk4,.lk4 b{color:#4d7f52}
+.lk5,.lk5 b{color:var(--hh-jade)}
+@media(hover:hover){
+  .lk1:hover{background:var(--hh-cinnabar-s);border-color:var(--hh-cinnabar)}
+  .lk2:hover{background:#f4e4d6;border-color:#b0602a}
+  .lk3:hover{background:var(--hh-pan)}
+  .lk4:hover{background:#e4efe1;border-color:#4d7f52}
+  .lk5:hover{background:var(--hh-jade-s);border-color:var(--hh-jade)}
+}
+@media(max-width:430px){ .rate5 button .sub{display:none} .rate5{gap:4px} }
+.guess{margin-top:11px;display:flex;align-items:center;gap:8px;justify-content:center;
+  font-size:12.5px;color:var(--hh-mut);cursor:pointer;user-select:none}
+.guess .box{width:17px;height:17px;border:1.5px solid var(--hh-faint);border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:12px;color:#fff}
+.guess.on .box{background:var(--hh-gold);border-color:var(--hh-gold)}
+.guess.on{color:var(--hh-gold);font-weight:700}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:var(--hh-mut);font-size:13px}
+.nav button{border:1px solid var(--hh-line);background:var(--hh-card);border-radius:9px;
+  width:36px;height:32px;font-size:15px;color:var(--hh-dim);cursor:pointer}
+.nav .pos{font-family:var(--hh-mono);font-size:12px}
+
+.done{text-align:center;padding:48px 16px}
+.done h2{color:var(--hh-jade);margin:0 0 6px}
+.done p{color:var(--hh-mut);font-size:14px;margin:4px 0}
+.done button{margin-top:16px;border:1px solid var(--hh-line);background:var(--hh-card);border-radius:10px;
+  padding:9px 16px;font:inherit;font-weight:700;color:var(--hh-ink);cursor:pointer}
+
+footer{margin-top:20px;color:var(--hh-faint);font-size:11.5px;line-height:1.6}
+footer .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+footer .legend span{font-family:var(--hh-mono);font-weight:700}
+footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:underline;
+  font:inherit;font-size:11.5px;cursor:pointer;padding:0;margin-top:6px}
+@media (hover:hover){
+  .reveal:hover{opacity:.92} .nav button:hover{border-color:var(--hh-faint)}
+  .seg button:hover{color:var(--hh-ink)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="u">9단원</span>산·염기와 완충 · 파일럿 카드덱</h1>
+    <p class="tagline">능동 인출 → 자가 채점 → 3·7·30일 간격반복 · 기본서·기출 그라운딩</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="row">
+      <div class="seg" id="mode">
+        <button data-mode="study" class="on">오늘 학습</button>
+        <button data-mode="all">전체</button>
+        <button data-mode="wrong">틀린 것만</button>
+      </div>
+      <select id="topic"></select>
+    </div>
+    <div class="row" id="layers">
+      <span class="lchip l-L1 on" data-l="L1">L1 사실</span>
+      <span class="lchip l-L2 on" data-l="L2">L2 방법</span>
+      <span class="lchip l-L4 on" data-l="L4">L4 변별</span>
+      <span class="lchip l-L6 on" data-l="L6">L6 함정</span>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+
+  <footer>
+    <div class="legend">
+      <span class="l-L1" style="color:var(--hh-jade)">L1 사실</span>
+      <span class="l-L2" style="color:var(--hh-azure)">L2 트리거→방법</span>
+      <span class="l-L4" style="color:var(--hh-gold)">L4 변별</span>
+      <span class="l-L6" style="color:var(--hh-cinnabar)">L6 함정</span>
+    </div>
+    이 덱은 <b>재인·인출</b>(사실·관계·변별·함정)만 다룹니다. 화학양론·pH·평형 등 다단계 계산은 의도적으로 제외 — 별도 문제풀이 트랙 권장(§5.4).
+    <br>진도는 이 브라우저에 저장됩니다(<code>chem_u9_acidbase_v1</code>). 5점 자가평가로 간격을 조절 — 1·2=리셋(즉시 다시), 3=유지, 4=한 단계↑, 5=두 단계↑. ‘찍음’ 표시 시 승급하지 않습니다.
+    <br><button class="reset" id="reset">↺ 진도 초기화</button>
+  </footer>
+</div>
+
+<script>
+/* ===================== 1단원 카드 데이터 (교재·기출 그라운딩) =====================
+   layer: L1 사실 / L2 트리거→방법 / L4 변별 / L6 함정
+   trap:true → 함정 카드(틀린 진술 적발). src: 모의고사 회-번 (있을 때) */
+const DECK = [
+  /* ===== 산과 염기의 정의 ===== */
+  {t:"산염기정의", l:"L1", f:"산·염기의 세 가지 정의는?", b:"<span class='k'>아레니우스 · 브뢴스테드–로우리 · 루이스</span>."},
+  {t:"산염기정의", l:"L1", f:"일반화학의 기본 정의와 전제는?", b:"<span class='k'>아레니우스</span>(수용액 전제)."},
+  {t:"산염기정의", l:"L1", f:"아레니우스 산·염기는?", b:"<span class='k'>H⁺</span> 내놓으면 산 / <span class='k'>OH⁻</span> 내놓으면 염기."},
+  {t:"산염기정의", l:"L1", f:"아레니우스 산의 예는?", b:"HCl·H₂SO₄·HNO₃·CH₃COOH·H₃PO₄."},
+  {t:"산염기정의", l:"L1", f:"브뢴스테드–로우리 산·염기는? ★", b:"H⁺(양성자)를 <span class='k'>주면 산, 받으면 염기</span>."},
+  {t:"산염기정의", l:"L1", f:"짝산–짝염기란?", b:"<span class='k'>H⁺ 하나</span>를 주고받는 한 쌍."},
+  {t:"산염기정의", l:"L1", f:"루이스 산·염기는?", b:"전자쌍 <span class='k'>받으면 산, 주면 염기</span>(가장 넓은 정의)."},
+  {t:"산염기정의", l:"L1", f:"H⁺는 물에서 실제로 어떻게 존재하나?", b:"<span class='k'>옥소늄 이온 H₃O⁺</span> (H⁺ = H₃O⁺)."},
+  {t:"산염기정의", l:"L2", src:"1-31", f:"HF+H₂O⇌H₃O⁺+F⁻에서 브뢴스테드 산은?", b:"<span class='k'>HF·H₃O⁺</span> (H⁺ 주는 쪽)."},
+  {t:"산염기정의", l:"L2", src:"3-45", f:"FeBr₃+Br⁻, SO₂+H₂O에서 루이스 산은?", b:"<span class='k'>FeBr₃·SO₂</span> (전자쌍 받음)."},
+  {t:"산염기정의", l:"L4", f:"루이스 정의가 가장 넓은 이유는?", b:"H⁺ 없이 <span class='k'>전자쌍만으로 정의</span>(금속 이온 등 포함)."},
+  {t:"산염기정의", l:"L2", f:"HCl의 짝염기, NH₃의 짝산은?", b:"<span class='k'>Cl⁻ / NH₄⁺</span>."},
+  {t:"산염기정의", l:"L4", f:"H₂O는 산으로도 염기로도 작용하나?", b:"<span class='k'>그렇다</span>(양쪽성)."},
+  {t:"산염기정의", l:"L4", f:"브뢴스테드 산 vs 염기 판별 기준은?", b:"H⁺를 <span class='k'>주는가(산)/받는가(염기)</span>."},
+
+  /* ===== 강산·약산과 이온화 상수 ===== */
+  {t:"강약·이온화상수", l:"L1", f:"강산 vs 약산은?", b:"강산 = 거의 100% 이온화 / <span class='k'>약산 = 일부만</span>."},
+  {t:"강약·이온화상수", l:"L1", f:"이온화도 α = ?", b:"<span class='k'>이온화한 양 / 녹인 전체 양</span>."},
+  {t:"강약·이온화상수", l:"L1", f:"강산·약산의 α는?", b:"강산 <span class='k'>α≈1</span> / 약산 <span class='k'>α≪1</span>."},
+  {t:"강약·이온화상수", l:"L1", f:"약산 HA의 이온화 상수 Ka는? ★", b:"<span class='k'>[H⁺][A⁻]/[HA] = Cα²/(1−α)</span>."},
+  {t:"강약·이온화상수", l:"L1", f:"Ka가 클수록 산은?", b:"<span class='k'>강함</span>."},
+  {t:"강약·이온화상수", l:"L1", f:"짝산–짝염기의 세기 관계는? ★", b:"<span class='k'>반대</span>(강한 산의 짝염기는 약함)."},
+  {t:"강약·이온화상수", l:"L6", trap:true, f:"“강한 산의 짝염기도 강하다” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>약함</span>(세기 반대)."},
+  {t:"강약·이온화상수", l:"L2", src:"3-39", f:"Ka=10⁻⁵<1이면 HA와 H₃O⁺의 세기는?", b:"<span class='k'>HA < H₃O⁺</span>(평형 왼쪽)."},
+  {t:"강약·이온화상수", l:"L1", src:"5-55", f:"HF·CH₃COOH·페놀의 산 세기 순은?", b:"<span class='k'>HF > CH₃COOH > 페놀</span>."},
+  {t:"강약·이온화상수", l:"L1", f:"산·염기 반응의 평형 방향은? ★", b:"<span class='k'>강한 산·염기 → 약한 산·염기</span> 쪽으로."},
+  {t:"강약·이온화상수", l:"L2", src:"4-35", f:"HI+OH⁻⇌H₂O+I⁻의 진행 방향은?", b:"<span class='k'>정반응</span>(HI 강산이 반응물)."},
+  {t:"강약·이온화상수", l:"L2", src:"4-35", f:"HCO₃⁻+Br⁻⇌HBr+CO₃²⁻의 방향은?", b:"<span class='k'>역반응</span>(HBr 강산이 생성물)."},
+  {t:"강약·이온화상수", l:"L1", f:"대표적인 강산 6가지는?", b:"<span class='k'>HCl·HBr·HI·HNO₃·H₂SO₄·HClO₄</span>."},
+  {t:"강약·이온화상수", l:"L1", f:"대표적인 약산은?", b:"CH₃COOH·HF·H₂CO₃·H₃PO₄·HCN·페놀."},
+  {t:"강약·이온화상수", l:"L1", f:"대표적인 강염기는?", b:"<span class='k'>NaOH·KOH·Ca(OH)₂·Ba(OH)₂</span>."},
+  {t:"강약·이온화상수", l:"L1", f:"대표적인 약염기는?", b:"<span class='k'>NH₃</span>(암모니아)."},
+  {t:"강약·이온화상수", l:"L4", f:"이온화도 α가 클수록 Ka는?", b:"<span class='k'>큼</span>(더 강한 산)."},
+  {t:"강약·이온화상수", l:"L4", f:"짝염기가 강할수록 원래 산은?", b:"<span class='k'>약함</span>(반비례)."},
+
+  /* ===== 물의 자동 이온화와 pH ===== */
+  {t:"pH·물이온화", l:"L1", f:"물의 자동 이온화 반응은?", b:"<span class='k'>H₂O ⇌ H⁺ + OH⁻</span>."},
+  {t:"pH·물이온화", l:"L1", f:"물의 이온곱 상수 Kw는? ★", b:"<span class='k'>[H⁺][OH⁻] = 10⁻¹⁴</span> (25℃)."},
+  {t:"pH·물이온화", l:"L1", f:"pH·pOH의 정의는? ★", b:"<span class='k'>pH=−log[H⁺], pOH=−log[OH⁻]</span>."},
+  {t:"pH·물이온화", l:"L1", f:"pH + pOH = ? ★", b:"<span class='k'>14</span> (25℃)."},
+  {t:"pH·물이온화", l:"L1", f:"산성·중성·염기성의 pH는? (25℃)", b:"산성 <7 / 중성 =7 / 염기성 >7."},
+  {t:"pH·물이온화", l:"L1", f:"물의 자동 이온화는 흡열인가 발열인가? ★", b:"<span class='k'>흡열</span>."},
+  {t:"pH·물이온화", l:"L1", f:"온도가 오르면 순수 물의 pH는? ★", b:"<span class='k'>7보다 작아짐</span>(이온화↑, Kw↑)."},
+  {t:"pH·물이온화", l:"L6", trap:true, src:"3-46", f:"“물속 [H⁺]는 온도와 무관하게 일정하다” — 옳은가?", b:"<span class='x'>✗</span> 온도↑면 <span class='k'>[H⁺]↑</span>(흡열)."},
+  {t:"pH·물이온화", l:"L6", trap:true, src:"3-46", f:"“물의 온도가 높을수록 이온화도가 감소한다” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>증가</span>(흡열)."},
+  {t:"pH·물이온화", l:"L6", trap:true, f:"“pH가 7이면 온도와 무관하게 항상 중성이다” — 옳은가?", b:"<span class='x'>✗</span> 25℃ 기준(온도 다르면 중성 pH≠7)."},
+  {t:"pH·물이온화", l:"L4", src:"3-46", f:"순수 물의 [H⁺]:[OH⁻] 비는 온도가 변하면?", b:"항상 <span class='k'>1:1</span>(순수 물)."},
+  {t:"pH·물이온화", l:"L2", src:"4-45", f:"pH n인 산을 100배 묽히면 pH는?", b:"<span class='k'>n+2</span> (10⁻ⁿ/100=10⁻⁽ⁿ⁺²⁾)."},
+  {t:"pH·물이온화", l:"L4", src:"4-45", f:"산을 묽히면 pH는 어느 쪽으로?", b:"<span class='k'>7에 가까워짐</span>(7 넘지 않음)."},
+  {t:"pH·물이온화", l:"L2", f:"[H⁺]=10⁻³이면 pH는?", b:"<span class='k'>3</span>."},
+  {t:"pH·물이온화", l:"L2", f:"[OH⁻]=10⁻⁸이면 pH는?", b:"<span class='k'>6</span> (pOH=8 → pH=6)."},
+  {t:"pH·물이온화", l:"L4", src:"4-39", f:"산성이 강한 순서 = pH 어떤 순서?", b:"<span class='k'>pH 작은 순</span>."},
+  {t:"pH·물이온화", l:"L2", f:"pH 4인 용액을 1000배 묽히면?", b:"<span class='k'>7에 가까워짐</span>(약간 산성)."},
+  {t:"pH·물이온화", l:"L1", f:"pH가 1 작아지면 [H⁺]는?", b:"<span class='k'>10배 커짐</span>."},
+  {t:"pH·물이온화", l:"L2", f:"pOH=2이면 pH는?", b:"<span class='k'>12</span>."},
+  {t:"pH·물이온화", l:"L1", f:"[H⁺]가 클수록 pH는?", b:"<span class='k'>작음</span>(반비례 로그)."},
+  {t:"pH·물이온화", l:"L4", f:"물의 자동 이온화가 흡열이라 온도↑ 시 Kw는?", b:"<span class='k'>커짐</span>."},
+
+  /* ===== 중화 반응과 중화 적정 ===== */
+  {t:"중화적정", l:"L1", f:"중화 반응이란?", b:"<span class='k'>산 + 염기 → 염 + 물</span>."},
+  {t:"중화적정", l:"L1", f:"중화 반응은 발열인가 흡열인가?", b:"<span class='k'>발열</span>."},
+  {t:"중화적정", l:"L1", f:"중화 적정이란?", b:"<span class='k'>표준 용액으로 미지 농도</span>를 알아내는 방법."},
+  {t:"중화적정", l:"L1", f:"중화 양적 관계식은? ★", b:"<span class='k'>n M V = n′ M′ V′</span> (n=가수)."},
+  {t:"중화적정", l:"L1", f:"중화점(당량점) 확인의 가장 간편한 방법은?", b:"<span class='k'>지시약 색 변화</span>."},
+  {t:"중화적정", l:"L1", f:"대표 지시약은?", b:"<span class='k'>페놀프탈레인·메틸 오렌지</span>."},
+  {t:"중화적정", l:"L2", f:"적정 곡선에서 당량점의 특징은?", b:"<span class='k'>pH가 급변</span>(수직 구간)."},
+  {t:"중화적정", l:"L2", src:"6-16", f:"필요한 NaOH 양은 무엇과 같나?", b:"산이 내놓는 <span class='k'>H⁺ 몰수</span>(가수 포함)."},
+  {t:"중화적정", l:"L4", src:"6-16", f:"당량점 NaOH가 가장 큰 산을 고르는 판단은?", b:"<span class='k'>가수 × 농도 × 부피</span> 최대."},
+  {t:"중화적정", l:"L2", src:"5-59", f:"CaCO₃+2H⁺ 반응에서 H⁺ 몰수는?", b:"CaCO₃ 몰수의 <span class='k'>2배</span>."},
+  {t:"중화적정", l:"L4", f:"산의 가수(n)란?", b:"한 분자가 내놓는 <span class='k'>H⁺ 수</span>(H₂SO₄=2, H₃PO₄=3)."},
+  {t:"중화적정", l:"L2", f:"H₂SO₄ 1몰·H₃PO₄ 1몰은 H⁺ 몇 몰?", b:"<span class='k'>2몰 / 3몰</span>."},
+  {t:"중화적정", l:"L4", f:"금속 산화물·비금속 산화물의 산염기 성격은?", b:"금속 산화물 = <span class='k'>염기</span> / 비금속 산화물 = <span class='k'>산</span>."},
+  {t:"중화적정", l:"L1", f:"당량점에서 산의 H⁺ 몰수와 염기의 OH⁻ 몰수는?", b:"<span class='k'>같음</span>."},
+  {t:"중화적정", l:"L2", f:"약산+강염기 적정의 당량점 pH는?", b:"<span class='k'>7보다 큼</span>(염기성)."},
+  {t:"중화적정", l:"L2", f:"강산+강염기 적정의 당량점 pH는?", b:"<span class='k'>7</span>(중성)."},
+
+  /* ===== 염의 가수분해와 액성 ===== */
+  {t:"염의가수분해", l:"L1", f:"염의 가수분해란?", b:"염의 이온 일부가 물과 반응해 <span class='k'>H⁺/OH⁻를 만들어 액성이 변함</span>."},
+  {t:"염의가수분해", l:"L1", f:"염의 액성은 무엇으로 판단? ★", b:"만든 <span class='k'>산·염기의 강약 조합</span>."},
+  {t:"염의가수분해", l:"L1", f:"강산+강염기 염의 액성과 예는? ★", b:"<span class='k'>중성</span>(NaCl)."},
+  {t:"염의가수분해", l:"L1", f:"강산+약염기 염의 액성과 예는? ★", b:"<span class='k'>산성</span>(NH₄Cl)."},
+  {t:"염의가수분해", l:"L1", f:"약산+강염기 염의 액성과 예는? ★", b:"<span class='k'>염기성</span>(CH₃COONa)."},
+  {t:"염의가수분해", l:"L1", f:"가수분해의 주인공(반응하는 이온)은?", b:"약한 쪽에서 온 이온(<span class='k'>약산 음이온·약염기 양이온</span>)."},
+  {t:"염의가수분해", l:"L1", f:"강한 쪽에서 온 이온은?", b:"<span class='k'>구경꾼(스펙테이터)</span>, 가수분해 안 함."},
+  {t:"염의가수분해", l:"L6", trap:true, f:"“겉모습 분류(산성염 등)가 실제 액성과 항상 같다” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>강약 조합</span>으로 판단."},
+  {t:"염의가수분해", l:"L2", src:"2-50", f:"NaF 수용액의 액성은?", b:"<span class='k'>염기성</span>(약산 HF의 염)."},
+  {t:"염의가수분해", l:"L2", src:"2-50", f:"NH₄⁺·Al³⁺ 용액의 액성과 더 산성인 것은?", b:"둘 다 <span class='k'>산성</span>, 전하 큰 <span class='k'>Al³⁺</span>이 더 산성."},
+  {t:"염의가수분해", l:"L2", src:"5-57", f:"Na₃PO₄·NH₃·KCN의 액성은?", b:"<span class='k'>셋 다 염기성</span>."},
+  {t:"염의가수분해", l:"L2", src:"5-57", f:"NH₄Cl·HCN의 액성은?", b:"<span class='k'>산성</span>."},
+  {t:"염의가수분해", l:"L2", src:"3-41", f:"NH₄Cl 수용액의 액성과 접근법은?", b:"<span class='k'>산성(pH<7)</span>, [H⁺]=√(Ka·C)."},
+  {t:"염의가수분해", l:"L4", f:"약염기 양이온(NH₄⁺)의 가수분해 결과는?", b:"<span class='k'>H⁺ 생성(산성)</span>."},
+  {t:"염의가수분해", l:"L4", f:"약산 음이온(CH₃COO⁻·F⁻)의 가수분해 결과는?", b:"<span class='k'>OH⁻ 생성(염기성)</span>."},
+  {t:"염의가수분해", l:"L2", f:"Ba(NO₃)₂의 액성은?", b:"<span class='k'>중성</span>(강산+강염기)."},
+  {t:"염의가수분해", l:"L1", f:"염의 액성 판단 전 먼저 할 일은?", b:"어떤 <span class='k'>산·염기에서 온 염인지</span> 파악."},
+  {t:"염의가수분해", l:"L4", f:"같은 농도에서 Al³⁺ vs NH₄⁺ 산성 비교는?", b:"<span class='k'>Al³⁺이 더 산성</span>(전하 큼)."},
+
+  /* ===== 완충 용액과 공통 이온 효과 ===== */
+  {t:"완충용액", l:"L1", f:"완충 용액이란? ★", b:"산·염기를 조금 넣어도 <span class='k'>pH가 거의 안 변하는</span> 용액."},
+  {t:"완충용액", l:"L1", f:"완충 용액의 구성은? ★", b:"<span class='k'>약산+짝염기</span>(또는 약염기+짝산)."},
+  {t:"완충용액", l:"L1", f:"완충의 원리는?", b:"<span class='k'>공통 이온 효과</span>."},
+  {t:"완충용액", l:"L1", f:"완충 용액의 예는?", b:"<span class='k'>CH₃COOH+CH₃COONa · NH₃+NH₄Cl</span>."},
+  {t:"완충용액", l:"L6", trap:true, f:"“강산+그 염(HCl+NaCl)도 완충 용액이다” — 옳은가? ★", b:"<span class='x'>✗</span> <span class='k'>완충 아님</span>(강산+강염기)."},
+  {t:"완충용액", l:"L1", f:"외부 산·염기를 넣으면 완충은?", b:"완충 성분과 반응해 <span class='k'>흡수 → pH 변화 작음</span>."},
+  {t:"완충용액", l:"L1", f:"완충 용량이 클수록 외부 변화에? ★", b:"<span class='k'>pH가 덜 민감(둔감)</span>."},
+  {t:"완충용액", l:"L6", trap:true, src:"5-60", f:"“완충 용량이 클수록 pH가 민감하게 변한다” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>둔감하게</span>(덜 변함)."},
+  {t:"완충용액", l:"L2", src:"6-27", f:"완충 아닌 것은? (HOAc+NaOAc / NH₄Cl+NH₃ / HCl+NaCl / 인산염)", b:"<span class='k'>HCl+NaCl</span>."},
+  {t:"완충용액", l:"L2", src:"4-6", f:"pH 9 완충에 적합한 것은?", b:"<span class='k'>NH₃</span>(pKb≈4.76 → pH≈9.2)."},
+  {t:"완충용액", l:"L1", f:"완충은 어느 pH 부근에서 가장 잘 작동? ★", b:"<span class='k'>pKa(또는 pKb) 부근</span>."},
+  {t:"완충용액", l:"L4", f:"완충이 pH 변화를 막는 방식은?", b:"가한 H⁺·OH⁻를 <span class='k'>짝 성분이 소모</span>."},
+  {t:"완충용액", l:"L1", f:"공통 이온 효과란?", b:"두 평형이 <span class='k'>공통 이온</span>을 가져 이온화를 억제."},
+  {t:"완충용액", l:"L4", f:"NaH₂PO₄+Na₂HPO₄는 완충인가?", b:"<span class='k'>그렇다</span>(약산/짝염기 쌍)."},
+  {t:"완충용액", l:"L2", f:"완충 용액을 물로 묽히면 pH는?", b:"<span class='k'>거의 변하지 않음</span>."},
+  {t:"완충용액", l:"L4", f:"완충 용액에 강산을 조금 넣으면?", b:"<span class='k'>짝염기가 흡수 → pH 거의 유지</span>."},
+  {t:"완충용액", l:"L4", f:"완충 용액에서 [약산]=[짝염기]이면 pH는?", b:"<span class='k'>pKa와 같음</span>(헨더슨–하셀바흐)."},
+  {t:"완충용액", l:"L1", f:"완충 성분 중 하나만(약산만) 있으면 완충인가?", b:"<span class='x'>아니오</span>(<span class='k'>짝도 필요</span>)."},
+
+  /* ===== 종합 보강 ===== */
+  {t:"강약·이온화상수", l:"L4", f:"강산 vs 약산 같은 농도에서 pH 비교는?", b:"<span class='k'>강산이 pH 더 낮음</span>(더 많이 이온화)."},
+  {t:"산염기정의", l:"L1", f:"양쪽성 물질(물·HCO₃⁻)이란?", b:"산·염기 <span class='k'>둘 다로 작용</span>."},
+  {t:"산염기정의", l:"L2", f:"HCO₃⁻의 짝산과 짝염기는?", b:"짝산 <span class='k'>H₂CO₃</span> / 짝염기 <span class='k'>CO₃²⁻</span>."},
+  {t:"pH·물이온화", l:"L2", f:"pH+pOH=14에서 pH=9면 pOH는?", b:"<span class='k'>5</span>."},
+  {t:"중화적정", l:"L2", f:"0.1M HCl 10mL 중화에 필요한 0.1M NaOH는?", b:"<span class='k'>10 mL</span>(1:1)."},
+  {t:"중화적정", l:"L4", f:"적정에 지시약을 쓰는 이유는?", b:"<span class='k'>당량점(색 변화)을 눈으로 확인</span>."},
+  {t:"완충용액", l:"L2", f:"pKa가 5인 약산으로 만든 완충의 최적 pH는?", b:"<span class='k'>약 5</span>."},
+  {t:"완충용액", l:"L1", f:"완충 용액이 생체에서 필요한 이유는?", b:"<span class='k'>혈액 pH 유지</span> 등."},
+  /* ===== 밀도 보강 2차 ===== */
+  {t:"산염기정의", l:"L1", f:"아레니우스 염기의 예는?", b:"<span class='k'>NaOH·KOH·Ca(OH)₂</span> 등(OH⁻ 내놓음)."},
+  {t:"강약·이온화상수", l:"L1", f:"이온화 상수 Ka와 Kb는 각각?", b:"산의 이온화 상수(<span class='k'>Ka</span>) / 염기의 이온화 상수(<span class='k'>Kb</span>)."},
+  {t:"강약·이온화상수", l:"L4", f:"약산의 이온화도 α는 농도가 묽어지면?", b:"<span class='k'>커짐</span>(묽힐수록 더 많이 이온화 — 오스트발트)."},
+  {t:"pH·물이온화", l:"L1", f:"pH 척도의 범위는?", b:"보통 <span class='k'>0~14</span> (25℃)."},
+  {t:"pH·물이온화", l:"L2", f:"[H⁺]=10⁻⁷이면 pH와 액성은?", b:"<span class='k'>pH 7, 중성</span>(25℃)."},
+  {t:"중화적정", l:"L2", f:"강산+약염기 적정의 당량점 pH는?", b:"<span class='k'>7보다 작음</span>(산성)."},
+  {t:"중화적정", l:"L1", f:"뷰렛·피펫·부피플라스크의 용도는?", b:"뷰렛=적정 부피 / 피펫=정확한 부피 옮김 / 부피플라스크=<span class='k'>표준 용액 제조</span>."},
+  {t:"염의가수분해", l:"L4", f:"약산+약염기 염의 액성 판단은?", b:"두 이온화 상수(<span class='k'>Ka·Kb</span>) 크기 비교로 결정."},
+  {t:"완충용액", l:"L4", f:"완충 용액에 강염기를 조금 넣으면?", b:"<span class='k'>약산이 흡수 → pH 거의 유지</span>."},
+  {t:"완충용액", l:"L1", f:"헨더슨–하셀바흐 식은?", b:"<span class='k'>pH = pKa + log([짝염기]/[약산])</span>."}
+];
+DECK.forEach((c,i)=>c.id="c"+i);
+
+/* ===================== 저장 (localStorage + in-memory 폴백) ===================== */
+const KEY="chem_u9_acidbase_v1", DAY=86400000, INTERVALS=[0,1*DAY,3*DAY,7*DAY,30*DAY];
+const mem={};
+function save(o){ const j=JSON.stringify(o); try{localStorage.setItem(KEY,j);}catch(e){} mem[KEY]=j; }
+function load(){ try{const j=localStorage.getItem(KEY); if(j)return JSON.parse(j);}catch(e){}
+  try{if(mem[KEY])return JSON.parse(mem[KEY]);}catch(e){} return {}; }
+let ST=load();                              // { id:{box,due,seen} }
+function cs(id){ return ST[id]||{box:0,due:0,seen:false}; }
+function schedule(id,grade,guessed){
+  let s=Object.assign({box:0,due:0,seen:false},ST[id]||{}); s.seen=true;
+  if(guessed || grade<=2) s.box=0;                    // 1·2 실패 / 찍음 → 리셋(즉시 재출제)
+  else if(grade===3) s.box=Math.max(1,s.box);         // 겨우 성공 → 유지·최소 1일
+  else if(grade===4) s.box=Math.min(4,s.box+1);       // 앎 → 한 단계 승급
+  else if(grade===5) s.box=Math.min(4,s.box+2);       // 완벽 → 두 단계 승급
+  s.due=Date.now()+INTERVALS[s.box]; ST[id]=s; save(ST); return s;
+}
+
+/* ===================== 상태 & 필터 ===================== */
+const UI={mode:"study", topic:"전체", layers:new Set(["L1","L2","L4","L6"])};
+const TOPICS=[...new Set(DECK.map(c=>c.t))];
+function passFilter(c){
+  if(!UI.layers.has(c.l)) return false;
+  if(UI.topic!=="전체" && c.t!==UI.topic) return false;
+  const s=cs(c.id), due=(!s.seen)||(s.due<=Date.now());
+  if(UI.mode==="study") return due;
+  if(UI.mode==="wrong") return s.seen && s.box===0;
+  return true;                               // all
+}
+let queue=[], qi=0, revealed=false, guessed=false;
+function buildQueue(){ queue=DECK.filter(passFilter).map(c=>c.id); qi=0; revealed=false; guessed=false; }
+
+/* ===================== 렌더 ===================== */
+const stage=document.getElementById("stage"), statsEl=document.getElementById("stats");
+function renderStats(){
+  const total=DECK.length;
+  const seen=DECK.filter(c=>cs(c.id).seen).length;
+  const mastered=DECK.filter(c=>cs(c.id).box>=3).length;
+  const due=DECK.filter(c=>{const s=cs(c.id);return (!s.seen)||(s.due<=Date.now());}).length;
+  statsEl.innerHTML=
+    `<span class="chip">오늘 학습 <b>${due}</b></span>`+
+    `<span class="chip">익힘 <b>${mastered}</b>/<b>${total}</b></span>`+
+    `<span class="chip">본 카드 <b>${seen}</b></span>`;
+}
+function renderCard(){
+  renderStats();
+  if(qi>=queue.length){
+    const label=UI.mode==="wrong"?"틀린 카드가 없어요":"이 범위 학습 완료";
+    stage.innerHTML=`<div class="done"><h2>✓ ${label}</h2>
+      <p>4·5로 넘긴 카드는 1·3·7·30일 간격으로 다시 나옵니다.</p>
+      <button id="again">처음부터 다시 돌기</button></div>`;
+    document.getElementById("again").onclick=()=>{buildQueue();renderCard();};
+    return;
+  }
+  const c=DECK.find(x=>x.id===queue[qi]);
+  const srcHtml=c.src?`<span class="src">모의 ${c.src}</span>`:`<span class="src"></span>`;
+  const trapHtml=(revealed&&c.trap)?`<div class="trapribbon">⚠ 함정 · 부정형("옳지 않은 것") 대비</div>`:"";
+  stage.innerHTML=`
+   <div class="card l-${c.l}">
+     <div class="cmeta">
+       <span class="badge l-${c.l}">${c.l}</span>
+       <span class="topic">${c.t}</span>${srcHtml}
+     </div>
+     <div class="front">${c.f}</div>
+     <div id="backwrap" style="display:${revealed?'block':'none'}">
+       <div class="divider"></div>${trapHtml}
+       <div class="back">${c.b}</div>
+     </div>
+     <div class="spacer"></div>
+     ${revealed?rateHtml():`<button class="reveal" id="reveal">정답 보기 · Space</button>`}
+     <div class="nav">
+       <button id="prev">‹</button>
+       <span class="pos">${qi+1} / ${queue.length}</span>
+       <button id="next">›</button>
+     </div>
+   </div>`;
+  wire(c);
+}
+function rateHtml(){
+  const L=[
+    {g:1,lab:"전혀",sub:"기억 안 남"},
+    {g:2,lab:"답보고",sub:"틀림·재인"},
+    {g:3,lab:"겨우",sub:"맞음·힘겹게"},
+    {g:4,lab:"앎",sub:"약간 주저"},
+    {g:5,lab:"완벽",sub:"즉시·확실"}
+  ];
+  const btns=L.map(x=>`<button class="lk${x.g}" data-g="${x.g}"><b>${x.g}</b><span class="lab">${x.lab}</span><span class="sub">${x.sub}</span></button>`).join("");
+  return `<div class="guess ${guessed?'on':''}" id="guess"><span class="box">${guessed?'✓':''}</span>찍음(운으로 맞음)</div>
+    <div class="lkaxis"><span>전혀 모름</span><span>얼마나 인출됐나?</span><span>완벽</span></div>
+    <div class="rate5">${btns}</div>`;
+}
+function wire(c){
+  const rev=document.getElementById("reveal");
+  if(rev) rev.onclick=doReveal;
+  const g=document.getElementById("guess");
+  if(g) g.onclick=()=>{guessed=!guessed; renderCard();};
+  stage.querySelectorAll(".rate5 button").forEach(b=>b.onclick=()=>rate(parseInt(b.dataset.g,10)));
+  document.getElementById("prev").onclick=()=>{ if(qi>0){qi--;revealed=false;guessed=false;renderCard();} };
+  document.getElementById("next").onclick=()=>{ if(qi<queue.length){qi++;revealed=false;guessed=false;renderCard();} };
+}
+function doReveal(){ revealed=true; renderCard(); }
+function rate(r){
+  const id=queue[qi];
+  const s=schedule(id,r,guessed);
+  const stillDue=(s.due<=Date.now());        // box0 → 이번 세션 재출제
+  revealed=false; guessed=false;
+  if(stillDue){ queue.push(id); }            // 뒤로 보내 다시 만나게
+  queue.splice(qi,1);                         // 현재 위치에서 제거
+  renderCard();
+}
+
+/* ===================== 컨트롤 배선 ===================== */
+const topicSel=document.getElementById("topic");
+topicSel.innerHTML=`<option>전체</option>`+TOPICS.map(t=>`<option>${t}</option>`).join("");
+topicSel.onchange=()=>{UI.topic=topicSel.value; buildQueue(); renderCard();};
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); UI.mode=b.dataset.mode; buildQueue(); renderCard();
+});
+document.querySelectorAll('#layers .lchip').forEach(ch=>ch.onclick=()=>{
+  const L=ch.dataset.l;
+  if(UI.layers.has(L)&&UI.layers.size>1){UI.layers.delete(L);ch.classList.remove('on');}
+  else{UI.layers.add(L);ch.classList.add('on');}
+  buildQueue(); renderCard();
+});
+document.getElementById("reset").onclick=()=>{
+  if(confirm("이 브라우저의 1단원 진도를 모두 초기화할까요?")){ ST={}; save(ST); buildQueue(); renderCard(); }
+};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){ e.preventDefault(); if(!revealed) doReveal(); }
+  else if(revealed && ["1","2","3","4","5"].includes(e.key)){ rate(parseInt(e.key,10)); }
+});
+
+/* ===================== 시작 ===================== */
+buildQueue(); renderCard();
+</script>
+</body>
+</html>

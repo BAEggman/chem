@@ -1,0 +1,7 @@
+# macOS / 편집기 잡파일 (GitHub Pages 배포에서 제외)
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+node_modules/

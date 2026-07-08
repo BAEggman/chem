@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4efe4">
+<title>화학 1단원 · 원자의 구조 — 파일럿 카드덱</title>
+<!--
+  화학 학습 허브 파일럿 (→ baeggman/hwahak 편입 대상)
+  · 단일 index.html · 외부 의존성 0 (완전 오프라인, GitHub Pages 배포용)
+  · 저장 키 격리: chem_u1_pilot_v1  (localStorage; 차단 시 in-memory 폴백 — 절대 크래시 안 함)
+  · SRS-lite: 경락 허브의 3·7·30일 간격반복 계승 + "찍음(운으로 맞음)" 플래그
+  · §5.4 준수: 이 덱은 재인·인출(사실·관계·변별·함정)만. 다단계 계산은 의도적 제외.
+  · 색/변수는 --hh-* 이름으로 정의 → HubHome 편입 시 값만 오버라이드하면 됨.
+-->
+<style>
+:root{
+  --hh-bg:#f3eee2; --hh-card:#fbf8f0; --hh-pan:#f0e8d8; --hh-pan2:#efe6d3;
+  --hh-ink:#2c261e; --hh-dim:#6c6252; --hh-mut:#877c69; --hh-faint:#a89c86;
+  --hh-line:#ddd2be; --hh-line2:#eae2d3;
+  --hh-gold:#a9791f; --hh-gold-s:#f3e6c6;
+  --hh-jade:#3c7568; --hh-jade-s:#dcece7;
+  --hh-azure:#356388; --hh-azure-s:#dbe6ef;
+  --hh-cinnabar:#a83a2c; --hh-cinnabar-s:#f4dcd6;
+  --hh-ok:#3c7568; --hh-no:#a83a2c;
+  --hh-shadow:0 6px 22px rgba(44,38,30,.10), 0 1px 3px rgba(44,38,30,.08);
+  --hh-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
+  --hh-mono:ui-monospace,'SF Mono','Menlo','Consolas',monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--hh-bg);color:var(--hh-ink);font-family:var(--hh-sans);
+  line-height:1.6;font-size:16px;touch-action:manipulation}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+header{margin:2px 0 12px}
+h1{font-size:19px;letter-spacing:-.02em;margin:0}
+h1 .u{font-family:var(--hh-mono);color:var(--hh-gold);font-weight:800;margin-right:6px}
+.tagline{color:var(--hh-mut);font-size:12.5px;margin:3px 0 0}
+
+/* stat chips */
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 10px}
+.chip{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:999px;
+  padding:5px 11px;font-size:12px;color:var(--hh-dim);box-shadow:var(--hh-shadow)}
+.chip b{color:var(--hh-ink);font-family:var(--hh-mono)}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--hh-pan);border:1px solid var(--hh-line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--hh-dim);font:inherit;font-size:12.5px;
+  padding:6px 11px;cursor:pointer}
+.seg button.on{background:var(--hh-card);color:var(--hh-ink);font-weight:700;box-shadow:inset 0 0 0 1px var(--hh-line)}
+select{font:inherit;font-size:13px;color:var(--hh-ink);background:var(--hh-card);
+  border:1px solid var(--hh-line);border-radius:9px;padding:6px 9px}
+.lchip{font-family:var(--hh-mono);font-size:11px;font-weight:700;border:1px solid;border-radius:999px;
+  padding:3px 9px;cursor:pointer;background:var(--hh-card);opacity:.5}
+.lchip.on{opacity:1}
+.l-L1{color:var(--hh-jade);border-color:var(--hh-jade)}
+.l-L2{color:var(--hh-azure);border-color:var(--hh-azure)}
+.l-L4{color:var(--hh-gold);border-color:var(--hh-gold)}
+.l-L6{color:var(--hh-cinnabar);border-color:var(--hh-cinnabar)}
+
+/* card */
+.card{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:18px;
+  box-shadow:var(--hh-shadow);padding:20px 20px 18px;min-height:340px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hh-line)}
+.card.l-L1::before{background:var(--hh-jade)} .card.l-L2::before{background:var(--hh-azure)}
+.card.l-L4::before{background:var(--hh-gold)} .card.l-L6::before{background:var(--hh-cinnabar)}
+.cmeta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--hh-mono);font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;color:#fff}
+.badge.l-L1{background:var(--hh-jade)} .badge.l-L2{background:var(--hh-azure)}
+.badge.l-L4{background:var(--hh-gold)} .badge.l-L6{background:var(--hh-cinnabar)}
+.topic{font-size:12px;color:var(--hh-mut);font-weight:600}
+.src{font-family:var(--hh-mono);font-size:10.5px;color:var(--hh-faint);margin-left:auto}
+.front{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.5;color:var(--hh-ink)}
+.front .em{color:var(--hh-cinnabar)}
+.divider{height:1px;background:var(--hh-line2);margin:16px 0}
+.back{font-size:16.5px;line-height:1.62;color:var(--hh-ink);white-space:pre-wrap}
+.back .k{color:var(--hh-jade);font-weight:700}
+.back .x{color:var(--hh-cinnabar);font-weight:700}
+.trapribbon{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;
+  color:var(--hh-cinnabar);background:var(--hh-cinnabar-s);border:1px solid #e6bfb6;
+  border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.spacer{flex:1}
+
+/* reveal / rate */
+.reveal{margin-top:16px;width:100%;border:0;border-radius:12px;padding:13px;
+  background:var(--hh-ink);color:var(--hh-card);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.lkaxis{display:flex;justify-content:space-between;margin-top:16px;margin-bottom:6px;
+  font-size:10.5px;color:var(--hh-faint)}
+.lkaxis span:nth-child(2){color:var(--hh-mut);font-weight:600}
+.rate5{display:flex;gap:6px}
+.rate5 button{flex:1;border:1px solid var(--hh-line);border-radius:12px;padding:9px 3px 8px;
+  background:var(--hh-card);font:inherit;cursor:pointer;color:var(--hh-dim);
+  display:flex;flex-direction:column;align-items:center;gap:1px}
+.rate5 button b{font-family:var(--hh-mono);font-size:18px;line-height:1.05}
+.rate5 button .lab{font-size:12px;font-weight:700;margin-top:2px}
+.rate5 button .sub{font-size:9.5px;font-weight:600;color:var(--hh-faint);text-align:center}
+.rate5 button:active{transform:translateY(1px)}
+.lk1,.lk1 b{color:var(--hh-cinnabar)}
+.lk2,.lk2 b{color:#b0602a}
+.lk3,.lk3 b{color:var(--hh-mut)}
+.lk4,.lk4 b{color:#4d7f52}
+.lk5,.lk5 b{color:var(--hh-jade)}
+@media(hover:hover){
+  .lk1:hover{background:var(--hh-cinnabar-s);border-color:var(--hh-cinnabar)}
+  .lk2:hover{background:#f4e4d6;border-color:#b0602a}
+  .lk3:hover{background:var(--hh-pan)}
+  .lk4:hover{background:#e4efe1;border-color:#4d7f52}
+  .lk5:hover{background:var(--hh-jade-s);border-color:var(--hh-jade)}
+}
+@media(max-width:430px){ .rate5 button .sub{display:none} .rate5{gap:4px} }
+.guess{margin-top:11px;display:flex;align-items:center;gap:8px;justify-content:center;
+  font-size:12.5px;color:var(--hh-mut);cursor:pointer;user-select:none}
+.guess .box{width:17px;height:17px;border:1.5px solid var(--hh-faint);border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:12px;color:#fff}
+.guess.on .box{background:var(--hh-gold);border-color:var(--hh-gold)}
+.guess.on{color:var(--hh-gold);font-weight:700}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:var(--hh-mut);font-size:13px}
+.nav button{border:1px solid var(--hh-line);background:var(--hh-card);border-radius:9px;
+  width:36px;height:32px;font-size:15px;color:var(--hh-dim);cursor:pointer}
+.nav .pos{font-family:var(--hh-mono);font-size:12px}
+
+.done{text-align:center;padding:48px 16px}
+.done h2{color:var(--hh-jade);margin:0 0 6px}
+.done p{color:var(--hh-mut);font-size:14px;margin:4px 0}
+.done button{margin-top:16px;border:1px solid var(--hh-line);background:var(--hh-card);border-radius:10px;
+  padding:9px 16px;font:inherit;font-weight:700;color:var(--hh-ink);cursor:pointer}
+
+footer{margin-top:20px;color:var(--hh-faint);font-size:11.5px;line-height:1.6}
+footer .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+footer .legend span{font-family:var(--hh-mono);font-weight:700}
+footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:underline;
+  font:inherit;font-size:11.5px;cursor:pointer;padding:0;margin-top:6px}
+@media (hover:hover){
+  .reveal:hover{opacity:.92} .nav button:hover{border-color:var(--hh-faint)}
+  .seg button:hover{color:var(--hh-ink)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="u">1단원</span>원자의 구조 · 파일럿 카드덱</h1>
+    <p class="tagline">능동 인출 → 자가 채점 → 3·7·30일 간격반복 · 기본서·기출 그라운딩</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="row">
+      <div class="seg" id="mode">
+        <button data-mode="study" class="on">오늘 학습</button>
+        <button data-mode="all">전체</button>
+        <button data-mode="wrong">틀린 것만</button>
+      </div>
+      <select id="topic"></select>
+    </div>
+    <div class="row" id="layers">
+      <span class="lchip l-L1 on" data-l="L1">L1 사실</span>
+      <span class="lchip l-L2 on" data-l="L2">L2 방법</span>
+      <span class="lchip l-L4 on" data-l="L4">L4 변별</span>
+      <span class="lchip l-L6 on" data-l="L6">L6 함정</span>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+
+  <footer>
+    <div class="legend">
+      <span class="l-L1" style="color:var(--hh-jade)">L1 사실</span>
+      <span class="l-L2" style="color:var(--hh-azure)">L2 트리거→방법</span>
+      <span class="l-L4" style="color:var(--hh-gold)">L4 변별</span>
+      <span class="l-L6" style="color:var(--hh-cinnabar)">L6 함정</span>
+    </div>
+    이 덱은 <b>재인·인출</b>(사실·관계·변별·함정)만 다룹니다. 화학양론·pH·평형 등 다단계 계산은 의도적으로 제외 — 별도 문제풀이 트랙 권장(§5.4).
+    <br>진도는 이 브라우저에 저장됩니다(<code>chem_u1_pilot_v1</code>). 5점 자가평가로 간격을 조절 — 1·2=리셋(즉시 다시), 3=유지, 4=한 단계↑, 5=두 단계↑. ‘찍음’ 표시 시 승급하지 않습니다.
+    <br><button class="reset" id="reset">↺ 진도 초기화</button>
+  </footer>
+</div>
+
+<script>
+/* ===================== 1단원 카드 데이터 (교재·기출 그라운딩) =====================
+   layer: L1 사실 / L2 트리거→방법 / L4 변별 / L6 함정
+   trap:true → 함정 카드(틀린 진술 적발). src: 모의고사 회-번 (있을 때) */
+const DECK = [
+  /* --- 원자 모형의 변천 --- */
+  {t:"원자모형", l:"L1", f:"전자를 발견한 실험과 그 모형은?", b:"<span class='k'>톰슨 — 음극선 실험</span> (전자 발견, (+)바탕에 (−)전자 박힌 모형)"},
+  {t:"원자모형", l:"L1", f:"원자핵을 발견한 실험과 그 모형은?", b:"<span class='k'>러더퍼드 — 알파 입자 산란 실험</span> (중심에 작은 (+)핵)"},
+  {t:"원자모형", l:"L6", trap:true, f:"“러더퍼드가 음극선 실험으로 전자를 발견했다.” — 옳은가?", b:"<span class='x'>✗ 아니다.</span> 톰슨=음극선(전자), 러더퍼드=알파산란(핵). 인물·실험을 서로 바꾸는 함정."},
+  {t:"원자모형", l:"L1", f:"알파 입자 산란 실험이 밝힌 결론 2가지는?", b:"① 원자핵은 매우 작다  ② 원자의 대부분은 <span class='k'>빈 공간</span>이다."},
+  {t:"원자모형", l:"L1", f:"원자 모형 발전 순서(5단계)는?", b:"돌턴 → 톰슨 → 러더퍼드 → 보어 → <span class='k'>슈뢰딩거(현대·오비탈)</span>"},
+
+  /* --- 양자·불연속 --- */
+  {t:"양자·불연속", l:"L1", f:"양자(quantum)의 뜻과 핵심 한 단어는?", b:"에너지의 <span class='k'>불연속</span>적인 묶음. 핵심 단어 = ‘불연속’. (양성자와 전혀 다른 개념)"},
+  {t:"양자·불연속", l:"L6", trap:true, f:"“전자의 궤도는 연속적으로 이어져 있다.” — 옳은가?", b:"<span class='x'>✗</span> 불연속(띄엄띄엄, 계단). ‘불’ 한 글자를 빼서 틀리게 만드는 대표 함정."},
+  {t:"양자·불연속", l:"L4", f:"양자(quantum) vs 양성자 — 무엇이 다른가?", b:"양자 = <span class='k'>에너지 묶음</span>(quantum) / 양성자 = 핵 속 입자. 이름만 비슷할 뿐 전혀 다름."},
+
+  /* --- 보어 --- */
+  {t:"보어", l:"L1", f:"보어 가설 4가지는?", b:"① 핵 주위를 전자 1개가 원운동(단전자계)\n② 정해진 궤도에서만 존재(불연속)\n③ 궤도를 도는 동안 에너지 출입 없음\n④ 이동할 때만 차이만큼 <span class='k'>흡수(낮→높)/방출(높→낮)</span>"},
+  {t:"보어", l:"L1", f:"전자 껍질 이름과 주양자수 n은? (안쪽부터)", b:"K(n=1) · L(2) · M(3) · N(4) … n↑ → 핵에서 멀어짐·에너지↑·불안정"},
+  {t:"보어", l:"L1", f:"n = ∞ 는 어떤 상태인가?", b:"<span class='k'>이온화</span> — 전자가 핵의 영향권을 완전히 벗어난 상태."},
+  {t:"보어", l:"L6", trap:true, f:"“수소 원자에서 전자의 에너지는 부(방위)양자수 l과 관련 있다.” — 옳은가?", b:"<span class='x'>✗</span> 수소는 에너지가 <span class='k'>n에만</span> 의존(2s=2p). l에 의존하는 건 다전자 원자."},
+  {t:"보어", l:"L1", f:"보어 모형이 잘 맞는 계(system)는?", b:"<span class='k'>단전자계</span>: H, He⁺, Li²⁺ 같은 수소꼴 이온."},
+  {t:"보어", l:"L6", trap:true, f:"“보어 모형은 모든 원자에 잘 들어맞는다.” — 옳은가?", b:"<span class='x'>✗</span> 단전자계만 맞음. 다전자 원자엔 안 맞는 것이 보어의 <span class='k'>결정적 한계</span>."},
+
+  /* --- 빛·스펙트럼 --- */
+  {t:"빛·스펙트럼", l:"L1", f:"E–ν, E–λ 의 관계는? (E = hc/λ)", b:"E ∝ ν (<span class='k'>비례</span>) · E ∝ 1/λ (<span class='k'>반비례</span>). 즉 파장↑ → 에너지↓."},
+  {t:"빛·스펙트럼", l:"L1", f:"자외선·가시광선·적외선의 에너지 순서는?", b:"자외선 > 가시광선 > 적외선 (<span class='k'>파장은 정반대</span> 순서)."},
+  {t:"빛·스펙트럼", l:"L1", f:"수소 스펙트럼 계열 – 도착 껍질 – 영역? (라이먼/발머/파셴)", b:"라이먼 n=1 <span class='k'>자외선</span> · 발머 n=2 <span class='k'>가시광선</span> · 파셴 n=3 <span class='k'>적외선</span>"},
+  {t:"빛·스펙트럼", l:"L2", f:"전자가 n:3 → 2 로 전이하면 계열과 색은?", b:"<span class='k'>발머 계열, 빨간색</span>. (시험에서 안 알려주므로 미리 암기.)"},
+  {t:"빛·스펙트럼", l:"L6", trap:true, f:"“라이먼 계열은 적외선 영역이다.” — 옳은가?", b:"<span class='x'>✗</span> 라이먼=자외선, 파셴=적외선. 계열–영역을 바꾸는 함정이 잦음."},
+  {t:"빛·스펙트럼", l:"L1", f:"선 스펙트럼이 ‘분리된 선’으로 나타나는 것이 증명하는 것은?", b:"전자 궤도(에너지 준위)의 <span class='k'>불연속</span> — 직접 증거."},
+  {t:"빛·스펙트럼", l:"L2", src:"3-55", f:"전자전이·진동·회전·병진 중 가장 짧은 파장을 흡수하는 것은?", b:"<span class='k'>전자 전이</span>. (에너지: 전자전이 > 진동 > 회전 > 병진.)"},
+  {t:"빛·스펙트럼", l:"L2", src:"1-47", f:"나트륨을 불꽃에 넣으면 노란빛이 난다. 이 빛과 관련된 것은?", b:"<span class='k'>원자가 전자</span>. 들뜬 원자가 전자가 낮은 준위로 돌아오며 특정 파장 방출(불꽃반응)."},
+
+  /* --- 현대 모형·오비탈 --- */
+  {t:"현대모형", l:"L1", f:"하이젠베르크 불확정성 원리를 한 문장으로?", b:"전자의 <span class='k'>위치와 운동량(속도)을 동시에 정확히</span> 측정하는 것은 불가능."},
+  {t:"현대모형", l:"L1", f:"오비탈의 정의와, 이를 계산해낸 사람은?", b:"전자가 존재할 확률이 높은 공간(확률분포함수). 계산한 사람 = <span class='k'>슈뢰딩거</span>."},
+  {t:"현대모형", l:"L4", f:"orbit vs orbital — 무엇이 다른가?", b:"orbit = 보어의 <span class='k'>정해진 원 궤도</span> / orbital = 현대의 <span class='k'>확률 공간</span>. 혼동 함정 단골."},
+  {t:"현대모형", l:"L6", trap:true, src:"1-42", f:"“현대 모형에서 전자는 정해진 궤도 위를 등속 원운동한다.” — 옳은가?", b:"<span class='x'>✗</span> 그건 보어 모형. 현대는 위치·운동을 <span class='k'>확률로만</span> 기술(불확정성)."},
+  {t:"현대모형", l:"L6", trap:true, f:"“전자는 오비탈 경계면 밖에서는 발견되지 않는다.” — 옳은가?", b:"<span class='x'>✗</span> 경계면은 <span class='k'>90% 경계</span>일 뿐, 바깥에서도 약 10% 존재 가능."},
+  {t:"현대모형", l:"L6", trap:true, f:"“핵에서 전자가 발견될 확률이 가장 높다.” — 옳은가?", b:"<span class='x'>✗</span> 핵에서 <span class='k'>조금 떨어진 곳</span>이 최대(방사 분포)."},
+  {t:"현대모형", l:"L4", src:"5-22", f:"양자역학 등장과 무관한 것은? (흑체복사 / 광전효과 / 수소스펙트럼 / 온도에 따른 입자분포)", b:"<span class='k'>온도에 따른 입자 분포</span>(맥스웰–볼츠만, 고전통계). 나머지 셋이 양자 개념을 낳음."},
+
+  /* --- 양자수 (★★★ 함정 밀집) --- */
+  {t:"양자수", l:"L1", f:"네 양자수가 각각 결정하는 것은? (n / l / mₗ / mₛ)", b:"n=크기·에너지(껍질) · l=<span class='k'>모양</span>(s·p·d·f) · mₗ=공간 <span class='k'>방향</span> · mₛ=스핀"},
+  {t:"양자수", l:"L1", f:"l의 허용 범위와 s/p/d/f 대응은?", b:"l = 0 ~ (n−1). 0→s, 1→p, 2→d, 3→f. 같은 껍질 내 에너지 <span class='k'>s < p < d</span>."},
+  {t:"양자수", l:"L1", f:"mₗ의 범위와, 한 부껍질의 오비탈 수는?", b:"mₗ = −l … 0 … +l (정수) → <span class='k'>(2l+1)개</span>. 에너지 정보는 주지 않음."},
+  {t:"양자수", l:"L6", trap:true, f:"다전자 원자에서 4s와 3d 중 에너지가 낮은 것과, 그 규칙은? ★★★", b:"<span class='k'>4s가 낮다.</span> 에너지 = (n+l) 합, 같으면 n 작은 쪽. 3d(2+3=5) > 4s(4+0=4)."},
+  {t:"양자수", l:"L6", trap:true, f:"“다전자 원자의 오비탈 에너지는 주양자수 n에만 의존한다.” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>(n+l) 합</span>에 의존. n에만 의존하는 건 수소. (문제가 수소인지 다전자인지부터 확인!)"},
+  {t:"양자수", l:"L1", f:"s/p/d/f 부껍질의 오비탈 수와 최대 전자 수는?", b:"s:1·2 / p:3·6 / d:5·10 / f:7·14 (오비탈 하나에 전자 2개)."},
+  {t:"양자수", l:"L1", f:"주양자수 n인 껍질의 오비탈 총수와 최대 전자 수는?", b:"오비탈 <span class='k'>n²개</span>, 최대 전자 <span class='k'>2n²개</span>. (n=3 → 9개·18전자)"},
+  {t:"양자수", l:"L4", src:"2-31", f:"n=1일 때 허용되는 l은? 왜 (n=1, l=1)은 불가능한가?", b:"l = 0 만 가능. l ≤ n−1 이므로 n=1이면 <span class='k'>l=0뿐</span>."},
+  {t:"양자수", l:"L6", trap:true, f:"“p 오비탈은 방향성이 없다.” vs “s 오비탈만 방향성이 없다.” — 옳은 쪽은?", b:"<span class='k'>s만 방향성 없음</span>(구형). p는 방향성 있음(아령). ‘p는 방향성 없다’는 함정."},
+  {t:"양자수", l:"L4", src:"2-32", f:"자기양자수 mₗ이 결정하는 것은? (에너지 / 모양 / 오비탈 수 / 훈트)", b:"부껍질의 <span class='k'>오비탈 수</span>(공간 방향). 모양은 l, 에너지는 n(다전자는 n+l)."},
+
+  /* --- 전자 배치 --- */
+  {t:"전자배치", l:"L1", f:"전자 배치 3원칙은?", b:"① 쌓음(Aufbau): 낮은 오비탈부터\n② 파울리: 한 오비탈 최대 2개, 스핀 반대(↑↓)\n③ 훈트: 같은 에너지엔 하나씩, <span class='k'>홀전자 최대</span>(각방 쓰기)"},
+  {t:"전자배치", l:"L1", f:"다전자 원자의 채움 순서는? (4s·3d까지)", b:"1s → 2s → 2p → 3s → 3p → <span class='k'>4s → 3d</span> → …"},
+  {t:"전자배치", l:"L4", trap:true, src:"3-53", f:"Cr(24)의 바닥상태가 4s²3d⁴ 가 아니라 4s¹3d⁵ 인 이유는?", b:"d 오비탈 <span class='k'>반채움 안정</span>. (Cu도 4s¹3d¹⁰ — 완전채움 안정.) 반채움/완전채움 예외."},
+  {t:"전자배치", l:"L6", trap:true, src:"5-21", f:"상자성 조건은? He·Be·N·Mg 중 상자성인 것은?", b:"<span class='k'>홀전자가 있으면 상자성</span>. N(2p³, 홀전자 3개). 나머지는 짝지어져 반자성."},
+  {t:"전자배치", l:"L2", src:"1-50", f:"전자 친화도가 클 배치는? 1s²2s²2p⁵는 무슨 원소인가?", b:"<span class='k'>17족(할로겐)</span>이 큼. 2p⁵ = F. (전자 1개 받아 비활성기체 배치로.)"},
+
+  /* --- 루이스·결합손 --- */
+  {t:"루이스", l:"L1", f:"루이스 구조에서 비공유 전자쌍 vs 홀전자는?", b:"쌍 이룬 것 = <span class='k'>비공유 전자쌍</span>, 짝 없는 것 = <span class='k'>홀전자</span>. 5번째 전자부터 쌍으로."},
+  {t:"루이스", l:"L6", trap:true, f:"단서 없이 ‘탄소의 결합손 수’를 물으면? 바닥상태 홀전자 2개라 답하면?", b:"<span class='k'>루이스(들뜬상태) 기준 4개</span>가 정답. Be 2·B 3·C 4. 바닥상태 2개로 답하면 함정."},
+
+  /* --- 주기율 도입 (→2단원 연결) --- */
+  {t:"주기율", l:"L1", f:"주기율표 배열 기준 — 멘델레예프 vs 모즐리는?", b:"멘델레예프 = <span class='k'>원자량</span> 순 / 모즐리 = <span class='k'>원자 번호(양성자 수)</span> 순(현재 기준)."},
+  {t:"주기율", l:"L6", trap:true, f:"“멘델레예프가 원자 번호 순으로 배열했다.” — 옳은가?", b:"<span class='x'>✗</span> 멘델레예프=원자량, 모즐리=원자번호. 둘을 바꾸는 함정."},
+  {t:"주기율", l:"L4", f:"전형 원소 vs 전이 원소 — 이온의 색은?", b:"<span class='k'>전이 원소</span>가 수용액에서 색 띠는 경우 많음. 전형 원소는 대부분 무색."},
+  {t:"주기율", l:"L6", trap:true, src:"1-39", f:"“전이금속은 최외각 전자가 모두 2개라 족이 달라도 성질이 비슷하다.” — 옳은가?", b:"<span class='x'>✗</span> 최외각 <span class='k'>1~2개로 다양</span>. 성질이 비슷한 건 d 전자 채움 방식 때문."},
+  {t:"주기율", l:"L6", trap:true, src:"6-42", f:"2주기에서 1차 이온화에너지가 가장 큰 원소는? (Be/B/N/O)", b:"<span class='k'>N</span> — 2p³ 반채움 안정이라 O보다 큼(오른쪽 증가 경향의 예외)."},
+  {t:"주기율", l:"L6", trap:true, src:"2-34", f:"“Mg < Al” 은 1차 이온화에너지 순서로 옳은가?", b:"<span class='x'>✗</span> Mg(3s² <span class='k'>완전채움</span>) > Al. 완전채움/반채움 예외로 Mg가 더 큼."},
+
+  /* ===== 구성 입자 (양성자·중성자·전자, 동위원소) — 기출 다수, 교재 ①단계 ===== */
+  {t:"구성입자", l:"L1", f:"원자를 구성하는 세 입자와 각 전하는?", b:"양성자(+) · 중성자(0) · 전자(−). <span class='k'>핵 = 양성자 + 중성자</span>."},
+  {t:"구성입자", l:"L1", f:"양성자·중성자·전자의 상대 질량은?", b:"양성자 ≈ 중성자 ≈ 1, 전자 ≈ <span class='k'>1/1840</span>(무시 가능). 질량 대부분은 핵."},
+  {t:"구성입자", l:"L1", f:"원자 번호가 정의하는 것은?", b:"<span class='k'>양성자 수</span>. (중성 원자에서는 전자 수와도 같음.)"},
+  {t:"구성입자", l:"L1", f:"질량수의 정의는?", b:"<span class='k'>양성자 수 + 중성자 수</span> (전자 질량은 무시)."},
+  {t:"구성입자", l:"L2", f:"중성자 수를 구하려면?", b:"<span class='k'>질량수 − 원자 번호</span>."},
+  {t:"구성입자", l:"L1", f:"동위원소(isotope)의 정의는?", b:"원자 번호(양성자 수)는 <span class='k'>같고</span>, 질량수(중성자 수)는 <span class='k'>다른</span> 원자."},
+  {t:"구성입자", l:"L4", f:"동위원소 vs 동중원소 — 무엇이 같고 다른가?", b:"동위원소: 원자번호 같음·질량수 다름 / 동중원소: <span class='k'>질량수 같음·원자번호 다름</span>."},
+  {t:"구성입자", l:"L6", trap:true, f:"“한 원소의 모든 원자는 질량수가 동일하다.” — 옳은가?", b:"<span class='x'>✗</span> 동위원소는 질량수가 다름(원자 번호는 같음)."},
+  {t:"구성입자", l:"L1", f:"동위원소끼리 화학적 성질이 같은 이유는?", b:"<span class='k'>전자 수(원자가 전자)가 같기</span> 때문. (질량 차로 물리적 성질은 다를 수 있음.)"},
+  {t:"구성입자", l:"L1", f:"원자량이 정수가 아닌 이유는? (예: Cl 35.5)", b:"여러 동위원소의 질량을 <span class='k'>존재비로 가중평균</span>하기 때문."},
+  {t:"구성입자", l:"L2", src:"2-8", f:"Cl 원자량이 35.5인데 ³⁵Cl : ³⁷Cl 존재비는 대략?", b:"약 <span class='k'>3 : 1</span> (35.5가 35에 가까움 → ³⁵Cl가 더 많음)."},
+  {t:"구성입자", l:"L6", trap:true, f:"“어떤 이온이든 전자 수는 항상 양성자 수보다 많다.” — 옳은가?", b:"<span class='x'>✗</span> 양이온은 전자<양성자(잃음), 음이온은 전자>양성자(얻음)."},
+  {t:"구성입자", l:"L2", f:"전하가 z인 이온의 전자 수는?", b:"<span class='k'>양성자 수 − z</span>. 예: Mg²⁺ = 12−2 = 10개."},
+  {t:"구성입자", l:"L4", src:"3-38", f:"핵반응 vs 화학반응 — 무엇이 관여하나?", b:"핵반응 = <span class='k'>양성자·중성자(핵)</span> / 화학반응 = <span class='k'>전자(원자가 전자)</span>."},
+  {t:"구성입자", l:"L1", f:"전자·원자핵·중성자를 발견/규명한 사람은?", b:"전자 = 톰슨 / 원자핵 = 러더퍼드 / <span class='k'>중성자 = 채드윅</span>."},
+  {t:"구성입자", l:"L1", f:"α 붕괴 시 질량수·원자번호 변화는?", b:"질량수 <span class='k'>−4</span>, 원자번호 <span class='k'>−2</span> (He 핵 방출)."},
+  {t:"구성입자", l:"L6", trap:true, f:"“β 붕괴는 질량수가 안 변하므로 다른 원소로 바뀌지 않는다.” — 옳은가?", b:"<span class='x'>✗</span> 질량수는 불변이지만 <span class='k'>원자번호 +1</span> → 다른 원소로 변함."},
+
+  /* ===== 양자 개념의 증거 (광전효과·흑체·물질파) — 기출 빈출 ===== */
+  {t:"양자·불연속", l:"L1", f:"광전효과를 설명하며 “빛은 입자”라 한 사람은?", b:"<span class='k'>아인슈타인</span>. 광전효과 → 빛의 입자성(광자)."},
+  {t:"양자·불연속", l:"L1", f:"흑체 복사를 설명하며 E=hν를 도입한 사람과 상수는?", b:"<span class='k'>플랑크</span>. h = 플랑크 상수. E = hν (에너지 양자화)."},
+  {t:"양자·불연속", l:"L1", f:"드브로이가 제안한 개념은?", b:"<span class='k'>물질파</span> — 입자도 파동성을 가짐(λ = h/p)."},
+  {t:"양자·불연속", l:"L1", f:"양자 개념을 낳은 증거들은?", b:"흑체복사(플랑크) · 광전효과(아인슈타인) · 수소 선스펙트럼(보어) · 물질파(드브로이)."},
+  {t:"양자·불연속", l:"L1", f:"빛의 이중성이란?", b:"<span class='k'>파동성 + 입자성</span>을 함께 가짐. (광전효과 = 입자성의 증거.)"},
+
+  /* ===== 원자 모형 보강 ===== */
+  {t:"원자모형", l:"L1", f:"돌턴 원자설의 핵심은?", b:"원자는 <span class='k'>더 쪼갤 수 없는 단단한 공</span>."},
+  {t:"원자모형", l:"L1", f:"톰슨 모형의 모습은?", b:"(+)바탕에 (−)전자가 박힌 모형 (<span class='k'>건포도빵·수박 모형</span>)."},
+  {t:"원자모형", l:"L1", f:"원자 탐구의 두 단계는?", b:"① 무엇으로 구성?(구성 입자) → ② 전자는 어떻게 존재?(전자 존재 방식). 화학의 핵심은 <span class='k'>②</span>."},
+  {t:"원자모형", l:"L4", f:"“화학은 무엇에 관한 학문”이라 하는가?", b:"<span class='k'>전자</span> — 특히 원자가 전자의 거동."},
+
+  /* ===== 보어 보강 ===== */
+  {t:"보어", l:"L1", f:"n이 커질 때 인력·에너지·안정성은?", b:"인력 약해짐 · 에너지 커짐 · <span class='k'>더 불안정</span>."},
+  {t:"보어", l:"L1", f:"수소 원자 에너지 준위 공식과 부호는?", b:"Eₙ = <span class='k'>−1312/n²</span> kJ/mol (음수). n↑ → 0에 가까워져 에너지↑."},
+  {t:"보어", l:"L2", f:"수소 에너지 준위 Eₙ이 (−)값인 이유는?", b:"자유 전자(n=∞)를 0으로 두면, 핵에 <span class='k'>붙잡힌(안정) 상태는 그보다 낮은 (−)</span>."},
+  {t:"보어", l:"L4", f:"Li²⁺가 보어 모형에 맞는 이유는?", b:"전자 <span class='k'>1개짜리 단전자계</span>이기 때문. (자연 상태 Li는 보통 Li⁺.)"},
+
+  /* ===== 빛·스펙트럼 보강 ===== */
+  {t:"빛·스펙트럼", l:"L1", f:"파장 λ와 진동수 ν의 정의는?", b:"λ = 마루~마루 길이 / ν = <span class='k'>1초당 진동 횟수</span>."},
+  {t:"빛·스펙트럼", l:"L1", f:"가시광선 안에서 보라색 vs 빨간색의 에너지·파장은?", b:"보라 = 에너지 최대·파장 최소 / 빨강 = <span class='k'>에너지 최소·파장 최대</span>."},
+  {t:"빛·스펙트럼", l:"L4", f:"연속 스펙트럼 vs 선 스펙트럼은?", b:"연속 = 무지개(끊김 없음) / 선 = <span class='k'>분리된 선(불연속)</span> → 궤도 불연속의 증거."},
+  {t:"빛·스펙트럼", l:"L2", f:"선 스펙트럼은 어떻게 생기나?", b:"들뜬 전자가 낮은 궤도로 떨어지며 <span class='k'>두 궤도 에너지 차만큼 특정 파장</span> 방출."},
+
+  /* ===== 현대 모형 보강 ===== */
+  {t:"현대모형", l:"L1", f:"운동량의 정의는? (불확정성 맥락)", b:"<span class='k'>질량 × 속도</span>. 질량 일정 → ‘속도’나 ‘운동량’이나 같은 말."},
+  {t:"현대모형", l:"L1", f:"전자가 2개 이상이면 거동을 정확히 알 수 없는 이유는?", b:"<span class='k'>전자–전자 상호작용</span>으로 관계가 복잡해져서."},
+
+  /* ===== 양자수 보강 ===== */
+  {t:"양자수", l:"L1", f:"양자수 아파트 비유는? (n / l / mₗ / mₛ)", b:"n=층수 · l=호수(모양) · mₗ=방 번호(방향) · mₛ=방 안 자세(스핀)."},
+  {t:"양자수", l:"L1", f:"방위(부)양자수 l의 다른 이름은?", b:"<span class='k'>각운동량 양자수</span>."},
+  {t:"양자수", l:"L1", f:"스핀양자수 mₛ의 값은?", b:"<span class='k'>+½, −½</span> (부호 약속은 책마다 다름)."},
+  {t:"양자수", l:"L1", f:"p 오비탈과 d 오비탈의 모양·개수는?", b:"p = 아령형·3축(<span class='k'>3개</span>) / d = 5가지(<span class='k'>5개</span>)."},
+  {t:"양자수", l:"L1", f:"s 오비탈의 모양과 방향성은?", b:"<span class='k'>구형 → 방향성 없음</span>."},
+  {t:"양자수", l:"L1", f:"방사 분포에서 전자 발견 확률이 최대인 곳은?", b:"핵에서 <span class='k'>조금 떨어진 곳</span> (핵이 최댓값 아님)."},
+
+  /* ===== 전자 배치 보강 ===== */
+  {t:"전자배치", l:"L1", f:"바닥 상태 vs 들뜬 상태는?", b:"바닥 = 규칙대로 가장 낮게 채운 상태 / 들뜬 = <span class='k'>전자가 더 높은 오비탈로 올라간 상태</span>."},
+  {t:"전자배치", l:"L4", f:"상자성 vs 반자성은?", b:"상자성 = <span class='k'>홀전자 있음</span>(자기장에 끌림) / 반자성 = 모두 짝지어짐."},
+  {t:"전자배치", l:"L1", f:"이온이 되려는 전자 배치의 경향은?", b:"<span class='k'>비활성 기체(18족)</span>의 안정한 배치를 가지려 함."},
+  {t:"전자배치", l:"L6", trap:true, f:"“N(질소)은 2p 전자가 짝지어져 홀전자가 1개다.” — 옳은가?", b:"<span class='x'>✗</span> 훈트 규칙 → 2p 3칸에 하나씩 → <span class='k'>홀전자 3개(상자성)</span>."},
+
+  /* ===== 루이스 보강 ===== */
+  {t:"루이스", l:"L1", f:"루이스 전자점 구조는 무엇을 점으로 나타내며, 어떤 결합 설명용인가?", b:"<span class='k'>원자가 전자</span>를 점으로. <span class='k'>공유 결합</span> 설명용 표기."},
+  {t:"루이스", l:"L1", f:"Be·B·C의 결합손(원자가) 수는? (들뜬 상태)", b:"Be <span class='k'>2</span> · B <span class='k'>3</span> · C <span class='k'>4</span>."},
+  {t:"루이스", l:"L2", f:"탄소의 결합손이 4개인 이유는? (들뜬 상태)", b:"2s 전자 1개가 빈 2p로 들뜸 → <span class='k'>홀전자 2 → 4</span> → 결합손 4."},
+
+  /* ===== 주기율 보강 ===== */
+  {t:"주기율", l:"L1", f:"되베라이너의 배열 기준은?", b:"<span class='k'>세 쌍 원소(triad)</span> — 같은 족 3원소에서 가운데가 양 끝의 중간값."},
+  {t:"주기율", l:"L1", f:"족과 주기의 의미는?", b:"족 = 세로줄(<span class='k'>같은 원자가 전자 → 성질 비슷</span>) / 주기 = 가로줄."},
+  {t:"주기율", l:"L4", f:"금속 vs 비금속의 이온 경향은?", b:"금속 = 전자 잃고 <span class='k'>양이온</span> / 비금속 = 전자 얻어 <span class='k'>음이온</span> (수소는 예외적 위치)."},
+  {t:"주기율", l:"L1", f:"금속성이 커지는 방향은?", b:"<span class='k'>왼쪽·아래</span>로 갈수록 증가."},
+  {t:"주기율", l:"L1", f:"비금속성·이온화에너지·전기음성도가 커지는 방향은?", b:"<span class='k'>오른쪽·위</span>로 갈수록 증가 (18족 별도)."},
+  {t:"주기율", l:"L1", f:"전형 원소 vs 전이 원소의 특징은?", b:"전형 = 같은 족끼리 성질 비슷·이온 대부분 무색 / 전이 = 중금속·<span class='k'>이온 색 띠는 경우 많음</span>·족 아니어도 비슷."},
+  {t:"주기율", l:"L1", f:"유효 핵전하(Z_eff)란?", b:"전자가 실제로 느끼는 핵의 (+)전하 = <span class='k'>핵전하 − 안쪽 전자의 가림(shielding)</span>."},
+  {t:"주기율", l:"L6", trap:true, f:"“같은 주기에서 원자 번호가 커지면 원자 반지름이 커진다.” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>작아짐</span> (유효 핵전하↑로 전자를 더 강하게 당김)."},
+
+  /* ===== 불꽃 반응 색 세트 (원자가 전자 들뜸 → 특정 파장 방출) ===== */
+  {t:"불꽃반응", l:"L1", f:"리튬(Li)의 불꽃 반응 색은?", b:"<span class='k'>빨강</span>(진홍)."},
+  {t:"불꽃반응", l:"L1", f:"나트륨(Na)의 불꽃 반응 색은?", b:"<span class='k'>노랑</span>."},
+  {t:"불꽃반응", l:"L1", f:"칼륨(K)의 불꽃 반응 색은?", b:"<span class='k'>보라</span>(연보라)."},
+  {t:"불꽃반응", l:"L1", f:"칼슘(Ca)의 불꽃 반응 색은?", b:"<span class='k'>주황</span>(주홍·벽돌색)."},
+  {t:"불꽃반응", l:"L1", f:"스트론튬(Sr)의 불꽃 반응 색은?", b:"<span class='k'>진홍</span>(빨강)."},
+  {t:"불꽃반응", l:"L1", f:"바륨(Ba)의 불꽃 반응 색은?", b:"<span class='k'>황록</span>(녹색)."},
+  {t:"불꽃반응", l:"L1", f:"구리(Cu)의 불꽃 반응 색은?", b:"<span class='k'>청록</span>(파란-초록)."},
+  {t:"불꽃반응", l:"L2", f:"Na의 노란빛이 강해 K 등 다른 색을 가릴 때 어떻게 관찰하나?", b:"<span class='k'>코발트(청색) 유리</span>로 노란빛을 걸러 관찰."},
+
+  /* ===== 오비탈 채움 예외 & 전이금속 이온 배치 ===== */
+  {t:"전자배치", l:"L1", f:"구리(Cu, 29)의 바닥상태 전자 배치는?", b:"[Ar] <span class='k'>3d¹⁰4s¹</span> (4s²3d⁹ 아님 — d 완전채움 안정)."},
+  {t:"전자배치", l:"L1", f:"4주기 전이금속 중 채움 예외인 원소 2개와 이유는?", b:"<span class='k'>Cr(3d⁵4s¹) · Cu(3d¹⁰4s¹)</span> — d 반채움/완전채움이 안정."},
+  {t:"전자배치", l:"L1", f:"[심화] Cr·Cu와 유사한 무거운 예외 원소는?", b:"Mo(4d⁵5s¹, Cr형) · Ag·Au(d¹⁰s¹, Cu형) · <span class='k'>Pd(4d¹⁰5s⁰, 특이)</span>."},
+  {t:"전자배치", l:"L2", f:"전이금속이 양이온이 될 때 먼저 잃는 전자는?", b:"<span class='k'>ns(4s) 먼저</span>, 그다음 (n−1)d. (채움과 반대 순서!)"},
+  {t:"전자배치", l:"L1", f:"Fe(26)의 바닥상태 전자 배치는?", b:"[Ar] <span class='k'>3d⁶4s²</span>."},
+  {t:"전자배치", l:"L4", f:"Fe²⁺와 Fe³⁺의 전자 배치는?", b:"Fe²⁺ = [Ar]<span class='k'>3d⁶</span> (4s 먼저 잃음) / Fe³⁺ = [Ar]<span class='k'>3d⁵</span>."},
+  {t:"전자배치", l:"L2", f:"Fe³⁺(3d⁵)가 상대적으로 안정한 이유는?", b:"<span class='k'>d 반채움(3d⁵)</span> 안정 — Fe³⁺가 흔한 이유."},
+  {t:"전자배치", l:"L1", f:"s·p·d·f 블록에 해당하는 족/영역은?", b:"s블록 = 1·2족 / p블록 = 13~18족 / d블록 = <span class='k'>전이금속</span> / f블록 = 란타넘·악티늄."},
+
+  /* ===== 원자가 전자 · 준금속 · 반지름/IE/EA 경향 보강 ===== */
+  {t:"주기율", l:"L1", f:"족에 따른 원자가 전자 수는? (전형 원소)", b:"1족=1, 2족=2, 13족=3 … 17족=7, <span class='k'>18족=8</span>(He는 2)."},
+  {t:"주기율", l:"L1", f:"준금속(반금속) 원소에는 무엇이 있나?", b:"<span class='k'>B·Si·Ge·As·Sb·Te</span> (금속–비금속 경계, 계단선 부근)."},
+  {t:"주기율", l:"L4", f:"원자·양이온·음이온의 반지름 크기 순서는?", b:"<span class='k'>양이온 < 원자 < 음이온</span>. (전자 잃으면 작아지고 얻으면 커짐)"},
+  {t:"주기율", l:"L1", f:"같은 족에서 아래로 갈수록 원자 반지름은?", b:"<span class='k'>커진다</span> (전자 껍질 수가 늘어서)."},
+  {t:"주기율", l:"L1", f:"각 주기에서 1차 이온화에너지가 최대·최소인 족은?", b:"최대 = <span class='k'>18족</span>(비활성) / 최소 = <span class='k'>1족</span>(알칼리금속)."},
+  {t:"주기율", l:"L6", trap:true, f:"“전자 친화도는 오른쪽으로 갈수록 항상 커진다.” — 옳은가?", b:"<span class='x'>✗</span> 17족이 최대지만 <span class='k'>2족·15족·18족은 작음</span>(안정 배치라 전자 받기 싫어함)."},
+
+  /* ===== 동위원소 예시 & 질량수/원자량 구분 ===== */
+  {t:"구성입자", l:"L1", f:"수소의 세 동위원소 이름은?", b:"¹H 경수소 · ²H <span class='k'>중수소(D)</span> · ³H <span class='k'>삼중수소(T)</span>."},
+  {t:"구성입자", l:"L4", f:"질량수와 원자량(평균)의 차이는? (정수 여부)", b:"질량수 = <span class='k'>항상 정수</span>(양성자+중성자) / 원자량 = <span class='k'>소수 가능</span>(존재비 가중평균)."},
+
+  /* ===== 양자수 드릴 (껍질별 오비탈/전자 수) ===== */
+  {t:"양자수", l:"L1", f:"각 껍질(n=1~4)의 오비탈 수·최대 전자 수는?", b:"n=1: 1·2 / n=2: 4·8 / n=3: 9·18 / <span class='k'>n=4: 16·32</span> (n²·2n²)."}
+];
+DECK.forEach((c,i)=>c.id="c"+i);
+
+/* ===================== 저장 (localStorage + in-memory 폴백) ===================== */
+const KEY="chem_u1_pilot_v1", DAY=86400000, INTERVALS=[0,1*DAY,3*DAY,7*DAY,30*DAY];
+const mem={};
+function save(o){ const j=JSON.stringify(o); try{localStorage.setItem(KEY,j);}catch(e){} mem[KEY]=j; }
+function load(){ try{const j=localStorage.getItem(KEY); if(j)return JSON.parse(j);}catch(e){}
+  try{if(mem[KEY])return JSON.parse(mem[KEY]);}catch(e){} return {}; }
+let ST=load();                              // { id:{box,due,seen} }
+function cs(id){ return ST[id]||{box:0,due:0,seen:false}; }
+function schedule(id,grade,guessed){
+  let s=Object.assign({box:0,due:0,seen:false},ST[id]||{}); s.seen=true;
+  if(guessed || grade<=2) s.box=0;                    // 1·2 실패 / 찍음 → 리셋(즉시 재출제)
+  else if(grade===3) s.box=Math.max(1,s.box);         // 겨우 성공 → 유지·최소 1일
+  else if(grade===4) s.box=Math.min(4,s.box+1);       // 앎 → 한 단계 승급
+  else if(grade===5) s.box=Math.min(4,s.box+2);       // 완벽 → 두 단계 승급
+  s.due=Date.now()+INTERVALS[s.box]; ST[id]=s; save(ST); return s;
+}
+
+/* ===================== 상태 & 필터 ===================== */
+const UI={mode:"study", topic:"전체", layers:new Set(["L1","L2","L4","L6"])};
+const TOPICS=[...new Set(DECK.map(c=>c.t))];
+function passFilter(c){
+  if(!UI.layers.has(c.l)) return false;
+  if(UI.topic!=="전체" && c.t!==UI.topic) return false;
+  const s=cs(c.id), due=(!s.seen)||(s.due<=Date.now());
+  if(UI.mode==="study") return due;
+  if(UI.mode==="wrong") return s.seen && s.box===0;
+  return true;                               // all
+}
+let queue=[], qi=0, revealed=false, guessed=false;
+function buildQueue(){ queue=DECK.filter(passFilter).map(c=>c.id); qi=0; revealed=false; guessed=false; }
+
+/* ===================== 렌더 ===================== */
+const stage=document.getElementById("stage"), statsEl=document.getElementById("stats");
+function renderStats(){
+  const total=DECK.length;
+  const seen=DECK.filter(c=>cs(c.id).seen).length;
+  const mastered=DECK.filter(c=>cs(c.id).box>=3).length;
+  const due=DECK.filter(c=>{const s=cs(c.id);return (!s.seen)||(s.due<=Date.now());}).length;
+  statsEl.innerHTML=
+    `<span class="chip">오늘 학습 <b>${due}</b></span>`+
+    `<span class="chip">익힘 <b>${mastered}</b>/<b>${total}</b></span>`+
+    `<span class="chip">본 카드 <b>${seen}</b></span>`;
+}
+function renderCard(){
+  renderStats();
+  if(qi>=queue.length){
+    const label=UI.mode==="wrong"?"틀린 카드가 없어요":"이 범위 학습 완료";
+    stage.innerHTML=`<div class="done"><h2>✓ ${label}</h2>
+      <p>4·5로 넘긴 카드는 1·3·7·30일 간격으로 다시 나옵니다.</p>
+      <button id="again">처음부터 다시 돌기</button></div>`;
+    document.getElementById("again").onclick=()=>{buildQueue();renderCard();};
+    return;
+  }
+  const c=DECK.find(x=>x.id===queue[qi]);
+  const srcHtml=c.src?`<span class="src">모의 ${c.src}</span>`:`<span class="src"></span>`;
+  const trapHtml=(revealed&&c.trap)?`<div class="trapribbon">⚠ 함정 · 부정형("옳지 않은 것") 대비</div>`:"";
+  stage.innerHTML=`
+   <div class="card l-${c.l}">
+     <div class="cmeta">
+       <span class="badge l-${c.l}">${c.l}</span>
+       <span class="topic">${c.t}</span>${srcHtml}
+     </div>
+     <div class="front">${c.f}</div>
+     <div id="backwrap" style="display:${revealed?'block':'none'}">
+       <div class="divider"></div>${trapHtml}
+       <div class="back">${c.b}</div>
+     </div>
+     <div class="spacer"></div>
+     ${revealed?rateHtml():`<button class="reveal" id="reveal">정답 보기 · Space</button>`}
+     <div class="nav">
+       <button id="prev">‹</button>
+       <span class="pos">${qi+1} / ${queue.length}</span>
+       <button id="next">›</button>
+     </div>
+   </div>`;
+  wire(c);
+}
+function rateHtml(){
+  const L=[
+    {g:1,lab:"전혀",sub:"기억 안 남"},
+    {g:2,lab:"답보고",sub:"틀림·재인"},
+    {g:3,lab:"겨우",sub:"맞음·힘겹게"},
+    {g:4,lab:"앎",sub:"약간 주저"},
+    {g:5,lab:"완벽",sub:"즉시·확실"}
+  ];
+  const btns=L.map(x=>`<button class="lk${x.g}" data-g="${x.g}"><b>${x.g}</b><span class="lab">${x.lab}</span><span class="sub">${x.sub}</span></button>`).join("");
+  return `<div class="guess ${guessed?'on':''}" id="guess"><span class="box">${guessed?'✓':''}</span>찍음(운으로 맞음)</div>
+    <div class="lkaxis"><span>전혀 모름</span><span>얼마나 인출됐나?</span><span>완벽</span></div>
+    <div class="rate5">${btns}</div>`;
+}
+function wire(c){
+  const rev=document.getElementById("reveal");
+  if(rev) rev.onclick=doReveal;
+  const g=document.getElementById("guess");
+  if(g) g.onclick=()=>{guessed=!guessed; renderCard();};
+  stage.querySelectorAll(".rate5 button").forEach(b=>b.onclick=()=>rate(parseInt(b.dataset.g,10)));
+  document.getElementById("prev").onclick=()=>{ if(qi>0){qi--;revealed=false;guessed=false;renderCard();} };
+  document.getElementById("next").onclick=()=>{ if(qi<queue.length){qi++;revealed=false;guessed=false;renderCard();} };
+}
+function doReveal(){ revealed=true; renderCard(); }
+function rate(r){
+  const id=queue[qi];
+  const s=schedule(id,r,guessed);
+  const stillDue=(s.due<=Date.now());        // box0 → 이번 세션 재출제
+  revealed=false; guessed=false;
+  if(stillDue){ queue.push(id); }            // 뒤로 보내 다시 만나게
+  queue.splice(qi,1);                         // 현재 위치에서 제거
+  renderCard();
+}
+
+/* ===================== 컨트롤 배선 ===================== */
+const topicSel=document.getElementById("topic");
+topicSel.innerHTML=`<option>전체</option>`+TOPICS.map(t=>`<option>${t}</option>`).join("");
+topicSel.onchange=()=>{UI.topic=topicSel.value; buildQueue(); renderCard();};
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); UI.mode=b.dataset.mode; buildQueue(); renderCard();
+});
+document.querySelectorAll('#layers .lchip').forEach(ch=>ch.onclick=()=>{
+  const L=ch.dataset.l;
+  if(UI.layers.has(L)&&UI.layers.size>1){UI.layers.delete(L);ch.classList.remove('on');}
+  else{UI.layers.add(L);ch.classList.add('on');}
+  buildQueue(); renderCard();
+});
+document.getElementById("reset").onclick=()=>{
+  if(confirm("이 브라우저의 1단원 진도를 모두 초기화할까요?")){ ST={}; save(ST); buildQueue(); renderCard(); }
+};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){ e.preventDefault(); if(!revealed) doReveal(); }
+  else if(revealed && ["1","2","3","4","5"].includes(e.key)){ rate(parseInt(e.key,10)); }
+});
+
+/* ===================== 시작 ===================== */
+buildQueue(); renderCard();
+</script>
+</body>
+</html>

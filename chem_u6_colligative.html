@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4efe4">
+<title>화학 6단원 · 용액의 총괄성 — 파일럿 카드덱</title>
+<!--
+  화학 학습 허브 파일럿 (→ baeggman/hwahak 편입 대상)
+  · 단일 index.html · 외부 의존성 0 (완전 오프라인, GitHub Pages 배포용)
+  · 저장 키 격리: chem_u6_colligative_v1  (localStorage; 차단 시 in-memory 폴백 — 절대 크래시 안 함)
+  · SRS-lite: 경락 허브의 3·7·30일 간격반복 계승 + "찍음(운으로 맞음)" 플래그
+  · §5.4 준수: 이 덱은 재인·인출(사실·관계·변별·함정)만. 다단계 계산은 의도적 제외.
+  · 색/변수는 --hh-* 이름으로 정의 → HubHome 편입 시 값만 오버라이드하면 됨.
+-->
+<style>
+:root{
+  --hh-bg:#f3eee2; --hh-card:#fbf8f0; --hh-pan:#f0e8d8; --hh-pan2:#efe6d3;
+  --hh-ink:#2c261e; --hh-dim:#6c6252; --hh-mut:#877c69; --hh-faint:#a89c86;
+  --hh-line:#ddd2be; --hh-line2:#eae2d3;
+  --hh-gold:#a9791f; --hh-gold-s:#f3e6c6;
+  --hh-jade:#3c7568; --hh-jade-s:#dcece7;
+  --hh-azure:#356388; --hh-azure-s:#dbe6ef;
+  --hh-cinnabar:#a83a2c; --hh-cinnabar-s:#f4dcd6;
+  --hh-ok:#3c7568; --hh-no:#a83a2c;
+  --hh-shadow:0 6px 22px rgba(44,38,30,.10), 0 1px 3px rgba(44,38,30,.08);
+  --hh-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
+  --hh-mono:ui-monospace,'SF Mono','Menlo','Consolas',monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--hh-bg);color:var(--hh-ink);font-family:var(--hh-sans);
+  line-height:1.6;font-size:16px;touch-action:manipulation}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+header{margin:2px 0 12px}
+h1{font-size:19px;letter-spacing:-.02em;margin:0}
+h1 .u{font-family:var(--hh-mono);color:var(--hh-gold);font-weight:800;margin-right:6px}
+.tagline{color:var(--hh-mut);font-size:12.5px;margin:3px 0 0}
+
+/* stat chips */
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 10px}
+.chip{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:999px;
+  padding:5px 11px;font-size:12px;color:var(--hh-dim);box-shadow:var(--hh-shadow)}
+.chip b{color:var(--hh-ink);font-family:var(--hh-mono)}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--hh-pan);border:1px solid var(--hh-line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--hh-dim);font:inherit;font-size:12.5px;
+  padding:6px 11px;cursor:pointer}
+.seg button.on{background:var(--hh-card);color:var(--hh-ink);font-weight:700;box-shadow:inset 0 0 0 1px var(--hh-line)}
+select{font:inherit;font-size:13px;color:var(--hh-ink);background:var(--hh-card);
+  border:1px solid var(--hh-line);border-radius:9px;padding:6px 9px}
+.lchip{font-family:var(--hh-mono);font-size:11px;font-weight:700;border:1px solid;border-radius:999px;
+  padding:3px 9px;cursor:pointer;background:var(--hh-card);opacity:.5}
+.lchip.on{opacity:1}
+.l-L1{color:var(--hh-jade);border-color:var(--hh-jade)}
+.l-L2{color:var(--hh-azure);border-color:var(--hh-azure)}
+.l-L4{color:var(--hh-gold);border-color:var(--hh-gold)}
+.l-L6{color:var(--hh-cinnabar);border-color:var(--hh-cinnabar)}
+
+/* card */
+.card{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:18px;
+  box-shadow:var(--hh-shadow);padding:20px 20px 18px;min-height:340px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hh-line)}
+.card.l-L1::before{background:var(--hh-jade)} .card.l-L2::before{background:var(--hh-azure)}
+.card.l-L4::before{background:var(--hh-gold)} .card.l-L6::before{background:var(--hh-cinnabar)}
+.cmeta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--hh-mono);font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;color:#fff}
+.badge.l-L1{background:var(--hh-jade)} .badge.l-L2{background:var(--hh-azure)}
+.badge.l-L4{background:var(--hh-gold)} .badge.l-L6{background:var(--hh-cinnabar)}
+.topic{font-size:12px;color:var(--hh-mut);font-weight:600}
+.src{font-family:var(--hh-mono);font-size:10.5px;color:var(--hh-faint);margin-left:auto}
+.front{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.5;color:var(--hh-ink)}
+.front .em{color:var(--hh-cinnabar)}
+.divider{height:1px;background:var(--hh-line2);margin:16px 0}
+.back{font-size:16.5px;line-height:1.62;color:var(--hh-ink);white-space:pre-wrap}
+.back .k{color:var(--hh-jade);font-weight:700}
+.back .x{color:var(--hh-cinnabar);font-weight:700}
+.trapribbon{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;
+  color:var(--hh-cinnabar);background:var(--hh-cinnabar-s);border:1px solid #e6bfb6;
+  border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.spacer{flex:1}
+
+/* reveal / rate */
+.reveal{margin-top:16px;width:100%;border:0;border-radius:12px;padding:13px;
+  background:var(--hh-ink);color:var(--hh-card);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.lkaxis{display:flex;justify-content:space-between;margin-top:16px;margin-bottom:6px;
+  font-size:10.5px;color:var(--hh-faint)}
+.lkaxis span:nth-child(2){color:var(--hh-mut);font-weight:600}
+.rate5{display:flex;gap:6px}
+.rate5 button{flex:1;border:1px solid var(--hh-line);border-radius:12px;padding:9px 3px 8px;
+  background:var(--hh-card);font:inherit;cursor:pointer;color:var(--hh-dim);
+  display:flex;flex-direction:column;align-items:center;gap:1px}
+.rate5 button b{font-family:var(--hh-mono);font-size:18px;line-height:1.05}
+.rate5 button .lab{font-size:12px;font-weight:700;margin-top:2px}
+.rate5 button .sub{font-size:9.5px;font-weight:600;color:var(--hh-faint);text-align:center}
+.rate5 button:active{transform:translateY(1px)}
+.lk1,.lk1 b{color:var(--hh-cinnabar)}
+.lk2,.lk2 b{color:#b0602a}
+.lk3,.lk3 b{color:var(--hh-mut)}
+.lk4,.lk4 b{color:#4d7f52}
+.lk5,.lk5 b{color:var(--hh-jade)}
+@media(hover:hover){
+  .lk1:hover{background:var(--hh-cinnabar-s);border-color:var(--hh-cinnabar)}
+  .lk2:hover{background:#f4e4d6;border-color:#b0602a}
+  .lk3:hover{background:var(--hh-pan)}
+  .lk4:hover{background:#e4efe1;border-color:#4d7f52}
+  .lk5:hover{background:var(--hh-jade-s);border-color:var(--hh-jade)}
+}
+@media(max-width:430px){ .rate5 button .sub{display:none} .rate5{gap:4px} }
+.guess{margin-top:11px;display:flex;align-items:center;gap:8px;justify-content:center;
+  font-size:12.5px;color:var(--hh-mut);cursor:pointer;user-select:none}
+.guess .box{width:17px;height:17px;border:1.5px solid var(--hh-faint);border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:12px;color:#fff}
+.guess.on .box{background:var(--hh-gold);border-color:var(--hh-gold)}
+.guess.on{color:var(--hh-gold);font-weight:700}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:var(--hh-mut);font-size:13px}
+.nav button{border:1px solid var(--hh-line);background:var(--hh-card);border-radius:9px;
+  width:36px;height:32px;font-size:15px;color:var(--hh-dim);cursor:pointer}
+.nav .pos{font-family:var(--hh-mono);font-size:12px}
+
+.done{text-align:center;padding:48px 16px}
+.done h2{color:var(--hh-jade);margin:0 0 6px}
+.done p{color:var(--hh-mut);font-size:14px;margin:4px 0}
+.done button{margin-top:16px;border:1px solid var(--hh-line);background:var(--hh-card);border-radius:10px;
+  padding:9px 16px;font:inherit;font-weight:700;color:var(--hh-ink);cursor:pointer}
+
+footer{margin-top:20px;color:var(--hh-faint);font-size:11.5px;line-height:1.6}
+footer .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+footer .legend span{font-family:var(--hh-mono);font-weight:700}
+footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:underline;
+  font:inherit;font-size:11.5px;cursor:pointer;padding:0;margin-top:6px}
+@media (hover:hover){
+  .reveal:hover{opacity:.92} .nav button:hover{border-color:var(--hh-faint)}
+  .seg button:hover{color:var(--hh-ink)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="u">6단원</span>용액의 총괄성 · 파일럿 카드덱</h1>
+    <p class="tagline">능동 인출 → 자가 채점 → 3·7·30일 간격반복 · 기본서·기출 그라운딩</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="row">
+      <div class="seg" id="mode">
+        <button data-mode="study" class="on">오늘 학습</button>
+        <button data-mode="all">전체</button>
+        <button data-mode="wrong">틀린 것만</button>
+      </div>
+      <select id="topic"></select>
+    </div>
+    <div class="row" id="layers">
+      <span class="lchip l-L1 on" data-l="L1">L1 사실</span>
+      <span class="lchip l-L2 on" data-l="L2">L2 방법</span>
+      <span class="lchip l-L4 on" data-l="L4">L4 변별</span>
+      <span class="lchip l-L6 on" data-l="L6">L6 함정</span>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+
+  <footer>
+    <div class="legend">
+      <span class="l-L1" style="color:var(--hh-jade)">L1 사실</span>
+      <span class="l-L2" style="color:var(--hh-azure)">L2 트리거→방법</span>
+      <span class="l-L4" style="color:var(--hh-gold)">L4 변별</span>
+      <span class="l-L6" style="color:var(--hh-cinnabar)">L6 함정</span>
+    </div>
+    이 덱은 <b>재인·인출</b>(사실·관계·변별·함정)만 다룹니다. 화학양론·pH·평형 등 다단계 계산은 의도적으로 제외 — 별도 문제풀이 트랙 권장(§5.4).
+    <br>진도는 이 브라우저에 저장됩니다(<code>chem_u6_colligative_v1</code>). 5점 자가평가로 간격을 조절 — 1·2=리셋(즉시 다시), 3=유지, 4=한 단계↑, 5=두 단계↑. ‘찍음’ 표시 시 승급하지 않습니다.
+    <br><button class="reset" id="reset">↺ 진도 초기화</button>
+  </footer>
+</div>
+
+<script>
+/* ===================== 1단원 카드 데이터 (교재·기출 그라운딩) =====================
+   layer: L1 사실 / L2 트리거→방법 / L4 변별 / L6 함정
+   trap:true → 함정 카드(틀린 진술 적발). src: 모의고사 회-번 (있을 때) */
+const DECK = [
+  /* ===== 총괄성 개관 ===== */
+  {t:"총괄성개관", l:"L1", f:"총괄성이란?", b:"용질의 <span class='k'>종류와 무관</span>하게 용질의 <span class='k'>입자 수(농도)에만 의존</span>하는 성질."},
+  {t:"총괄성개관", l:"L1", f:"총괄성의 전제 조건 2가지는?", b:"용질이 <span class='k'>비전해질 · 비휘발성</span>."},
+  {t:"총괄성개관", l:"L1", f:"총괄성 네 가지는? ★", b:"<span class='k'>증기압 내림 · 끓는점 오름 · 어는점 내림 · 삼투압</span>."},
+  {t:"총괄성개관", l:"L4", f:"설탕·포도당·요소를 같은 농도로 녹인 용액의 총괄성은?", b:"<span class='k'>같음</span>(입자 수 같으면 종류 무관)."},
+  {t:"총괄성개관", l:"L1", f:"총괄성은 무엇을 측정하는 데 이용?", b:"미지 물질의 <span class='k'>분자량</span>."},
+  {t:"총괄성개관", l:"L6", trap:true, src:"4-40", f:"“기체의 용해도가 온도에 따라 변한다”는 총괄성인가?", b:"<span class='x'>✗</span> 헨리 법칙/용해도 — 총괄성 아님."},
+  {t:"총괄성개관", l:"L6", trap:true, src:"2-44", f:"“용액의 밀도 측정”으로 분자량을 구할 수 있나?", b:"<span class='x'>✗</span> 밀도는 총괄성이 아니라 <span class='k'>부적합</span>."},
+  {t:"총괄성개관", l:"L2", src:"2-44", f:"분자량 측정에 쓸 수 있는 총괄성 방법은?", b:"어는점 내림 · 끓는점 오름 · 증기압 내림 · <span class='k'>삼투압</span>."},
+  {t:"총괄성개관", l:"L1", f:"휘발성 용질은 총괄성 문제에 나오나?", b:"<span class='k'>거의 안 나옴</span>(비휘발성 전제)."},
+  {t:"총괄성개관", l:"L1", f:"총괄성의 핵심 한 단어는?", b:"<span class='k'>입자 수</span>."},
+  {t:"총괄성개관", l:"L2", f:"전해질 용액의 총괄성이 더 큰 이유는?", b:"이온화로 <span class='k'>입자 수가 늘어서</span>(i를 곱함)."},
+  {t:"총괄성개관", l:"L1", f:"총괄성은 진한 용액에서도 정확한가?", b:"<span class='k'>묽은 용액</span>에서 정확(묽은 용액 전제)."},
+
+  /* ===== 증기압 내림 · 라울 법칙 ===== */
+  {t:"증기압내림·라울", l:"L1", f:"증기압 내림이 생기는 이유는?", b:"비휘발성 용질이 용매의 <span class='k'>증발을 방해</span>."},
+  {t:"증기압내림·라울", l:"L1", f:"라울 법칙 — 용액의 증기압은? ★", b:"<span class='k'>P용액 = P°용매 × X용매</span>(용매 몰분율)."},
+  {t:"증기압내림·라울", l:"L1", f:"용액의 증기압이 항상 순수 용매보다 낮은 이유는?", b:"<span class='k'>용매 몰분율 < 1</span>."},
+  {t:"증기압내림·라울", l:"L1", f:"증기압 내림 ΔP = ? ★", b:"<span class='k'>P°용매 × X용질</span>(용질 몰분율)."},
+  {t:"증기압내림·라울", l:"L4", f:"“용액의 증기압” vs “증기압 내림” — 각 공식은? ★", b:"P용액 = P°×<span class='k'>X용매</span> / ΔP = P°×<span class='k'>X용질</span>."},
+  {t:"증기압내림·라울", l:"L2", f:"용질을 더 녹이면 용액의 증기압은?", b:"<span class='k'>더 낮아짐</span>(X용질↑)."},
+  {t:"증기압내림·라울", l:"L1", f:"라울 법칙에서 P°는 무엇?", b:"<span class='k'>순수 용매의 증기압</span>."},
+  {t:"증기압내림·라울", l:"L6", trap:true, f:"“비휘발성 용질을 녹이면 증기압이 올라간다” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>낮아짐</span>(증기압 내림)."},
+  {t:"증기압내림·라울", l:"L1", f:"X용매 + X용질 = ?", b:"<span class='k'>1</span>."},
+  {t:"증기압내림·라울", l:"L2", f:"순수 용매 증기압 100, 용매 몰분율 0.9면 용액 증기압은?", b:"<span class='k'>90</span> (100×0.9)."},
+  {t:"증기압내림·라울", l:"L2", f:"증기압이 낮아지면 끓는점·어는점은?", b:"끓는점 <span class='k'>↑</span> · 어는점 <span class='k'>↓</span>."},
+  {t:"증기압내림·라울", l:"L1", f:"라울 법칙이 잘 맞는 용액은?", b:"<span class='k'>이상 용액(묽은 용액)</span>."},
+
+  /* ===== 끓는점 오름 · 어는점 내림 ===== */
+  {t:"끓는점·어는점", l:"L1", f:"끓는점 오름·어는점 내림 공식은? ★", b:"<span class='k'>ΔTb = i·Kb·m , ΔTf = i·Kf·m</span>."},
+  {t:"끓는점·어는점", l:"L1", f:"Kb·Kf는 무엇에 의존?", b:"<span class='k'>용매에만</span>(용질 종류 무관)."},
+  {t:"끓는점·어는점", l:"L1", f:"물의 Kb와 Kf 값은?", b:"<span class='k'>Kb=0.52 · Kf=1.86</span> (℃·kg/mol)."},
+  {t:"끓는점·어는점", l:"L1", f:"왜 몰랄 농도를 쓰나? ★", b:"온도가 변해 부피가 달라짐 → 부피 기준 몰농도 부정확. <span class='k'>몰랄은 질량 기준이라 온도 무관</span>."},
+  {t:"끓는점·어는점", l:"L1", f:"화학에서 몰랄 농도를 쓰는 곳은?", b:"<span class='k'>끓는점 오름·어는점 내림</span>(이 두 곳뿐)."},
+  {t:"끓는점·어는점", l:"L4", f:"용액의 끓는점 vs 끓는점 오름은? ★", b:"용액 끓는점 = <span class='k'>용매 끓는점 + ΔTb</span> / ΔTb = 오름 폭."},
+  {t:"끓는점·어는점", l:"L4", f:"용액의 어는점 vs 어는점 내림은? ★", b:"용액 어는점 = <span class='k'>용매 어는점 − ΔTf</span>."},
+  {t:"끓는점·어는점", l:"L2", f:"물에 1몰랄 비전해질을 녹이면 끓는점은?", b:"<span class='k'>100.52℃</span> (ΔTb=0.52)."},
+  {t:"끓는점·어는점", l:"L6", trap:true, f:"수용액의 어는점은 양수인가?", b:"<span class='x'>✗</span> <span class='k'>0℃보다 낮은 음수</span>(부호 주의)."},
+  {t:"끓는점·어는점", l:"L1", f:"왜 증기압이 낮아지면 끓는점이 오르나?", b:"낮아진 증기압을 <span class='k'>대기압까지 올리려면 더 높은 온도</span> 필요."},
+  {t:"끓는점·어는점", l:"L1", f:"왜 어는점이 내려가나?", b:"용질이 <span class='k'>결정화(어는 것)를 방해</span> → 더 낮은 온도에서 얼음."},
+  {t:"끓는점·어는점", l:"L2", src:"1-23", f:"끓는점 최고를 고르려면 무엇을 비교?", b:"<span class='k'>m × i</span>(입자 몰랄 농도)."},
+  {t:"끓는점·어는점", l:"L2", src:"1-23", f:"CaCl₂ 0.2m·NaCl 0.25m·HCl 0.15m·초산 0.4m 중 끓는점 최고는?", b:"<span class='k'>CaCl₂</span>(0.2×3=0.6이 최대)."},
+  {t:"끓는점·어는점", l:"L4", src:"1-23", f:"초산(약산)의 유효 입자 농도는?", b:"≈0.4 (<span class='k'>거의 이온화 안 함, i≈1</span>)."},
+  {t:"끓는점·어는점", l:"L2", src:"2-45", f:"물 100g에 0.1몰씩 녹일 때 끓는점 최고는?", b:"<span class='k'>NaCl</span>(i=2, 입자 최다)."},
+  {t:"끓는점·어는점", l:"L4", src:"2-45", f:"Ag₂CrO₄가 끓는점 효과가 작은 이유는?", b:"물에 <span class='k'>거의 안 녹음(불용성)</span>."},
+  {t:"끓는점·어는점", l:"L2", src:"3-28", f:"어는점 내림으로 분자량 구하는 순서(개념)는?", b:"ΔTf → m → 용질 몰수 → <span class='k'>분자량 = 질량/몰수</span>."},
+  {t:"끓는점·어는점", l:"L2", src:"3-26", f:"어는점 내림 + 조성%로 분자식 구하는 순서는?", b:"실험식(조성%) + 분자량(어는점 내림) → <span class='k'>분자식</span>."},
+  {t:"끓는점·어는점", l:"L1", f:"어는점 내림·끓는점 오름은 무엇에 비례?", b:"입자의 <span class='k'>몰랄 농도(i·m)</span>."},
+  {t:"끓는점·어는점", l:"L4", f:"같은 몰랄 농도 NaCl vs 포도당 — 어는점 더 낮은 것은?", b:"<span class='k'>NaCl</span>(i=2)."},
+  {t:"끓는점·어는점", l:"L1", f:"겨울에 도로에 소금(제설제)을 뿌리는 원리는?", b:"<span class='k'>어는점 내림</span>(더 낮은 온도에서만 얼음)."},
+  {t:"끓는점·어는점", l:"L2", f:"자동차 부동액의 원리는?", b:"<span class='k'>어는점 내림 + 끓는점 오름</span>(액체 범위 확대)."},
+  {t:"끓는점·어는점", l:"L6", trap:true, f:"“Kf는 용질의 종류에 따라 달라진다” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>용매</span>에 따라 정해짐."},
+  {t:"끓는점·어는점", l:"L1", f:"액체가 끓는 조건은?", b:"<span class='k'>증기압 = 외부(대기)압</span>."},
+  {t:"끓는점·어는점", l:"L4", f:"물에서 끓는점 오름과 어는점 내림 중 더 큰 것은?", b:"<span class='k'>어는점 내림</span>(Kf 1.86 > Kb 0.52)."},
+  {t:"끓는점·어는점", l:"L1", f:"순수 물의 어는점·끓는점은?", b:"<span class='k'>0℃ · 100℃</span>."},
+  {t:"끓는점·어는점", l:"L4", f:"같은 질량이면 분자량 작은 용질의 총괄성은?", b:"<span class='k'>크다</span>(몰수 많음)."},
+
+  /* ===== 삼투압 ===== */
+  {t:"삼투압", l:"L1", f:"반투막이란?", b:"<span class='k'>용매만 통과</span>시키는 막."},
+  {t:"삼투압", l:"L1", f:"삼투란?", b:"반투막을 통해 <span class='k'>용매가 용액 쪽으로 이동</span>하는 현상."},
+  {t:"삼투압", l:"L1", f:"삼투압이란? ★", b:"용매의 이동(삼투)을 <span class='k'>막는 데 필요한 압력</span>."},
+  {t:"삼투압", l:"L1", f:"반트호프 삼투압 식은? ★", b:"<span class='k'>π = i·M·R·T</span>."},
+  {t:"삼투압", l:"L1", f:"삼투압 식의 M·R·T는?", b:"M=<span class='k'>몰농도</span>, R=0.082, T=절대온도."},
+  {t:"삼투압", l:"L4", f:"삼투압만 다른 농도를 쓴다 — 무엇? ★", b:"<span class='k'>몰 농도</span>(끓는점/어는점은 몰랄)."},
+  {t:"삼투압", l:"L1", f:"삼투압이 고분자 분자량 측정에 유용한 이유는?", b:"작은 농도에도 <span class='k'>큰 값</span>이 나와서."},
+  {t:"삼투압", l:"L1", f:"역삼투란? ★", b:"삼투압보다 <span class='k'>큰 압력</span>을 가해 용매를 거꾸로 밀어냄."},
+  {t:"삼투압", l:"L2", src:"6-33", f:"역삼투로 바닷물을 담수화할 때 필요한 압력은?", b:"<span class='k'>삼투압보다 큰 압력</span>."},
+  {t:"삼투압", l:"L1", f:"삼투압은 무엇에 비례?", b:"<span class='k'>몰 농도와 절대 온도</span>(π=iMRT)."},
+  {t:"삼투압", l:"L4", f:"삼투에서 용매는 어느 쪽으로 이동?", b:"순수 용매 → <span class='k'>용액 쪽(농도 높은 쪽)</span>."},
+  {t:"삼투압", l:"L2", src:"1-22", f:"삼투압으로 고분자 분자량 구하는 순서는?", b:"π → M(=π/RT) → 몰수 → <span class='k'>분자량</span>."},
+  {t:"삼투압", l:"L4", f:"등장액(isotonic)이란?", b:"<span class='k'>삼투압이 같은</span> 두 용액(용매 이동 없음)."},
+  {t:"삼투압", l:"L1", f:"고장액에 세포를 넣으면?", b:"세포에서 <span class='k'>물이 빠져나감(수축)</span>."},
+  {t:"삼투압", l:"L1", f:"저장액에 적혈구를 넣으면?", b:"물이 들어와 <span class='k'>부풀어 터짐(용혈)</span>."},
+  {t:"삼투압", l:"L6", trap:true, f:"“삼투압은 몰랄 농도에 비례한다” — 옳은가?", b:"<span class='x'>✗</span> <span class='k'>몰 농도</span>(삼투압만 몰농도)."},
+  {t:"삼투압", l:"L2", f:"역삼투 정수기의 원리는?", b:"삼투압보다 큰 압력으로 <span class='k'>물만 반투막 통과</span>."},
+  {t:"삼투압", l:"L1", f:"삼투압의 단위는?", b:"<span class='k'>atm</span>(또는 torr)."},
+  {t:"삼투압", l:"L4", f:"삼투압 vs 어는점 내림 — 고분자 분자량 측정에 유리한 것은?", b:"<span class='k'>삼투압</span>(미량 농도에 큰 값)."},
+
+  /* ===== 전해질 · 반트호프 계수 ===== */
+  {t:"반트호프계수", l:"L1", f:"반트호프 계수 i란? ★", b:"용질이 물에서 나뉘어 <span class='k'>늘어나는 입자 수 배수</span>."},
+  {t:"반트호프계수", l:"L1", f:"비전해질(설탕·포도당·요소)의 i는?", b:"<span class='k'>1</span>(이온화 안 함)."},
+  {t:"반트호프계수", l:"L1", f:"NaCl과 CaCl₂의 i는? ★", b:"NaCl <span class='k'>2</span>(Na⁺+Cl⁻) / CaCl₂ <span class='k'>3</span>(Ca²⁺+2Cl⁻)."},
+  {t:"반트호프계수", l:"L1", f:"i를 셀 때 양이온·음이온을 구별하나?", b:"안 함, <span class='k'>입자 수만</span> 셈."},
+  {t:"반트호프계수", l:"L1", f:"모든 총괄성 식에 무엇을 곱하나? ★", b:"<span class='k'>i</span>."},
+  {t:"반트호프계수", l:"L2", src:"5-48", f:"i가 2에 가장 가까운 것은? (MgCl₂/KCl/포도당/Na₂SO₄)", b:"<span class='k'>KCl</span>(i=2)."},
+  {t:"반트호프계수", l:"L1", f:"KCl·KNO₃·NaCl의 i는?", b:"<span class='k'>2</span>(이온 2개)."},
+  {t:"반트호프계수", l:"L1", f:"CaCl₂·MgCl₂·Na₂SO₄·K₂SO₄의 i는?", b:"<span class='k'>3</span>(이온 3개)."},
+  {t:"반트호프계수", l:"L1", f:"Al₂(SO₄)₃의 i는?", b:"<span class='k'>5</span> (2 Al³⁺ + 3 SO₄²⁻)."},
+  {t:"반트호프계수", l:"L1", f:"K₃PO₄의 i는?", b:"<span class='k'>4</span> (3 K⁺ + PO₄³⁻)."},
+  {t:"반트호프계수", l:"L4", f:"약산·약염기(초산 등)의 i는?", b:"<span class='k'>1에 가까움</span>(거의 이온화 안 함)."},
+  {t:"반트호프계수", l:"L2", f:"같은 몰랄 농도에서 총괄성 효과 순서(i 기준)는?", b:"i 큰 것일수록 큼(<span class='k'>CaCl₂ > NaCl > 포도당</span>)."},
+  {t:"반트호프계수", l:"L1", f:"물 1몰랄 끓는점 — 설탕·NaCl·CaCl₂는?", b:"<span class='k'>100.52 / 101.04 / 101.56</span>."},
+  {t:"반트호프계수", l:"L4", f:"전해질이 비전해질보다 총괄성이 큰 이유는?", b:"이온화로 <span class='k'>입자 수가 늘어서</span>."},
+  {t:"반트호프계수", l:"L6", trap:true, f:"“CaCl₂ 0.1m와 포도당 0.1m는 어는점이 같다” — 옳은가?", b:"<span class='x'>✗</span> CaCl₂가 <span class='k'>i=3</span>이라 더 낮음."},
+  {t:"반트호프계수", l:"L4", f:"같은 몰랄 NaCl vs Na₂SO₄ — 어는점 더 낮은 것은?", b:"<span class='k'>Na₂SO₄</span>(i=3 > 2)."},
+  {t:"반트호프계수", l:"L1", f:"i를 곱하는 이유는?", b:"총괄성은 ‘<span class='k'>입자 수</span>’에 의존하므로."},
+  {t:"반트호프계수", l:"L2", f:"유효 입자 몰랄 농도 = ?", b:"<span class='k'>i × m</span>."},
+  {t:"반트호프계수", l:"L1", f:"이온성 화합물이 물에 녹으면?", b:"<span class='k'>이온으로 나뉨</span>(전해질)."},
+  {t:"반트호프계수", l:"L4", f:"강전해질 vs 약전해질의 i는?", b:"강전해질 = 완전 이온화(i=이온 수) / 약전해질 = <span class='k'>부분(i<이론값)</span>."},
+  {t:"반트호프계수", l:"L1", f:"실제 전해질 용액의 i가 이론값보다 약간 작은 이유는?", b:"<span class='k'>이온쌍 형성</span>(일부 이온이 뭉침)."},
+  {t:"반트호프계수", l:"L1", f:"MgSO₄·NH₄Cl·NaNO₃의 i는?", b:"<span class='k'>2</span>."},
+  {t:"반트호프계수", l:"L1", f:"Ba(OH)₂의 i는?", b:"<span class='k'>3</span> (Ba²⁺ + 2 OH⁻)."},
+  {t:"반트호프계수", l:"L4", f:"포도당 1몰랄 vs NaCl 1몰랄 — 입자 몰랄 농도는?", b:"<span class='k'>1 vs 2</span>."},
+  {t:"반트호프계수", l:"L4", f:"같은 몰랄의 KCl과 CaCl₂ — 총괄성 큰 것은?", b:"<span class='k'>CaCl₂</span>(i=3 > 2)."},
+
+  /* ===== 종합 보강 ===== */
+  {t:"총괄성개관", l:"L4", f:"총괄성 네 가지 중 몰농도를 쓰는 것과 몰랄을 쓰는 것은?", b:"몰농도 = <span class='k'>삼투압만</span> / 몰랄 = 끓는점·어는점(증기압은 몰분율)."},
+  {t:"총괄성개관", l:"L1", f:"‘총괄’성이라 부르는 이유는?", b:"여러 성질이 공통적으로 <span class='k'>입자 수에 의존</span>해서."},
+  {t:"증기압내림·라울", l:"L2", f:"용매 몰분율이 1에 가까우면(묽은 용액) 증기압 내림은?", b:"<span class='k'>작음</span>."},
+  {t:"끓는점·어는점", l:"L2", f:"대기압이 낮으면 순수 용매의 끓는점은?", b:"<span class='k'>낮아짐</span>(5단원 연결)."},
+  {t:"삼투압", l:"L2", f:"두 용액의 삼투압이 같으면?", b:"<span class='k'>등장</span>(용매 이동 없음)."},
+  {t:"반트호프계수", l:"L4", f:"증기압 내림·끓는점 오름·어는점 내림·삼투압은 모두 무엇에 비례?", b:"유효 <span class='k'>입자 농도(i 포함)</span>."},
+  {t:"삼투압", l:"L4", f:"반투막을 통과하는 것과 못하는 것은?", b:"용매는 통과 / <span class='k'>용질(큰 입자)은 못 통과</span>."},
+  {t:"끓는점·어는점", l:"L2", f:"소금물이 순수 물보다 어는점이 낮은 이유 2가지는?", b:"용질이 결정화 방해(어는점 내림) + <span class='k'>i=2(입자 2배)</span>."},
+  {t:"총괄성개관", l:"L2", f:"총괄성으로 분자량을 구하는 공통 원리는?", b:"측정값 → 몰수 → <span class='k'>분자량 = 질량/몰수</span>."},
+  {t:"삼투압", l:"L1", f:"역삼투의 대표 응용은?", b:"<span class='k'>해수 담수화 · 정수기</span>."},
+  /* ===== 밀도 보강 2차 ===== */
+  {t:"반트호프계수", l:"L1", f:"NaOH·KOH·HCl의 i는?", b:"<span class='k'>2</span> (강전해질, 이온 2개)."},
+  {t:"반트호프계수", l:"L1", f:"K₂CO₃·(NH₄)₂SO₄의 i는?", b:"<span class='k'>3</span> (이온 3개)."},
+  {t:"반트호프계수", l:"L1", f:"AlCl₃·FeCl₃·Na₃PO₄의 i는?", b:"<span class='k'>4</span> (이온 4개)."},
+  {t:"반트호프계수", l:"L1", f:"CuSO₄·MgSO₄의 i는?", b:"<span class='k'>2</span> (2가+2가, 이온 2개)."},
+  {t:"반트호프계수", l:"L4", f:"같은 몰랄에서 어는점이 가장 낮은 것은? (포도당/NaCl/CaCl₂/Al₂(SO₄)₃)", b:"<span class='k'>Al₂(SO₄)₃</span> (i=5, 입자 최다)."},
+  {t:"반트호프계수", l:"L2", f:"어떤 물질의 총괄성이 클지 예측하려면 무엇을 보나?", b:"<span class='k'>i × 농도</span>(유효 입자 수)."},
+  {t:"반트호프계수", l:"L4", f:"CaCl₂와 Na₂SO₄는 둘 다 i=3인가?", b:"<span class='k'>그렇다</span>(이온 3개씩)."},
+  {t:"끓는점·어는점", l:"L4", f:"같은 몰랄 포도당·NaCl·CaCl₂의 끓는점 순서는?", b:"<span class='k'>CaCl₂ > NaCl > 포도당</span> (i=3>2>1)."},
+  {t:"끓는점·어는점", l:"L1", f:"몰랄 농도의 정의는? (복습)", b:"용질 몰수 / <span class='k'>용매 질량(kg)</span>."},
+  {t:"삼투압", l:"L4", f:"고장액·저장액·등장액을 삼투압으로 정리하면?", b:"고장 = 삼투압 높음(물 빠짐) / 저장 = 낮음(물 들어옴) / <span class='k'>등장 = 같음</span>."},
+  {t:"삼투압", l:"L2", f:"같은 몰농도라도 전해질의 삼투압이 큰 이유는?", b:"<span class='k'>i 배만큼</span> 입자가 많아서(π=i·M·R·T)."},
+  {t:"삼투압", l:"L2", f:"삼투압 측정으로 분자량을 구할 때 π를 무엇으로?", b:"<span class='k'>M = π/(RT)</span> → 몰수 → 분자량."},
+  {t:"증기압내림·라울", l:"L4", f:"용액과 순수 용매를 밀폐 용기에 나란히 두면?", b:"증기압 낮은 <span class='k'>용액 쪽으로 용매가 증류돼 모임</span>."},
+  {t:"총괄성개관", l:"L4", f:"총괄성이 아닌 성질의 예는?", b:"<span class='k'>밀도·색·용해도(온도 의존)</span> 등."},
+  {t:"삼투압", l:"L1", f:"삼투 현상에서 물이 이동한 결과는?", b:"양쪽 농도를 같게 만드는 쪽(<span class='k'>용액 희석</span>)."}
+];
+DECK.forEach((c,i)=>c.id="c"+i);
+
+/* ===================== 저장 (localStorage + in-memory 폴백) ===================== */
+const KEY="chem_u6_colligative_v1", DAY=86400000, INTERVALS=[0,1*DAY,3*DAY,7*DAY,30*DAY];
+const mem={};
+function save(o){ const j=JSON.stringify(o); try{localStorage.setItem(KEY,j);}catch(e){} mem[KEY]=j; }
+function load(){ try{const j=localStorage.getItem(KEY); if(j)return JSON.parse(j);}catch(e){}
+  try{if(mem[KEY])return JSON.parse(mem[KEY]);}catch(e){} return {}; }
+let ST=load();                              // { id:{box,due,seen} }
+function cs(id){ return ST[id]||{box:0,due:0,seen:false}; }
+function schedule(id,grade,guessed){
+  let s=Object.assign({box:0,due:0,seen:false},ST[id]||{}); s.seen=true;
+  if(guessed || grade<=2) s.box=0;                    // 1·2 실패 / 찍음 → 리셋(즉시 재출제)
+  else if(grade===3) s.box=Math.max(1,s.box);         // 겨우 성공 → 유지·최소 1일
+  else if(grade===4) s.box=Math.min(4,s.box+1);       // 앎 → 한 단계 승급
+  else if(grade===5) s.box=Math.min(4,s.box+2);       // 완벽 → 두 단계 승급
+  s.due=Date.now()+INTERVALS[s.box]; ST[id]=s; save(ST); return s;
+}
+
+/* ===================== 상태 & 필터 ===================== */
+const UI={mode:"study", topic:"전체", layers:new Set(["L1","L2","L4","L6"])};
+const TOPICS=[...new Set(DECK.map(c=>c.t))];
+function passFilter(c){
+  if(!UI.layers.has(c.l)) return false;
+  if(UI.topic!=="전체" && c.t!==UI.topic) return false;
+  const s=cs(c.id), due=(!s.seen)||(s.due<=Date.now());
+  if(UI.mode==="study") return due;
+  if(UI.mode==="wrong") return s.seen && s.box===0;
+  return true;                               // all
+}
+let queue=[], qi=0, revealed=false, guessed=false;
+function buildQueue(){ queue=DECK.filter(passFilter).map(c=>c.id); qi=0; revealed=false; guessed=false; }
+
+/* ===================== 렌더 ===================== */
+const stage=document.getElementById("stage"), statsEl=document.getElementById("stats");
+function renderStats(){
+  const total=DECK.length;
+  const seen=DECK.filter(c=>cs(c.id).seen).length;
+  const mastered=DECK.filter(c=>cs(c.id).box>=3).length;
+  const due=DECK.filter(c=>{const s=cs(c.id);return (!s.seen)||(s.due<=Date.now());}).length;
+  statsEl.innerHTML=
+    `<span class="chip">오늘 학습 <b>${due}</b></span>`+
+    `<span class="chip">익힘 <b>${mastered}</b>/<b>${total}</b></span>`+
+    `<span class="chip">본 카드 <b>${seen}</b></span>`;
+}
+function renderCard(){
+  renderStats();
+  if(qi>=queue.length){
+    const label=UI.mode==="wrong"?"틀린 카드가 없어요":"이 범위 학습 완료";
+    stage.innerHTML=`<div class="done"><h2>✓ ${label}</h2>
+      <p>4·5로 넘긴 카드는 1·3·7·30일 간격으로 다시 나옵니다.</p>
+      <button id="again">처음부터 다시 돌기</button></div>`;
+    document.getElementById("again").onclick=()=>{buildQueue();renderCard();};
+    return;
+  }
+  const c=DECK.find(x=>x.id===queue[qi]);
+  const srcHtml=c.src?`<span class="src">모의 ${c.src}</span>`:`<span class="src"></span>`;
+  const trapHtml=(revealed&&c.trap)?`<div class="trapribbon">⚠ 함정 · 부정형("옳지 않은 것") 대비</div>`:"";
+  stage.innerHTML=`
+   <div class="card l-${c.l}">
+     <div class="cmeta">
+       <span class="badge l-${c.l}">${c.l}</span>
+       <span class="topic">${c.t}</span>${srcHtml}
+     </div>
+     <div class="front">${c.f}</div>
+     <div id="backwrap" style="display:${revealed?'block':'none'}">
+       <div class="divider"></div>${trapHtml}
+       <div class="back">${c.b}</div>
+     </div>
+     <div class="spacer"></div>
+     ${revealed?rateHtml():`<button class="reveal" id="reveal">정답 보기 · Space</button>`}
+     <div class="nav">
+       <button id="prev">‹</button>
+       <span class="pos">${qi+1} / ${queue.length}</span>
+       <button id="next">›</button>
+     </div>
+   </div>`;
+  wire(c);
+}
+function rateHtml(){
+  const L=[
+    {g:1,lab:"전혀",sub:"기억 안 남"},
+    {g:2,lab:"답보고",sub:"틀림·재인"},
+    {g:3,lab:"겨우",sub:"맞음·힘겹게"},
+    {g:4,lab:"앎",sub:"약간 주저"},
+    {g:5,lab:"완벽",sub:"즉시·확실"}
+  ];
+  const btns=L.map(x=>`<button class="lk${x.g}" data-g="${x.g}"><b>${x.g}</b><span class="lab">${x.lab}</span><span class="sub">${x.sub}</span></button>`).join("");
+  return `<div class="guess ${guessed?'on':''}" id="guess"><span class="box">${guessed?'✓':''}</span>찍음(운으로 맞음)</div>
+    <div class="lkaxis"><span>전혀 모름</span><span>얼마나 인출됐나?</span><span>완벽</span></div>
+    <div class="rate5">${btns}</div>`;
+}
+function wire(c){
+  const rev=document.getElementById("reveal");
+  if(rev) rev.onclick=doReveal;
+  const g=document.getElementById("guess");
+  if(g) g.onclick=()=>{guessed=!guessed; renderCard();};
+  stage.querySelectorAll(".rate5 button").forEach(b=>b.onclick=()=>rate(parseInt(b.dataset.g,10)));
+  document.getElementById("prev").onclick=()=>{ if(qi>0){qi--;revealed=false;guessed=false;renderCard();} };
+  document.getElementById("next").onclick=()=>{ if(qi<queue.length){qi++;revealed=false;guessed=false;renderCard();} };
+}
+function doReveal(){ revealed=true; renderCard(); }
+function rate(r){
+  const id=queue[qi];
+  const s=schedule(id,r,guessed);
+  const stillDue=(s.due<=Date.now());        // box0 → 이번 세션 재출제
+  revealed=false; guessed=false;
+  if(stillDue){ queue.push(id); }            // 뒤로 보내 다시 만나게
+  queue.splice(qi,1);                         // 현재 위치에서 제거
+  renderCard();
+}
+
+/* ===================== 컨트롤 배선 ===================== */
+const topicSel=document.getElementById("topic");
+topicSel.innerHTML=`<option>전체</option>`+TOPICS.map(t=>`<option>${t}</option>`).join("");
+topicSel.onchange=()=>{UI.topic=topicSel.value; buildQueue(); renderCard();};
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); UI.mode=b.dataset.mode; buildQueue(); renderCard();
+});
+document.querySelectorAll('#layers .lchip').forEach(ch=>ch.onclick=()=>{
+  const L=ch.dataset.l;
+  if(UI.layers.has(L)&&UI.layers.size>1){UI.layers.delete(L);ch.classList.remove('on');}
+  else{UI.layers.add(L);ch.classList.add('on');}
+  buildQueue(); renderCard();
+});
+document.getElementById("reset").onclick=()=>{
+  if(confirm("이 브라우저의 1단원 진도를 모두 초기화할까요?")){ ST={}; save(ST); buildQueue(); renderCard(); }
+};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){ e.preventDefault(); if(!revealed) doReveal(); }
+  else if(revealed && ["1","2","3","4","5"].includes(e.key)){ rate(parseInt(e.key,10)); }
+});
+
+/* ===================== 시작 ===================== */
+buildQueue(); renderCard();
+</script>
+</body>
+</html>

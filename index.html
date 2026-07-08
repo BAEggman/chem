@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>일반화학 카드덱 · 9단원</title>
+<meta name="description" content="편입 일반화학 카드덱 허브 — 9단원 1099장. 5점 자가평가 · SRS 1·3·7·30일 간격반복.">
+<style>
+/* ===================== 디자인 토큰 (카드덱과 동일: 한지·먹·주사) =====================
+   9개 단원 HTML의 :root --hh-* 값을 그대로 복사해 시각적 일관성 유지.
+   외부 폰트·CDN·이미지 없음 → 완전 오프라인. */
+:root{
+  --hh-bg:#f3eee2; --hh-card:#fbf8f0; --hh-pan:#f0e8d8; --hh-pan2:#efe6d3;
+  --hh-ink:#2c261e; --hh-dim:#6c6252; --hh-mut:#877c69; --hh-faint:#a89c86;
+  --hh-line:#ddd2be; --hh-line2:#eae2d3;
+  --hh-gold:#a9791f; --hh-gold-s:#f3e6c6;
+  --hh-jade:#3c7568; --hh-jade-s:#dcece7;
+  --hh-azure:#356388; --hh-azure-s:#dbe6ef;
+  --hh-cinnabar:#a83a2c; --hh-cinnabar-s:#f4dcd6;
+  --hh-ok:#3c7568; --hh-no:#a83a2c;
+  --hh-shadow:0 6px 22px rgba(44,38,30,.10), 0 1px 3px rgba(44,38,30,.08);
+  --hh-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
+  --hh-mono:ui-monospace,'SF Mono','Menlo','Consolas',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--hh-bg); color:var(--hh-ink);
+  font-family:var(--hh-sans); line-height:1.5;
+  -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px; margin:0 auto; padding:24px 18px 56px;}
+
+/* ---------- 헤더 ---------- */
+header{padding:14px 4px 20px; border-bottom:1px solid var(--hh-line); margin-bottom:22px;}
+.brandrow{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+h1{font-size:clamp(21px,3.6vw,29px); margin:0; letter-spacing:-.01em; font-weight:800;}
+h1 .seal{color:var(--hh-cinnabar);}
+.subtitle{margin:6px 0 0; color:var(--hh-dim); font-size:15px; font-weight:600;}
+.tagline{margin:12px 0 0; display:flex; gap:8px; flex-wrap:wrap;}
+.tagline .chip{
+  font-size:12.5px; color:var(--hh-dim); background:var(--hh-pan);
+  border:1px solid var(--hh-line); border-radius:999px; padding:4px 11px; white-space:nowrap;
+}
+.tagline .chip b{color:var(--hh-ink); font-weight:700;}
+
+/* ---------- 단원 그리드 (데스크톱 3열 / 태블릿 2열 / 모바일 1열) ---------- */
+.grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+@media(max-width:860px){.grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.grid{grid-template-columns:1fr;}}
+
+.unit{
+  background:var(--hh-card); border:1px solid var(--hh-line); border-radius:16px;
+  box-shadow:var(--hh-shadow); padding:16px 16px 15px;
+  display:flex; flex-direction:column; position:relative; overflow:hidden;
+}
+.unit::before{content:""; position:absolute; left:0; top:0; height:4px; width:100%;
+  background:var(--acc); opacity:.9;}
+.uhead{display:flex; align-items:center; gap:12px; margin:6px 0 4px;}
+.unum{
+  flex:0 0 auto; width:40px; height:40px; border-radius:11px;
+  background:var(--acc-s); color:var(--acc); border:1px solid var(--acc);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:19px; font-family:var(--hh-mono);
+}
+.utitle h2{margin:0; font-size:17px; font-weight:800; letter-spacing:-.01em;}
+.utitle .umeta{margin:2px 0 0; font-size:12.5px; color:var(--hh-mut); font-weight:600;}
+.usub{margin:8px 0 2px; font-size:12.5px; color:var(--hh-faint);}
+
+.ubody{display:flex; align-items:center; gap:14px; margin:12px 0 14px; padding-top:12px; border-top:1px dashed var(--hh-line2);}
+.ringwrap{position:relative; flex:0 0 auto; width:74px; height:74px;}
+.ring{width:74px; height:74px; transform:rotate(-90deg);}
+.ring-bg{fill:none; stroke:var(--hh-line2); stroke-width:3.4;}
+.ring-fg{fill:none; stroke:var(--acc); stroke-width:3.4; stroke-linecap:round;
+  transition:stroke-dashoffset .5s ease;}
+.ringlabel{position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;}
+.ringlabel b{font-size:18px; font-weight:800; line-height:1; font-family:var(--hh-mono); color:var(--hh-ink);}
+.ringlabel.pre b{font-size:12px; color:var(--hh-mut); font-weight:700;}
+.ringlabel span{font-size:9.5px; color:var(--hh-mut); margin-top:2px; letter-spacing:.02em;}
+
+.ustats{display:flex; flex:1; gap:6px;}
+.ustat{flex:1; text-align:center; background:var(--hh-pan); border:1px solid var(--hh-line);
+  border-radius:9px; padding:7px 3px;}
+.ustat b{display:block; font-size:16px; font-weight:800; font-family:var(--hh-mono); color:var(--hh-ink);}
+.ustat.due b{color:var(--hh-cinnabar);}
+.ustat span{display:block; font-size:10.5px; color:var(--hh-mut); margin-top:1px;}
+
+.startbtn{
+  margin-top:auto; display:flex; align-items:center; justify-content:center; gap:6px;
+  min-height:46px; border-radius:11px; text-decoration:none;
+  background:var(--acc); color:#fdfaf3; font-weight:800; font-size:15px;
+  border:1px solid rgba(0,0,0,.06); transition:filter .15s ease, transform .05s ease;
+}
+.startbtn:hover{filter:brightness(1.06);}
+.startbtn:active{transform:translateY(1px);}
+
+/* ---------- 하단 전체 진도 요약 바 ---------- */
+.overall{margin-top:26px; background:var(--hh-card); border:1px solid var(--hh-line);
+  border-radius:16px; box-shadow:var(--hh-shadow); padding:18px 18px 16px;}
+.overall h3{margin:0 0 3px; font-size:15px; font-weight:800;}
+.overall .osum{margin:0 0 14px; font-size:13px; color:var(--hh-dim);}
+.overall .osum b{color:var(--hh-ink); font-family:var(--hh-mono); font-weight:800;}
+.obar{display:flex; height:16px; border-radius:999px; overflow:hidden;
+  background:var(--hh-pan2); border:1px solid var(--hh-line);}
+.oseg{height:100%;}
+.oseg.ret{background:var(--hh-jade);}
+.oseg.due{background:var(--hh-cinnabar);}
+.olegend{display:flex; flex-wrap:wrap; gap:16px; margin-top:13px;}
+.leg{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--hh-dim);}
+.leg .sw{width:12px; height:12px; border-radius:4px; flex:0 0 auto;}
+.leg .sw.ret{background:var(--hh-jade);}
+.leg .sw.due{background:var(--hh-cinnabar);}
+.leg .sw.non{background:var(--hh-pan2); border:1px solid var(--hh-line);}
+.leg b{color:var(--hh-ink); font-family:var(--hh-mono); font-weight:800;}
+
+footer{margin-top:22px; text-align:center; color:var(--hh-faint); font-size:12px; line-height:1.7;}
+footer code{font-family:var(--hh-mono); background:var(--hh-pan); padding:1px 6px; border-radius:5px; border:1px solid var(--hh-line);}
+.nojs{background:var(--hh-cinnabar-s); border:1px solid var(--hh-cinnabar);
+  color:var(--hh-cinnabar); padding:12px 14px; border-radius:10px; margin-bottom:18px; font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brandrow">
+      <h1>일반화학 카드덱 <span class="seal">·</span> 9단원</h1>
+    </div>
+    <!-- 부제: 목표 시험/날짜는 사용자가 자유롭게 수정하세요. -->
+    <p class="subtitle">편입 일반화학</p>
+    <div class="tagline">
+      <span class="chip">총 <b>1099</b>장</span>
+      <span class="chip"><b>9</b>단원</span>
+      <span class="chip"><b>73</b>토픽</span>
+      <span class="chip">5점 자가평가 · SRS <b>1·3·7·30</b>일</span>
+    </div>
+  </header>
+
+  <noscript>
+    <div class="nojs">이 페이지의 진도 대시보드는 JavaScript가 필요합니다. 각 단원 링크는 아래에서 그대로 이용할 수 있습니다.</div>
+  </noscript>
+
+  <main id="grid" class="grid" aria-label="단원 목록"></main>
+
+  <section class="overall" id="overall" aria-label="전체 진도 요약"></section>
+
+  <footer>
+    진도는 이 브라우저에 <code>localStorage</code>로 저장됩니다(단원별 키 격리). 기기·브라우저가 바뀌면 진도는 공유되지 않습니다.<br>
+    학습률 = 한 번이라도 채점된 카드 ÷ 전체 카드. 오늘 복습 예정 = 채점된 카드 중 다음 복습일이 오늘 이하인 카드.
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================================
+   단원 메타데이터
+   - file : 같은 폴더의 원본 카드덱 HTML (상대 경로, 파일명 미변경)
+   - key  : 각 단원 엔진이 쓰는 localStorage 키 (코드에서 직접 확인함)
+   - cards: 카드 수(DECK 길이) — 각 파일에서 실측 (합계 1099)
+   - topics: 토픽 수(고유 t 값) — 각 파일에서 실측
+   - acc  : 강조색 토큰 이름(gold/jade/azure/cinnabar) — 시각 구분용
+   ========================================================================== */
+var UNITS=[
+  {n:1, name:"원자의 구조",            sub:"원자모형·양자수·전자배치",   file:"chem_u1_atomic_structure.html", key:"chem_u1_pilot_v1",      cards:134, topics:11, acc:"gold"},
+  {n:2, name:"주기성·주요 원소",       sub:"주기적 성질·대표 원소",      file:"chem_u2_periodic.html",         key:"chem_u2_periodic_v1",   cards:126, topics:13, acc:"jade"},
+  {n:3, name:"화학 결합과 분자",       sub:"이온·공유결합·분자구조",     file:"chem_u3_bonding.html",          key:"chem_u3_bonding_v1",    cards:119, topics:11, acc:"azure"},
+  {n:4, name:"화학량론",               sub:"몰·반응식·수득률",           file:"chem_u4_stoichiometry.html",    key:"chem_u4_stoich_v1",     cards:115, topics:6,  acc:"cinnabar"},
+  {n:5, name:"기체·액체·고체와 상평형", sub:"기체법칙·상변화·상평형",     file:"chem_u5_gas_phase.html",        key:"chem_u5_gas_v1",        cards:120, topics:8,  acc:"gold"},
+  {n:6, name:"용액의 총괄성",          sub:"어는점내림·끓는점오름·삼투압", file:"chem_u6_colligative.html",     key:"chem_u6_colligative_v1",cards:120, topics:5,  acc:"jade"},
+  {n:7, name:"반응 속도",              sub:"속도식·반응차수·활성화에너지", file:"chem_u7_kinetics.html",        key:"chem_u7_kinetics_v1",   cards:122, topics:8,  acc:"azure"},
+  {n:8, name:"화학 평형",              sub:"평형상수·르샤틀리에",        file:"chem_u8_equilibrium.html",      key:"chem_u8_equilibrium_v1",cards:120, topics:5,  acc:"cinnabar"},
+  {n:9, name:"산·염기와 완충",         sub:"pH·적정·완충용액",           file:"chem_u9_acidbase.html",         key:"chem_u9_acidbase_v1",   cards:123, topics:6,  acc:"gold"}
+];
+
+/* ----------------------------------------------------------------------------
+   진도 파싱 — 각 단원의 실제 저장 스키마에 맞춤.
+   엔진 스키마: localStorage[key] = JSON.stringify({ "cN": {box, due, seen} })
+     · seen === true  → 한 번이라도 채점된 카드 (엔진의 '본 카드')
+     · box  (0~4)     → SRS 단계, box>=3 을 '익힘'으로 봄 (엔진 renderStats와 동일)
+     · due  (ms)      → 다음 복습 예정 시각. due <= now 이면 복습 도래
+   판정이 애매한 부분은 안전하게: '오늘 복습 예정'은 채점된 카드(seen===true) 중
+   due<=now 인 것만 센다. 미착수(키 없음/미채점)는 0% 처리. 파싱 실패는 try/catch로 흡수.
+---------------------------------------------------------------------------- */
+function readUnit(u){
+  var r={studied:0, due:0, mastered:0, total:u.cards, pct:0, started:false};
+  try{
+    var raw=localStorage.getItem(u.key);
+    if(raw){
+      var obj=JSON.parse(raw);
+      if(obj && typeof obj==="object"){
+        var now=Date.now();
+        for(var id in obj){
+          if(!Object.prototype.hasOwnProperty.call(obj,id)) continue;
+          var s=obj[id];
+          if(!s || typeof s!=="object") continue;
+          if(s.seen===true){
+            r.studied++;
+            if(typeof s.due==="number" && s.due<=now) r.due++;
+            if(typeof s.box==="number" && s.box>=3) r.mastered++;
+          }
+        }
+      }
+    }
+  }catch(e){ /* 파싱 실패 → 전부 0 유지 (앱이 죽지 않도록) */ }
+  r.started = r.studied>0;
+  r.pct = r.total ? Math.round(r.studied/r.total*100) : 0;
+  return r;
+}
+
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+function ringSVG(pct){
+  var p=Math.max(0,Math.min(100,pct));
+  var off=100-p; /* r=15.9155 → 둘레≈100 → dashoffset = 100 - 학습률(%) */
+  return '<svg class="ring" viewBox="0 0 40 40" role="img" aria-label="학습률 '+p+'%">'
+       +   '<circle class="ring-bg" cx="20" cy="20" r="15.9155"></circle>'
+       +   '<circle class="ring-fg" cx="20" cy="20" r="15.9155" style="stroke-dasharray:100 100;stroke-dashoffset:'+off+'"></circle>'
+       + '</svg>';
+}
+
+function unitCard(u){
+  var r=readUnit(u);
+  var ringLabel = r.started
+      ? '<div class="ringlabel"><b>'+r.pct+'%</b><span>학습</span></div>'
+      : '<div class="ringlabel pre"><b>시작 전</b><span>0%</span></div>';
+  return ''
+  + '<article class="unit" style="--acc:var(--hh-'+u.acc+');--acc-s:var(--hh-'+u.acc+'-s)">'
+  +   '<div class="uhead">'
+  +     '<div class="unum">'+u.n+'</div>'
+  +     '<div class="utitle"><h2>'+esc(u.name)+'</h2>'
+  +       '<p class="umeta">'+u.cards+'장 · '+u.topics+'토픽</p></div>'
+  +   '</div>'
+  +   '<p class="usub">'+esc(u.sub)+'</p>'
+  +   '<div class="ubody">'
+  +     '<div class="ringwrap">'+ringSVG(r.started?r.pct:0)+ringLabel+'</div>'
+  +     '<div class="ustats">'
+  +       '<div class="ustat"><b>'+r.studied+'</b><span>학습</span></div>'
+  +       '<div class="ustat"><b>'+r.mastered+'</b><span>익힘</span></div>'
+  +       '<div class="ustat due"><b>'+r.due+'</b><span>오늘 복습</span></div>'
+  +     '</div>'
+  +   '</div>'
+  +   '<a class="startbtn" href="'+u.file+'">학습 시작 &rarr;</a>'
+  + '</article>';
+}
+
+function renderOverall(list){
+  var total=0, studied=0, due=0, mastered=0;
+  for(var i=0;i<list.length;i++){
+    total+=list[i].total; studied+=list[i].studied; due+=list[i].due; mastered+=list[i].mastered;
+  }
+  var notStarted=total-studied;
+  var retained=studied-due;               /* 채점됐고 아직 복습일 전 */
+  if(retained<0) retained=0;
+  var pct=total?Math.round(studied/total*100):0;
+  var wRet=total?(retained/total*100):0;
+  var wDue=total?(due/total*100):0;
+
+  return ''
+  + '<h3>전체 진도</h3>'
+  + '<p class="osum">총 <b>'+total+'</b>장 중 학습 <b>'+studied+'</b>장(<b>'+pct+'%</b>) · '
+  +   '익힘 <b>'+mastered+'</b>장 · 오늘 복습 예정 <b>'+due+'</b>장 · 미착수 <b>'+notStarted+'</b>장</p>'
+  + '<div class="obar" role="img" aria-label="전체 학습률 '+pct+'퍼센트">'
+  +   '<div class="oseg ret" style="width:'+wRet.toFixed(2)+'%"></div>'
+  +   '<div class="oseg due" style="width:'+wDue.toFixed(2)+'%"></div>'
+  + '</div>'
+  + '<div class="olegend">'
+  +   '<span class="leg"><span class="sw ret"></span>학습·보유 <b>'+retained+'</b></span>'
+  +   '<span class="leg"><span class="sw due"></span>오늘 복습 예정 <b>'+due+'</b></span>'
+  +   '<span class="leg"><span class="sw non"></span>미착수 <b>'+notStarted+'</b></span>'
+  + '</div>';
+}
+
+function render(){
+  var results=[];
+  var html="";
+  for(var i=0;i<UNITS.length;i++){
+    // 단원별로 개별 try/catch: 한 단원 오류가 전체를 막지 않도록
+    try{
+      results.push(readUnit(UNITS[i]));
+      html+=unitCard(UNITS[i]);
+    }catch(e){
+      results.push({studied:0,due:0,mastered:0,total:UNITS[i].cards});
+      html+='<article class="unit" style="--acc:var(--hh-'+UNITS[i].acc+');--acc-s:var(--hh-'+UNITS[i].acc+'-s)">'
+          + '<div class="uhead"><div class="unum">'+UNITS[i].n+'</div>'
+          + '<div class="utitle"><h2>'+esc(UNITS[i].name)+'</h2>'
+          + '<p class="umeta">'+UNITS[i].cards+'장 · '+UNITS[i].topics+'토픽</p></div></div>'
+          + '<a class="startbtn" href="'+UNITS[i].file+'">학습 시작 &rarr;</a></article>';
+    }
+  }
+  document.getElementById("grid").innerHTML=html;
+  document.getElementById("overall").innerHTML=renderOverall(results);
+}
+
+render();
+/* 단원 학습 후 뒤로가기/재표시 시 진도 갱신 (bfcache 복원 및 탭 재활성 포함) */
+window.addEventListener("pageshow", render);
+document.addEventListener("visibilitychange", function(){ if(!document.hidden) render(); });
+</script>
+</body>
+</html>
