@@ -218,7 +218,7 @@ footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:und
     </div>
     <div class="row setrow">
       <span class="num">하루 새 카드
-        <button id="newdec" aria-label="줄이기">−</button><b id="newval">20</b><button id="newinc" aria-label="늘리기">+</button>
+        <button id="newdec" aria-label="줄이기">−</button><b id="newval">30</b><button id="newinc" aria-label="늘리기">+</button>
       </span>
       <label class="chk"><input type="checkbox" id="interleave" checked>교차연습</label>
       <label class="chk"><input type="checkbox" id="weakfirst" checked>약점 우선</label>
@@ -237,7 +237,7 @@ footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:und
     <details class="guide">
       <summary>📘 학습 가이드 — 하루 얼마나, 어떻게 학습할까?</summary>
       <ul>
-        <li><b>하루 새 카드 20장 기본 권장</b>(지속 가능·기억 정착에 유리). 시험이 ~1달이면 35–40장, 여유 있으면 10–15장. 전체 1099장 기준 <b>20장/일 ≈ 55일</b>, 30장/일 ≈ 37일, 15장/일 ≈ 73일에 1회 완주.</li>
+        <li><b>하루 새 카드 30장(현재 기본)</b>. 촉박하면 40장, 여유 있으면 15–20장으로 조절. 전체 1099장 기준 <b>30장/일 ≈ 37일</b>, 20장/일 ≈ 55일, 15장/일 ≈ 73일에 1회 완주. 새 카드가 많을수록 며칠 뒤 복습량도 늘어납니다.</li>
         <li><b>매일 복습부터, 그다음 새 카드</b>: ‘오늘 학습’은 밀린 복습 + 오늘 새 카드를 함께 냅니다. 복습은 잊기 직전 최적 시점에 뜨므로 먼저 비우세요.</li>
         <li><b>정직하게 채점</b>: 1·2(모름·답 보고)는 즉시 리셋돼 다시 나옵니다. 후하게 주면 SRS가 무너집니다.</li>
         <li><b>교차연습 켜두기</b>: 단원을 섞어야 비슷한 개념의 변별력이 오릅니다(‘blocked’보다 우수).</li>
@@ -259,7 +259,7 @@ const DECK = [{"id":"u1c0","u":1,"t":"원자모형","l":"L1","f":"전자를 발�
 <script>
 /* ===================== 통합 SRS 엔진 ===================== */
 const KEY="chem_unified_v1", DAY=86400000, INTERVALS=[0,1*DAY,3*DAY,7*DAY,30*DAY];
-const DEFAULT_NEW=20;
+const DEFAULT_NEW=30;
 const UNIT_META={
   1:{name:"원자의 구조",            file:"chem_u1_atomic_structure.html", acc:"var(--hh-gold)"},
   2:{name:"주기성·주요 원소",       file:"chem_u2_periodic.html",         acc:"var(--hh-jade)"},
