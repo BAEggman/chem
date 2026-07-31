@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4efe4">
+<title>화학 12단원 · 산화·환원 — 카드덱</title>
+<!--
+  화학 학습 허브 파일럿 (→ baeggman/hwahak 편입 대상)
+  · 단일 index.html · 외부 의존성 0 (완전 오프라인, GitHub Pages 배포용)
+  · 저장 키 격리: chem_u12_redox_v1  (localStorage; 차단 시 in-memory 폴백 — 절대 크래시 안 함)
+  · SRS-lite: 경락 허브의 3·7·30일 간격반복 계승 + "찍음(운으로 맞음)" 플래그
+  · §5.4 준수: 이 덱은 재인·인출(사실·관계·변별·함정)만. 다단계 계산은 의도적 제외.
+  · 색/변수는 --hh-* 이름으로 정의 → HubHome 편입 시 값만 오버라이드하면 됨.
+-->
+<style>
+:root{
+  --hh-bg:#f3eee2; --hh-card:#fbf8f0; --hh-pan:#f0e8d8; --hh-pan2:#efe6d3;
+  --hh-ink:#2c261e; --hh-dim:#6c6252; --hh-mut:#877c69; --hh-faint:#a89c86;
+  --hh-line:#ddd2be; --hh-line2:#eae2d3;
+  --hh-gold:#a9791f; --hh-gold-s:#f3e6c6;
+  --hh-jade:#3c7568; --hh-jade-s:#dcece7;
+  --hh-azure:#356388; --hh-azure-s:#dbe6ef;
+  --hh-cinnabar:#a83a2c; --hh-cinnabar-s:#f4dcd6;
+  --hh-ok:#3c7568; --hh-no:#a83a2c;
+  --hh-shadow:0 6px 22px rgba(44,38,30,.10), 0 1px 3px rgba(44,38,30,.08);
+  --hh-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
+  --hh-mono:ui-monospace,'SF Mono','Menlo','Consolas',monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--hh-bg);color:var(--hh-ink);font-family:var(--hh-sans);
+  line-height:1.6;font-size:16px;touch-action:manipulation}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+header{margin:2px 0 12px}
+h1{font-size:19px;letter-spacing:-.02em;margin:0}
+h1 .u{font-family:var(--hh-mono);color:var(--hh-gold);font-weight:800;margin-right:6px}
+.tagline{color:var(--hh-mut);font-size:12.5px;margin:3px 0 0}
+
+/* stat chips */
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 10px}
+.chip{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:999px;
+  padding:5px 11px;font-size:12px;color:var(--hh-dim);box-shadow:var(--hh-shadow)}
+.chip b{color:var(--hh-ink);font-family:var(--hh-mono)}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--hh-pan);border:1px solid var(--hh-line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--hh-dim);font:inherit;font-size:12.5px;
+  padding:6px 11px;cursor:pointer}
+.seg button.on{background:var(--hh-card);color:var(--hh-ink);font-weight:700;box-shadow:inset 0 0 0 1px var(--hh-line)}
+select{font:inherit;font-size:13px;color:var(--hh-ink);background:var(--hh-card);
+  border:1px solid var(--hh-line);border-radius:9px;padding:6px 9px}
+.lchip{font-family:var(--hh-mono);font-size:11px;font-weight:700;border:1px solid;border-radius:999px;
+  padding:3px 9px;cursor:pointer;background:var(--hh-card);opacity:.5}
+.lchip.on{opacity:1}
+.l-L1{color:var(--hh-jade);border-color:var(--hh-jade)}
+.l-L2{color:var(--hh-azure);border-color:var(--hh-azure)}
+.l-L4{color:var(--hh-gold);border-color:var(--hh-gold)}
+.l-L6{color:var(--hh-cinnabar);border-color:var(--hh-cinnabar)}
+
+/* card */
+.card{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:18px;
+  box-shadow:var(--hh-shadow);padding:20px 20px 18px;min-height:340px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hh-line)}
+.card.l-L1::before{background:var(--hh-jade)} .card.l-L2::before{background:var(--hh-azure)}
+.card.l-L4::before{background:var(--hh-gold)} .card.l-L6::before{background:var(--hh-cinnabar)}
+.cmeta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--hh-mono);font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;color:#fff}
+.badge.l-L1{background:var(--hh-jade)} .badge.l-L2{background:var(--hh-azure)}
+.badge.l-L4{background:var(--hh-gold)} .badge.l-L6{background:var(--hh-cinnabar)}
+.topic{font-size:12px;color:var(--hh-mut);font-weight:600}
+.src{font-family:var(--hh-mono);font-size:10.5px;color:var(--hh-faint);margin-left:auto}
+.front{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.5;color:var(--hh-ink)}
+.front .em{color:var(--hh-cinnabar)}
+.divider{height:1px;background:var(--hh-line2);margin:16px 0}
+.back{font-size:16.5px;line-height:1.62;color:var(--hh-ink);white-space:pre-wrap}
+.back .k{color:var(--hh-jade);font-weight:700}
+.back .x{color:var(--hh-cinnabar);font-weight:700}
+.trapribbon{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;
+  color:var(--hh-cinnabar);background:var(--hh-cinnabar-s);border:1px solid #e6bfb6;
+  border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.spacer{flex:1}
+
+/* reveal / rate */
+.reveal{margin-top:16px;width:100%;border:0;border-radius:12px;padding:13px;
+  background:var(--hh-ink);color:var(--hh-card);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.lkaxis{display:flex;justify-content:space-between;margin-top:16px;margin-bottom:6px;
+  font-size:10.5px;color:var(--hh-faint)}
+.lkaxis span:nth-child(2){color:var(--hh-mut);font-weight:600}
+.rate5{display:flex;gap:6px}
+.rate5 button{flex:1;border:1px solid var(--hh-line);border-radius:12px;padding:9px 3px 8px;
+  background:var(--hh-card);font:inherit;cursor:pointer;color:var(--hh-dim);
+  display:flex;flex-direction:column;align-items:center;gap:1px}
+.rate5 button b{font-family:var(--hh-mono);font-size:18px;line-height:1.05}
+.rate5 button .lab{font-size:12px;font-weight:700;margin-top:2px}
+.rate5 button .sub{font-size:9.5px;font-weight:600;color:var(--hh-faint);text-align:center}
+.rate5 button:active{transform:translateY(1px)}
+.lk1,.lk1 b{color:var(--hh-cinnabar)}
+.lk2,.lk2 b{color:#b0602a}
+.lk3,.lk3 b{color:var(--hh-mut)}
+.lk4,.lk4 b{color:#4d7f52}
+.lk5,.lk5 b{color:var(--hh-jade)}
+@media(hover:hover){
+  .lk1:hover{background:var(--hh-cinnabar-s);border-color:var(--hh-cinnabar)}
+  .lk2:hover{background:#f4e4d6;border-color:#b0602a}
+  .lk3:hover{background:var(--hh-pan)}
+  .lk4:hover{background:#e4efe1;border-color:#4d7f52}
+  .lk5:hover{background:var(--hh-jade-s);border-color:var(--hh-jade)}
+}
+@media(max-width:430px){ .rate5 button .sub{display:none} .rate5{gap:4px} }
+.guess{margin-top:11px;display:flex;align-items:center;gap:8px;justify-content:center;
+  font-size:12.5px;color:var(--hh-mut);cursor:pointer;user-select:none}
+.guess .box{width:17px;height:17px;border:1.5px solid var(--hh-faint);border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:12px;color:#fff}
+.guess.on .box{background:var(--hh-gold);border-color:var(--hh-gold)}
+.guess.on{color:var(--hh-gold);font-weight:700}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:var(--hh-mut);font-size:13px}
+.nav button{border:1px solid var(--hh-line);background:var(--hh-card);border-radius:9px;
+  width:36px;height:32px;font-size:15px;color:var(--hh-dim);cursor:pointer}
+.nav .pos{font-family:var(--hh-mono);font-size:12px}
+
+.done{text-align:center;padding:48px 16px}
+.done h2{color:var(--hh-jade);margin:0 0 6px}
+.done p{color:var(--hh-mut);font-size:14px;margin:4px 0}
+.done button{margin-top:16px;border:1px solid var(--hh-line);background:var(--hh-card);border-radius:10px;
+  padding:9px 16px;font:inherit;font-weight:700;color:var(--hh-ink);cursor:pointer}
+
+footer{margin-top:20px;color:var(--hh-faint);font-size:11.5px;line-height:1.6}
+footer .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+footer .legend span{font-family:var(--hh-mono);font-weight:700}
+footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:underline;
+  font:inherit;font-size:11.5px;cursor:pointer;padding:0;margin-top:6px}
+@media (hover:hover){
+  .reveal:hover{opacity:.92} .nav button:hover{border-color:var(--hh-faint)}
+  .seg button:hover{color:var(--hh-ink)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="u">12단원</span>산화·환원 · 카드덱</h1>
+    <p class="tagline">능동 인출 → 자가 채점 → 3·7·30일 간격반복 · 기본서·기출 그라운딩</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="row">
+      <div class="seg" id="mode">
+        <button data-mode="study" class="on">오늘 학습</button>
+        <button data-mode="all">전체</button>
+        <button data-mode="wrong">틀린 것만</button>
+      </div>
+      <select id="topic"></select>
+    </div>
+    <div class="row" id="layers">
+      <span class="lchip l-L1 on" data-l="L1">L1 사실</span>
+      <span class="lchip l-L2 on" data-l="L2">L2 방법</span>
+      <span class="lchip l-L4 on" data-l="L4">L4 변별</span>
+      <span class="lchip l-L6 on" data-l="L6">L6 함정</span>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+
+  <footer>
+    <div class="legend">
+      <span class="l-L1" style="color:var(--hh-jade)">L1 사실</span>
+      <span class="l-L2" style="color:var(--hh-azure)">L2 트리거→방법</span>
+      <span class="l-L4" style="color:var(--hh-gold)">L4 변별</span>
+      <span class="l-L6" style="color:var(--hh-cinnabar)">L6 함정</span>
+    </div>
+    이 덱은 <b>재인·인출</b>(사실·관계·변별·함정)만 다룹니다. 화학양론·pH·평형 등 다단계 계산은 의도적으로 제외 — 별도 문제풀이 트랙 권장(§5.4).
+    <br>진도는 이 브라우저에 저장됩니다(<code>chem_u12_redox_v1</code>). 5점 자가평가로 간격을 조절 — 1·2=리셋(즉시 다시), 3=유지, 4=한 단계↑, 5=두 단계↑. ‘찍음’ 표시 시 승급하지 않습니다.
+    <br><button class="reset" id="reset">↺ 진도 초기화</button>
+  </footer>
+</div>
+
+<script>
+/* ===================== 12단원 카드 데이터 (교재·기출 그라운딩) =====================
+   layer: L1 사실 / L2 트리거→방법 / L4 변별 / L6 함정
+   trap:true → 함정 카드(틀린 진술 적발). src: 모의고사 회-번 (있을 때) */
+const DECK = [
+  {t:"산화·환원 기초", l:"L1", f:"산화의 네 가지 정의는?", b:"<span class='k'>산소를 얻음</span> · <span class='k'>수소를 잃음</span> · <span class='k'>전자를 잃음</span> · <span class='k'>산화수 증가</span>"},
+  {t:"산화·환원 기초", l:"L1", f:"환원의 네 가지 정의는?", b:"<span class='k'>산소를 잃음</span> · <span class='k'>수소를 얻음</span> · <span class='k'>전자를 얻음</span> · <span class='k'>산화수 감소</span>"},
+  {t:"산화·환원 기초", l:"L1", f:"산화와 환원은 따로 일어날 수 있는가?", b:"<span class='k'>없다</span>. 전자를 잃는 쪽이 있으면 얻는 쪽이 반드시 있다 — 항상 동시에"},
+  {t:"산화·환원 기초", l:"L2", f:"“산화되었는가”를 묻는 문제, 첫 동작은?", b:"눈으로 산소·수소를 따지지 말고 <span class='k'>산화수부터 계산</span>한다. 반사적으로 나가야 한다"},
+  {t:"산화·환원 기초", l:"L2", f:"반응 전후 산화수가 하나도 안 변했다면?", b:"<span class='k'>산화·환원 반응이 아니다</span>. 즉시 탈락시키고 다음 보기로 간다"},
+  {t:"산화·환원 기초", l:"L2", f:"보기 5개 중 산화환원 반응을 고르라면?", b:"보기마다 <span class='k'>계산하기 쉬운 원소 하나</span>만 잡아 산화수 변화를 본다. 전부 계산할 필요 없다"},
+  {t:"산화·환원 기초", l:"L4", f:"중화 반응과 산화환원 반응을 어떻게 가르나?", b:"<span class='k'>산화수 변화가 있으면 산화환원</span>, 없으면 아니다. 금속 산화물(염기) + 비금속 산화물(산)은 중화 반응"},
+  {t:"산화·환원 기초", l:"L6", trap:true, f:"“산소가 관여해야 산화환원 반응이다.” — 옳은가?", b:"<span class='x'>아니다.</span> 산소가 없어도 <span class='k'>전자 이동·산화수 변화</span>가 있으면 산화환원이다"},
+  {t:"산화수 규칙", l:"L1", f:"홑원소 물질의 산화수는?", b:"<span class='k'>0</span>. H2, O2, Cu, Zn 모두 0"},
+  {t:"산화수 규칙", l:"L1", f:"단원자 이온의 산화수는?", b:"<span class='k'>이온의 전하와 같다</span>. Na⁺는 +1, Cl⁻는 −1"},
+  {t:"산화수 규칙", l:"L1", f:"산화수 결정의 우선순위는?", b:"<span class='k'>1족 +1 → 2족 +2 → Al·B +3 → F −1 → H +1 → O −2 → 나머지</span>. 위에서부터 확정"},
+  {t:"산화수 규칙", l:"L1", f:"화합물 전체의 산화수 합은?", b:"<span class='k'>0</span>. 다원자 이온이면 <span class='k'>그 이온의 전하</span>"},
+  {t:"산화수 규칙", l:"L1", f:"과산화물에서 산소의 산화수는?", b:"<span class='k'>−1</span>. H2O2가 대표적"},
+  {t:"산화수 규칙", l:"L1", f:"금속 수소화물에서 수소의 산화수는?", b:"<span class='k'>−1</span>. NaH, CaH2 등"},
+  {t:"산화수 규칙", l:"L2", f:"산화수를 못 구하겠을 때 순서는?", b:"<span class='k'>우선순위가 높은 원소부터 확정</span>하고, 나머지를 미지수로 놓아 합이 0(또는 이온 전하)이 되게 푼다"},
+  {t:"산화수 규칙", l:"L1", f:"KMnO4에서 Mn의 산화수는?", b:"<span class='k'>+7</span>. K +1, O −2×4 = −8 → Mn = +7"},
+  {t:"산화수 규칙", l:"L1", f:"K2Cr2O7에서 Cr의 산화수는?", b:"<span class='k'>+6</span>. K +1×2, O −2×7 = −14 → Cr 2개가 +12"},
+  {t:"산화수 규칙", l:"L6", trap:true, f:"“화합물 속 산소는 항상 −2다.” — 옳은가?", b:"<span class='x'>아니다.</span> 과산화물에서 <span class='k'>−1</span>, OF2에서는 <span class='k'>+2</span>"},
+  {t:"산화수 규칙", l:"L6", trap:true, f:"“화합물 속 수소는 항상 +1이다.” — 옳은가?", b:"<span class='x'>아니다.</span> 금속 수소화물(NaH)에서 <span class='k'>−1</span>"},
+  {t:"산화제·환원제", l:"L1", f:"산화제란?", b:"<span class='k'>상대를 산화시키고 자신은 환원</span>되는 물질. 전자를 빼앗는 쪽"},
+  {t:"산화제·환원제", l:"L1", f:"환원제란?", b:"<span class='k'>상대를 환원시키고 자신은 산화</span>되는 물질. 전자를 내주는 쪽"},
+  {t:"산화제·환원제", l:"L2", f:"산화제·환원제를 판정하는 순서는?", b:"산화수를 구해 <span class='k'>감소한 쪽이 산화제</span>, <span class='k'>증가한 쪽이 환원제</span>. 이름에 속지 말고 수치로"},
+  {t:"산화제·환원제", l:"L1", f:"대표적인 산화제 셋은?", b:"<span class='k'>KMnO4 · K2Cr2O7 · H2O2</span>"},
+  {t:"산화제·환원제", l:"L1", f:"대표적인 환원제 둘은?", b:"<span class='k'>이온화 경향이 큰 금속</span>, <span class='k'>H2</span>"},
+  {t:"산화제·환원제", l:"L4", f:"H2O2는 산화제인가 환원제인가?", b:"<span class='k'>둘 다 가능</span>. 산소 산화수가 −1이라 −2로 내려가면 산화제, 0으로 올라가면 환원제"},
+  {t:"산화제·환원제", l:"L4", f:"산소가 많은 물질과 수소가 많은 물질, 어느 쪽이 산화제인가?", b:"<span class='k'>산소가 많은 쪽이 산화제</span>, <span class='k'>수소가 많은 쪽이 환원제</span>. 관상 판정용 요령"},
+  {t:"산화제·환원제", l:"L6", trap:true, f:"“산화제는 자기 자신이 산화된다.” — 옳은가?", b:"<span class='x'>아니다.</span> 산화제는 <span class='k'>자신이 환원</span>된다. 이름과 반대라서 매년 나오는 함정"},
+  {t:"이온화 경향", l:"L1", f:"금속의 이온화 경향 순서는?", b:"<span class='k'>칼카나마 알아철 니주납수 구수은 백금 금</span> — K Ca Na Mg Al Zn Fe Ni Sn Pb H Cu Hg Ag Pt Au"},
+  {t:"이온화 경향", l:"L1", f:"이온화 경향이 크다는 것은?", b:"<span class='k'>양이온이 되기 쉽다</span> = 전자를 잃기 쉽다 = 산화되기 쉽다 = 반응성이 크다"},
+  {t:"이온화 경향", l:"L2", f:"금속과 금속 이온의 반응이 일어나는지 판정하려면?", b:"<span class='k'>이온화 경향이 큰 쪽이 이온으로</span> 있어야 정반응이다. 아니면 역반응이 일어난다"},
+  {t:"이온화 경향", l:"L2", f:"표준 환원 전위표 없이 반응 가능성을 예측하려면?", b:"<span class='k'>이온화 경향 순서</span>만으로 충분하다. 시험에서 값을 안 줘도 풀 수 있다"},
+  {t:"이온화 경향", l:"L4", f:"이온화 경향이 큰 금속은 전지에서 어느 극인가?", b:"<span class='k'>음극(−)</span>. 산화되어 전자를 내놓는다"},
+  {t:"이온화 경향", l:"L4", f:"이온화 경향이 작은 금속의 이온은?", b:"<span class='k'>전자를 잘 얻어</span> 금속으로 석출되려는 경향이 강하다"},
+  {t:"이온화 경향", l:"L6", trap:true, f:"“이온화 경향이 작은 금속은 음이온이 되기 쉽다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>양이온이 되기 어렵다</span>가 맞는 표현이다. 금속은 음이온이 되지 않는다"},
+  {t:"산화·환원 기초", l:"L2", f:"산화환원 반응식의 계수를 맞추는 두 방법은?", b:"<span class='k'>산화수법</span>(증가량 = 감소량) / <span class='k'>반쪽 반응법</span>(산화·환원을 나눠 맞춘 뒤 합침)"},
+  {t:"산화·환원 기초", l:"L2", f:"반쪽 반응법에서 산성 조건일 때 원자를 맞추는 순서는?", b:"<span class='k'>주원자 → 산소는 H2O로 → 수소는 H⁺로 → 전하는 전자로</span>"},
+  {t:"산화·환원 기초", l:"L4", f:"산성 조건과 염기성 조건의 반쪽 반응법 차이는?", b:"산성은 <span class='k'>H⁺</span>로, 염기성은 <span class='k'>OH⁻</span>로 수소를 맞춘다"},
+  {t:"산화·환원 기초", l:"L1", f:"산화수법의 핵심 원칙은?", b:"<span class='k'>산화수 증가량의 총합 = 감소량의 총합</span>"},
+  {t:"산화제·환원제", l:"L2", f:"산화제·환원제의 세기를 비교하려면?", b:"<span class='k'>표준 환원 전위</span>를 본다. 값이 클수록 강한 산화제, 작을수록 강한 환원제"},
+  {t:"산화제·환원제", l:"L4", f:"가장 강한 환원제는 전위표의 어느 쪽에 있나?", b:"<span class='k'>환원 전위가 가장 작은(음수인) 쪽</span>. 이온화 경향이 가장 큰 금속"},
+  {t:"이온화 경향", l:"L1", f:"찬물과 반응해 수소를 내는 금속은?", b:"<span class='k'>K · Ca · Na</span> — 이온화 경향 최상위"},
+  {t:"이온화 경향", l:"L1", f:"뜨거운 물·수증기와 반응하는 금속은?", b:"<span class='k'>Mg</span>는 뜨거운 물, <span class='k'>Al · Zn · Fe</span>는 고온 수증기"},
+  {t:"이온화 경향", l:"L1", f:"묽은 산과 반응해 수소를 내는 금속의 기준은?", b:"<span class='k'>수소보다 이온화 경향이 큰 금속</span>. Cu 이후는 묽은 산과 반응하지 않는다"},
+  {t:"이온화 경향", l:"L1", f:"Pt·Au를 녹이는 것은?", b:"<span class='k'>왕수</span> (진한 질산 : 진한 염산 = 1 : 3)"},
+  {t:"이온화 경향", l:"L4", f:"Cu가 묽은 염산에는 안 녹는데 진한 질산에는 녹는 이유는?", b:"수소보다 이온화 경향이 작아 H⁺에게는 전자를 못 주지만, <span class='k'>산화력이 있는 산</span>에는 산화된다"},
+  {t:"산화환원 반응식 균형", l:"L1", f:"산화수법의 원칙은?", b:"<span class='k'>산화수 증가량의 총합 = 감소량의 총합</span>이 되도록 계수를 정한다"},
+  {t:"산화환원 반응식 균형", l:"L2", f:"산화수법의 실행 순서는?", b:"<span class='k'>산화수 변화 원소 찾기 → 변화량 계산 → 최소공배수로 맞추기 → 나머지 원자·전하 맞추기</span>"},
+  {t:"산화환원 반응식 균형", l:"L1", f:"반쪽 반응법이란?", b:"<span class='k'>산화 반쪽식과 환원 반쪽식을 따로 맞춘 뒤 전자 수를 같게 해 합치는</span> 방법"},
+  {t:"산화환원 반응식 균형", l:"L2", f:"산성 조건 반쪽 반응법의 순서는?", b:"<span class='k'>주원자 → 산소는 H2O 추가 → 수소는 H⁺ 추가 → 전하는 전자로</span>"},
+  {t:"산화환원 반응식 균형", l:"L2", f:"염기성 조건에서는 무엇이 달라지나?", b:"산성으로 맞춘 뒤 양변에 <span class='k'>OH⁻</span>를 더해 H⁺를 물로 바꾼다"},
+  {t:"산화환원 반응식 균형", l:"L1", f:"반응식 균형에서 항상 같아야 하는 두 가지는?", b:"<span class='k'>원자 수</span>와 <span class='k'>전하량의 합</span>"},
+  {t:"산화환원 반응식 균형", l:"L4", f:"산화수법과 반쪽 반응법 중 이온 반응식에 유리한 것은?", b:"<span class='k'>반쪽 반응법</span>. 전하까지 맞춰야 하는 이온식에 적합하다"},
+  {t:"산화환원 반응식 균형", l:"L1", f:"MnO4⁻가 산성에서 환원되면 무엇이 되나?", b:"<span class='k'>Mn²⁺</span> (보라색 → 무색). 산화수 +7 → +2, 전자 5개"},
+  {t:"산화환원 반응식 균형", l:"L1", f:"MnO4⁻가 중성·염기성에서 환원되면?", b:"<span class='k'>MnO2</span> (갈색 침전). 산화수 +7 → +4"},
+  {t:"산화환원 반응식 균형", l:"L1", f:"Cr2O7²⁻가 산성에서 환원되면?", b:"<span class='k'>Cr³⁺</span> (주황색 → 초록색). +6 → +3, 전자 6개"},
+  {t:"산화환원 반응식 균형", l:"L2", f:"전자 수가 맞지 않는 두 반쪽식을 합치려면?", b:"각 반쪽식에 정수를 곱해 <span class='k'>전자 수를 최소공배수로</span> 맞춘 뒤 더한다"},
+  {t:"산화환원 반응식 균형", l:"L6", trap:true, f:"“반쪽 반응법에서 두 식을 더할 때 전자를 남겨두어야 한다.” — 옳은가?", b:"<span class='x'>아니다.</span> 전자는 <span class='k'>완전히 상쇄</span>되어 최종 반응식에 남지 않는다"},
+  {t:"산화환원 적정", l:"L1", f:"과망간산 적정에서 지시약이 필요 없는 이유는?", b:"<span class='k'>MnO4⁻ 자체가 지시약</span> 역할을 한다. 종말점에서 옅은 분홍색이 사라지지 않는다"},
+  {t:"산화환원 적정", l:"L1", f:"과망간산 적정의 색 변화는?", b:"<span class='k'>보라색 → 무색</span>, 종말점에서 <span class='k'>옅은 분홍색</span>이 남는다"},
+  {t:"산화환원 적정", l:"L1", f:"산화환원 적정의 당량점 조건은?", b:"<span class='k'>잃은 전자의 몰수 = 얻은 전자의 몰수</span>"},
+  {t:"산화환원 적정", l:"L2", f:"산화환원 적정 계산의 순서는?", b:"<span class='k'>각 물질의 전자 수 확인 → 몰수 × 전자 수를 양변에 같게</span>. 산·염기 적정의 가수와 같은 자리"},
+  {t:"산화환원 적정", l:"L1", f:"아이오딘 적정에서 쓰는 지시약은?", b:"<span class='k'>녹말</span>. I2가 있으면 청색, 없어지면 무색"},
+  {t:"산화환원 적정", l:"L1", f:"티오황산나트륨 적정은 무엇을 정량하나?", b:"<span class='k'>아이오딘(I2)</span>. I2 + 2S2O3²⁻ → 2I⁻ + S4O6²⁻"},
+  {t:"산화환원 적정", l:"L4", f:"산·염기 적정과 산화환원 적정의 공통 구조는?", b:"둘 다 <span class='k'>당량점에서 주고받는 양이 같다</span>. 산염기는 H⁺, 산화환원은 전자"},
+  {t:"산화환원 적정", l:"L6", trap:true, f:"“과망간산 적정에도 페놀프탈레인을 넣어야 한다.” — 옳은가?", b:"<span class='x'>아니다.</span> MnO4⁻가 <span class='k'>자체 지시약</span>이므로 별도 지시약이 필요 없다"},
+  {t:"금속과 산·물의 반응", l:"L1", f:"뜨거운 물·고온 수증기와 반응하는 금속은?", b:"<span class='k'>Mg</span>는 뜨거운 물, <span class='k'>Al · Zn · Fe</span>는 고온 수증기"},
+  {t:"금속과 산·물의 반응", l:"L1", f:"Cu·Hg·Ag가 묽은 염산에 녹지 않는 이유는?", b:"<span class='k'>수소보다 이온화 경향이 작아</span> H⁺에게 전자를 주지 못한다"},
+  {t:"금속과 산·물의 반응", l:"L1", f:"Cu를 녹이는 산은?", b:"<span class='k'>진한 질산 · 묽은 질산 · 진한 황산</span> — 산화력이 있는 산"},
+  {t:"금속과 산·물의 반응", l:"L1", f:"부동태란?", b:"<span class='k'>Al · Fe · Ni</span>가 진한 질산에서 표면에 산화 피막을 만들어 더 이상 반응하지 않는 현상"},
+  {t:"금속과 산·물의 반응", l:"L4", f:"알칼리 금속을 석유에 보관하는 이유는?", b:"<span class='k'>공기 중의 산소·수분과 즉시 반응</span>하기 때문. 이온화 경향이 매우 크다"},
+  {t:"금속과 산·물의 반응", l:"L2", f:"금속이 산에 녹는지 물으면?", b:"<span class='k'>이온화 경향과 수소의 위치</span>를 비교한다. 수소보다 뒤면 산화력 있는 산인지 추가로 확인"},
+  {t:"금속과 산·물의 반응", l:"L6", trap:true, f:"“Al은 이온화 경향이 커서 진한 질산에 잘 녹는다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>부동태</span>를 형성해 오히려 녹지 않는다"},
+  {t:"할로젠의 산화력", l:"L1", f:"할로젠의 산화력 순서는?", b:"<span class='k'>F2 > Cl2 > Br2 > I2</span>. 위로 갈수록 전자를 잘 빼앗는다"},
+  {t:"할로젠의 산화력", l:"L1", f:"할로젠화 이온의 환원력 순서는?", b:"<span class='k'>I⁻ > Br⁻ > Cl⁻ > F⁻</span>. 산화력과 정반대"},
+  {t:"할로젠의 산화력", l:"L2", f:"Cl2를 KBr 수용액에 넣으면?", b:"Cl2의 산화력이 더 크므로 <span class='k'>Br2가 생성</span>된다. 산화력이 큰 쪽이 이온을 밀어낸다"},
+  {t:"할로젠의 산화력", l:"L2", f:"I2를 KCl 수용액에 넣으면?", b:"<span class='k'>반응하지 않는다</span>. I2는 Cl⁻보다 산화력이 약하다"},
+  {t:"할로젠의 산화력", l:"L4", f:"할로젠의 산화력이 위로 갈수록 큰 이유는?", b:"<span class='k'>전기음성도와 전자 친화도</span>가 크고 원자 반지름이 작아 전자를 강하게 끌어당긴다"},
+  {t:"할로젠의 산화력", l:"L1", f:"염소수의 표백 작용은 어떤 반응인가?", b:"<span class='k'>산화</span>. HClO의 산소가 색소를 산화시켜 색을 없앤다"},
+  {t:"할로젠의 산화력", l:"L6", trap:true, f:"“I2는 Br⁻를 산화시켜 Br2를 만든다.” — 옳은가?", b:"<span class='x'>아니다.</span> 산화력이 <span class='k'>I2 < Br2</span>이므로 일어나지 않는다. 반대 방향이 일어난다"},
+  {t:"생활 속 산화환원", l:"L1", f:"연소는 어떤 반응인가?", b:"<span class='k'>산화</span>. 물질이 산소와 결합하며 빛과 열을 낸다"},
+  {t:"생활 속 산화환원", l:"L1", f:"호흡과 광합성의 산화환원 관계는?", b:"호흡은 포도당의 <span class='k'>산화</span>, 광합성은 CO2의 <span class='k'>환원</span>. 서로 역과정"},
+  {t:"생활 속 산화환원", l:"L1", f:"철의 제련에서 환원제 역할을 하는 것은?", b:"<span class='k'>일산화탄소(CO)</span>. Fe2O3를 환원해 철을 얻는다"},
+  {t:"생활 속 산화환원", l:"L1", f:"깎아둔 사과가 갈변하는 이유는?", b:"과육이 공기 중 산소에 <span class='k'>산화</span>되기 때문"},
+  {t:"생활 속 산화환원", l:"L1", f:"염색약·표백제의 작용 원리는?", b:"<span class='k'>산화 또는 환원</span>으로 색소의 구조를 바꾼다"},
+  {t:"생활 속 산화환원", l:"L1", f:"김치·술이 시어지는 과정은?", b:"<span class='k'>발효</span> — 미생물에 의한 산화 과정"},
+  {t:"생활 속 산화환원", l:"L1", f:"산소를 없애는 탈산소제(철분)의 원리는?", b:"철이 <span class='k'>산화</span>되며 포장 안의 산소를 소모한다"},
+  {t:"생활 속 산화환원", l:"L4", f:"산화 방지제는 어떤 물질인가?", b:"자신이 대신 <span class='k'>산화</span>되는 물질, 즉 <span class='k'>환원제</span>. 비타민 C가 대표적"},
+  {t:"생활 속 산화환원", l:"L2", f:"실생활 현상이 산화환원인지 물으면?", b:"<span class='k'>산소·수소의 이동 또는 산화수 변화</span>가 있는지 본다. 상태 변화나 용해는 산화환원이 아니다"},
+  {t:"생활 속 산화환원", l:"L6", trap:true, f:"“소금이 물에 녹는 것은 산화환원 반응이다.” — 옳은가?", b:"<span class='x'>아니다.</span> 이온이 흩어질 뿐 <span class='k'>산화수 변화가 없다</span>"},
+  {t:"생활 속 산화환원", l:"L6", trap:true, f:"“중화 반응은 산화환원 반응의 일종이다.” — 옳은가?", b:"<span class='x'>아니다.</span> 중화는 H⁺와 OH⁻의 결합일 뿐 <span class='k'>산화수가 변하지 않는다</span>"},
+  {t:"산화환원과 화학량론", l:"L2", f:"산화환원 문제에서 양적 관계를 물으면?", b:"먼저 <span class='k'>균형 잡힌 반응식</span>을 만든다. 계수 없이 몰비를 쓰면 반드시 틀린다"},
+  {t:"산화환원과 화학량론", l:"L1", f:"전자 1몰이 운반하는 전기량은?", b:"<span class='k'>96500 C</span> — 패러데이 상수"},
+  {t:"산화환원과 화학량론", l:"L2", f:"산화제와 환원제의 반응 몰비를 구하려면?", b:"<span class='k'>각자 주고받는 전자 수</span>의 역수 비. 전자 5개짜리와 2개짜리는 2 : 5로 반응"},
+  {t:"산화환원과 화학량론", l:"L1", f:"MnO4⁻와 Fe²⁺의 반응 몰비는?", b:"<span class='k'>1 : 5</span>. MnO4⁻는 전자 5개를 받고 Fe²⁺는 1개를 준다"},
+  {t:"산화환원과 화학량론", l:"L4", f:"같은 몰수의 산화제라도 소모량이 다른 이유는?", b:"<span class='k'>주고받는 전자 수</span>가 물질마다 다르기 때문"},
+  {t:"산화수 규칙", l:"L1", f:"HNO3에서 N의 산화수는?", b:"<span class='k'>+5</span>. H +1, O −2×3 = −6"},
+  {t:"산화수 규칙", l:"L1", f:"H2SO4에서 S의 산화수는?", b:"<span class='k'>+6</span>. H +1×2, O −2×4 = −8"},
+  {t:"산화수 규칙", l:"L1", f:"NH3에서 N의 산화수는?", b:"<span class='k'>−3</span>. H가 +1이므로 N이 −3이어야 합이 0"},
+  {t:"산화수 규칙", l:"L1", f:"CH4에서 C의 산화수는?", b:"<span class='k'>−4</span>. 탄소는 화합물에 따라 −4에서 +4까지 변한다"},
+  {t:"산화수 규칙", l:"L1", f:"Fe3O4에서 철의 평균 산화수는?", b:"<span class='k'>+8/3</span>. 산화수는 분수도 될 수 있다"},
+  {t:"산화수 규칙", l:"L1", f:"S2O3²⁻에서 S의 평균 산화수는?", b:"<span class='k'>+2</span>. O −2×3 = −6, 전체가 −2이므로 S 2개가 +4"},
+  {t:"산화수 규칙", l:"L4", f:"같은 원소가 화합물마다 산화수가 다른 이유는?", b:"<span class='k'>결합 상대의 전기음성도</span>에 따라 전자를 얼마나 끌어오는지가 달라지기 때문"},
+  {t:"산화수 규칙", l:"L6", trap:true, f:"“산화수는 항상 정수다.” — 옳은가?", b:"<span class='x'>아니다.</span> Fe3O4처럼 <span class='k'>평균 산화수가 분수</span>인 경우가 있다"},
+  {t:"산화제·환원제", l:"L1", f:"진한 황산이 산화제로 작용하면 무엇이 되나?", b:"<span class='k'>SO2</span>. S의 산화수가 +6 → +4"},
+  {t:"산화제·환원제", l:"L1", f:"묽은 질산과 진한 질산의 환원 생성물 차이는?", b:"묽은 질산은 <span class='k'>NO</span>, 진한 질산은 <span class='k'>NO2</span>"},
+  {t:"산화제·환원제", l:"L4", f:"SO2는 산화제인가 환원제인가?", b:"<span class='k'>둘 다 가능</span>. S가 +4라 +6으로 오르면 환원제, 0으로 내려가면 산화제"},
+  {t:"산화제·환원제", l:"L1", f:"산화제·환원제를 판단하는 기준 시점은?", b:"<span class='k'>반응물 상태</span>에서 판단한다. 생성물로 판단하면 뒤집힌다"},
+  {t:"산화제·환원제", l:"L2", f:"한 물질이 산화제와 환원제 둘 다 될 수 있는 조건은?", b:"그 원소의 산화수가 <span class='k'>최고도 최저도 아닌 중간값</span>일 때"},
+  {t:"산화제·환원제", l:"L6", trap:true, f:"“산화수가 가장 높은 상태의 원소는 환원제가 될 수 있다.” — 옳은가?", b:"<span class='x'>아니다.</span> 더 이상 올라갈 수 없으므로 <span class='k'>산화제로만</span> 작용한다"},
+  {t:"이온화 경향", l:"L2", f:"이온화 경향을 실험으로 확인하려면?", b:"금속판을 다른 금속의 <span class='k'>이온 용액에 담가</span> 석출 여부를 본다"},
+  {t:"이온화 경향", l:"L1", f:"Zn판을 CuSO4 수용액에 담그면?", b:"Zn이 녹고 <span class='k'>구리가 석출</span>된다. 용액의 푸른색이 옅어진다"},
+  {t:"이온화 경향", l:"L1", f:"Cu판을 ZnSO4 수용액에 담그면?", b:"<span class='k'>아무 변화 없다</span>. Cu가 Zn보다 이온화 경향이 작다"},
+  {t:"이온화 경향", l:"L4", f:"이온화 경향과 표준 환원 전위의 관계는?", b:"<span class='k'>반대</span>. 이온화 경향이 클수록 환원 전위는 작다(음수)"},
+  {t:"산화환원 적정", l:"L1", f:"적정에서 당량점과 종말점의 차이는?", b:"<span class='k'>당량점</span>은 이론상 정확히 반응이 끝난 점, <span class='k'>종말점</span>은 지시약으로 관찰한 점"},
+  {t:"산화환원 적정", l:"L2", f:"과망간산 적정을 산성 조건에서 하는 이유는?", b:"산성이라야 <span class='k'>Mn²⁺(무색)</span>까지 환원되어 색 변화가 뚜렷하기 때문"},
+  {t:"산화환원 적정", l:"L1", f:"과망간산 적정에 염산을 쓰지 않는 이유는?", b:"Cl⁻가 함께 <span class='k'>산화</span>되어 결과가 어긋난다. 황산을 쓴다"},
+  {t:"산화환원 적정", l:"L4", f:"산화환원 적정과 중화 적정에서 ‘가수’에 해당하는 것은?", b:"중화는 <span class='k'>H⁺ 개수</span>, 산화환원은 <span class='k'>전자 개수</span>"},
+  {t:"산화환원과 화학량론", l:"L2", f:"산화환원 적정 계산식의 형태는?", b:"<span class='k'>n₁M₁V₁ = n₂M₂V₂</span> (n은 주고받는 전자 수). 중화 적정과 같은 꼴"},
+  {t:"산화환원과 화학량론", l:"L1", f:"MnO4⁻와 H2O2의 반응 몰비는?", b:"<span class='k'>2 : 5</span>. MnO4⁻는 전자 5개, H2O2는 2개를 낸다"},
+  {t:"산화환원과 화학량론", l:"L2", f:"반응한 전자의 몰수를 구하려면?", b:"<span class='k'>물질의 몰수 × 그 물질이 주고받는 전자 수</span>"},
+  {t:"산화환원과 화학량론", l:"L4", f:"순도를 구하는 산화환원 적정 문제의 구조는?", b:"<span class='k'>적정으로 실제 반응한 몰수</span>를 구하고, 시료 전체 질량과 비교한다"},
+  {t:"산화환원과 화학량론", l:"L1", f:"노르말 농도(N)와 몰 농도(M)의 관계는?", b:"<span class='k'>N = M × 전자 수(또는 가수)</span>"},
+  {t:"생활 속 산화환원", l:"L1", f:"과산화수소가 상처를 소독하는 원리는?", b:"<span class='k'>산화</span> 작용으로 세균을 파괴한다. 분해되며 O2가 발생해 거품이 인다"},
+  {t:"생활 속 산화환원", l:"L1", f:"손난로(철분 발열체)의 원리는?", b:"철이 <span class='k'>산화</span>되는 발열 반응"},
+  {t:"생활 속 산화환원", l:"L4", f:"비타민 C가 산화 방지제인 이유는?", b:"자신이 먼저 <span class='k'>산화</span>되어 다른 물질의 산화를 막는다. 즉 환원제"},
+  {t:"생활 속 산화환원", l:"L1", f:"알코올 검사기의 원리는?", b:"에탄올이 <span class='k'>산화</span>되며 다이크로뮴산 이온의 색이 주황 → 초록으로 변한다"},
+  {t:"할로젠의 산화력", l:"L1", f:"F2가 물과 반응하면?", b:"<span class='k'>산소를 발생</span>시킨다. 산화력이 너무 커서 물조차 산화시킨다"},
+  {t:"할로젠의 산화력", l:"L2", f:"할로젠 치환 반응이 일어나는지 판정하려면?", b:"<span class='k'>산화력이 큰 할로젠이 분자로</span>, 작은 쪽이 이온으로 있어야 정반응"},
+  {t:"할로젠의 산화력", l:"L1", f:"아이오딘화 칼륨 녹말 종이의 용도는?", b:"<span class='k'>산화제 검출</span>. 산화되어 생긴 I2가 녹말과 청색을 낸다"},
+  {t:"산화수와 명명법", l:"L1", f:"산화수를 이름에 표기하는 방법은?", b:"<span class='k'>로마 숫자</span>를 괄호에 넣는다. 산화철(II), 산화철(III)"},
+  {t:"산화수와 명명법", l:"L1", f:"FeO와 Fe2O3의 이름은?", b:"<span class='k'>산화철(II)</span>, <span class='k'>산화철(III)</span>"},
+  {t:"산화수와 명명법", l:"L1", f:"산화수를 이름에 표기해야 하는 원소는?", b:"<span class='k'>산화수가 여러 개인 전이 금속</span> (Fe, Cu, Mn 등)"},
+  {t:"산화수와 명명법", l:"L1", f:"CuO와 Cu2O의 이름은?", b:"<span class='k'>산화구리(II)</span>, <span class='k'>산화구리(I)</span>"},
+  {t:"산화수와 명명법", l:"L4", f:"Na2O에 로마 숫자를 붙이지 않는 이유는?", b:"나트륨은 <span class='k'>산화수가 +1 하나뿐</span>이라 구별할 필요가 없다"},
+  {t:"산화수와 명명법", l:"L2", f:"화합물 이름에 로마 숫자가 보이면?", b:"그 값이 <span class='k'>금속의 산화수</span>다. 화학식을 역산할 수 있다"},
+];
+
+DECK.forEach((c,i)=>c.id="c"+i);
+
+/* ===================== 저장 (localStorage + in-memory 폴백) ===================== */
+const KEY="chem_u12_redox_v1", DAY=86400000, INTERVALS=[0,1*DAY,3*DAY,7*DAY,30*DAY];
+const mem={};
+function save(o){ const j=JSON.stringify(o); try{localStorage.setItem(KEY,j);}catch(e){} mem[KEY]=j; }
+function load(){ try{const j=localStorage.getItem(KEY); if(j)return JSON.parse(j);}catch(e){}
+  try{if(mem[KEY])return JSON.parse(mem[KEY]);}catch(e){} return {}; }
+let ST=load();                              // { id:{box,due,seen} }
+function cs(id){ return ST[id]||{box:0,due:0,seen:false}; }
+function schedule(id,grade,guessed){
+  let s=Object.assign({box:0,due:0,seen:false},ST[id]||{}); s.seen=true;
+  if(guessed || grade<=2) s.box=0;                    // 1·2 실패 / 찍음 → 리셋(즉시 재출제)
+  else if(grade===3) s.box=Math.max(1,s.box);         // 겨우 성공 → 유지·최소 1일
+  else if(grade===4) s.box=Math.min(4,s.box+1);       // 앎 → 한 단계 승급
+  else if(grade===5) s.box=Math.min(4,s.box+2);       // 완벽 → 두 단계 승급
+  s.due=Date.now()+INTERVALS[s.box]; ST[id]=s; save(ST); return s;
+}
+
+/* ===================== 상태 & 필터 ===================== */
+const UI={mode:"study", topic:"전체", layers:new Set(["L1","L2","L4","L6"])};
+const TOPICS=[...new Set(DECK.map(c=>c.t))];
+function passFilter(c){
+  if(!UI.layers.has(c.l)) return false;
+  if(UI.topic!=="전체" && c.t!==UI.topic) return false;
+  const s=cs(c.id), due=(!s.seen)||(s.due<=Date.now());
+  if(UI.mode==="study") return due;
+  if(UI.mode==="wrong") return s.seen && s.box===0;
+  return true;                               // all
+}
+let queue=[], qi=0, revealed=false, guessed=false;
+function buildQueue(){ queue=DECK.filter(passFilter).map(c=>c.id); qi=0; revealed=false; guessed=false; }
+
+/* ===================== 렌더 ===================== */
+const stage=document.getElementById("stage"), statsEl=document.getElementById("stats");
+function renderStats(){
+  const total=DECK.length;
+  const seen=DECK.filter(c=>cs(c.id).seen).length;
+  const mastered=DECK.filter(c=>cs(c.id).box>=3).length;
+  const due=DECK.filter(c=>{const s=cs(c.id);return (!s.seen)||(s.due<=Date.now());}).length;
+  statsEl.innerHTML=
+    `<span class="chip">오늘 학습 <b>${due}</b></span>`+
+    `<span class="chip">익힘 <b>${mastered}</b>/<b>${total}</b></span>`+
+    `<span class="chip">본 카드 <b>${seen}</b></span>`;
+}
+function renderCard(){
+  renderStats();
+  if(qi>=queue.length){
+    const label=UI.mode==="wrong"?"틀린 카드가 없어요":"이 범위 학습 완료";
+    stage.innerHTML=`<div class="done"><h2>✓ ${label}</h2>
+      <p>4·5로 넘긴 카드는 1·3·7·30일 간격으로 다시 나옵니다.</p>
+      <button id="again">처음부터 다시 돌기</button></div>`;
+    document.getElementById("again").onclick=()=>{buildQueue();renderCard();};
+    return;
+  }
+  const c=DECK.find(x=>x.id===queue[qi]);
+  const srcHtml=c.src?`<span class="src">모의 ${c.src}</span>`:`<span class="src"></span>`;
+  const trapHtml=(revealed&&c.trap)?`<div class="trapribbon">⚠ 함정 · 부정형("옳지 않은 것") 대비</div>`:"";
+  stage.innerHTML=`
+   <div class="card l-${c.l}">
+     <div class="cmeta">
+       <span class="badge l-${c.l}">${c.l}</span>
+       <span class="topic">${c.t}</span>${srcHtml}
+     </div>
+     <div class="front">${c.f}</div>
+     <div id="backwrap" style="display:${revealed?'block':'none'}">
+       <div class="divider"></div>${trapHtml}
+       <div class="back">${c.b}</div>
+     </div>
+     <div class="spacer"></div>
+     ${revealed?rateHtml():`<button class="reveal" id="reveal">정답 보기 · Space</button>`}
+     <div class="nav">
+       <button id="prev">‹</button>
+       <span class="pos">${qi+1} / ${queue.length}</span>
+       <button id="next">›</button>
+     </div>
+   </div>`;
+  wire(c);
+}
+function rateHtml(){
+  const L=[
+    {g:1,lab:"전혀",sub:"기억 안 남"},
+    {g:2,lab:"답보고",sub:"틀림·재인"},
+    {g:3,lab:"겨우",sub:"맞음·힘겹게"},
+    {g:4,lab:"앎",sub:"약간 주저"},
+    {g:5,lab:"완벽",sub:"즉시·확실"}
+  ];
+  const btns=L.map(x=>`<button class="lk${x.g}" data-g="${x.g}"><b>${x.g}</b><span class="lab">${x.lab}</span><span class="sub">${x.sub}</span></button>`).join("");
+  return `<div class="guess ${guessed?'on':''}" id="guess"><span class="box">${guessed?'✓':''}</span>찍음(운으로 맞음)</div>
+    <div class="lkaxis"><span>전혀 모름</span><span>얼마나 인출됐나?</span><span>완벽</span></div>
+    <div class="rate5">${btns}</div>`;
+}
+function wire(c){
+  const rev=document.getElementById("reveal");
+  if(rev) rev.onclick=doReveal;
+  const g=document.getElementById("guess");
+  if(g) g.onclick=()=>{guessed=!guessed; renderCard();};
+  stage.querySelectorAll(".rate5 button").forEach(b=>b.onclick=()=>rate(parseInt(b.dataset.g,10)));
+  document.getElementById("prev").onclick=()=>{ if(qi>0){qi--;revealed=false;guessed=false;renderCard();} };
+  document.getElementById("next").onclick=()=>{ if(qi<queue.length){qi++;revealed=false;guessed=false;renderCard();} };
+}
+function doReveal(){ revealed=true; renderCard(); }
+function rate(r){
+  const id=queue[qi];
+  const s=schedule(id,r,guessed);
+  const stillDue=(s.due<=Date.now());        // box0 → 이번 세션 재출제
+  revealed=false; guessed=false;
+  if(stillDue){ queue.push(id); }            // 뒤로 보내 다시 만나게
+  queue.splice(qi,1);                         // 현재 위치에서 제거
+  renderCard();
+}
+
+/* ===================== 컨트롤 배선 ===================== */
+const topicSel=document.getElementById("topic");
+topicSel.innerHTML=`<option>전체</option>`+TOPICS.map(t=>`<option>${t}</option>`).join("");
+topicSel.onchange=()=>{UI.topic=topicSel.value; buildQueue(); renderCard();};
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); UI.mode=b.dataset.mode; buildQueue(); renderCard();
+});
+document.querySelectorAll('#layers .lchip').forEach(ch=>ch.onclick=()=>{
+  const L=ch.dataset.l;
+  if(UI.layers.has(L)&&UI.layers.size>1){UI.layers.delete(L);ch.classList.remove('on');}
+  else{UI.layers.add(L);ch.classList.add('on');}
+  buildQueue(); renderCard();
+});
+document.getElementById("reset").onclick=()=>{
+  if(confirm("이 브라우저의 12단원 진도를 모두 초기화할까요?")){ ST={}; save(ST); buildQueue(); renderCard(); }
+};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){ e.preventDefault(); if(!revealed) doReveal(); }
+  else if(revealed && ["1","2","3","4","5"].includes(e.key)){ rate(parseInt(e.key,10)); }
+});
+
+/* ===================== 시작 ===================== */
+buildQueue(); renderCard();
+</script>
+</body>
+</html>

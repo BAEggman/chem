@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4efe4">
+<title>화학 10단원 · 열화학 — 카드덱</title>
+<!--
+  화학 학습 허브 파일럿 (→ baeggman/hwahak 편입 대상)
+  · 단일 index.html · 외부 의존성 0 (완전 오프라인, GitHub Pages 배포용)
+  · 저장 키 격리: chem_u10_thermochem_v1  (localStorage; 차단 시 in-memory 폴백 — 절대 크래시 안 함)
+  · SRS-lite: 경락 허브의 3·7·30일 간격반복 계승 + "찍음(운으로 맞음)" 플래그
+  · §5.4 준수: 이 덱은 재인·인출(사실·관계·변별·함정)만. 다단계 계산은 의도적 제외.
+  · 색/변수는 --hh-* 이름으로 정의 → HubHome 편입 시 값만 오버라이드하면 됨.
+-->
+<style>
+:root{
+  --hh-bg:#f3eee2; --hh-card:#fbf8f0; --hh-pan:#f0e8d8; --hh-pan2:#efe6d3;
+  --hh-ink:#2c261e; --hh-dim:#6c6252; --hh-mut:#877c69; --hh-faint:#a89c86;
+  --hh-line:#ddd2be; --hh-line2:#eae2d3;
+  --hh-gold:#a9791f; --hh-gold-s:#f3e6c6;
+  --hh-jade:#3c7568; --hh-jade-s:#dcece7;
+  --hh-azure:#356388; --hh-azure-s:#dbe6ef;
+  --hh-cinnabar:#a83a2c; --hh-cinnabar-s:#f4dcd6;
+  --hh-ok:#3c7568; --hh-no:#a83a2c;
+  --hh-shadow:0 6px 22px rgba(44,38,30,.10), 0 1px 3px rgba(44,38,30,.08);
+  --hh-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
+  --hh-mono:ui-monospace,'SF Mono','Menlo','Consolas',monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--hh-bg);color:var(--hh-ink);font-family:var(--hh-sans);
+  line-height:1.6;font-size:16px;touch-action:manipulation}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+header{margin:2px 0 12px}
+h1{font-size:19px;letter-spacing:-.02em;margin:0}
+h1 .u{font-family:var(--hh-mono);color:var(--hh-gold);font-weight:800;margin-right:6px}
+.tagline{color:var(--hh-mut);font-size:12.5px;margin:3px 0 0}
+
+/* stat chips */
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 10px}
+.chip{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:999px;
+  padding:5px 11px;font-size:12px;color:var(--hh-dim);box-shadow:var(--hh-shadow)}
+.chip b{color:var(--hh-ink);font-family:var(--hh-mono)}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--hh-pan);border:1px solid var(--hh-line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--hh-dim);font:inherit;font-size:12.5px;
+  padding:6px 11px;cursor:pointer}
+.seg button.on{background:var(--hh-card);color:var(--hh-ink);font-weight:700;box-shadow:inset 0 0 0 1px var(--hh-line)}
+select{font:inherit;font-size:13px;color:var(--hh-ink);background:var(--hh-card);
+  border:1px solid var(--hh-line);border-radius:9px;padding:6px 9px}
+.lchip{font-family:var(--hh-mono);font-size:11px;font-weight:700;border:1px solid;border-radius:999px;
+  padding:3px 9px;cursor:pointer;background:var(--hh-card);opacity:.5}
+.lchip.on{opacity:1}
+.l-L1{color:var(--hh-jade);border-color:var(--hh-jade)}
+.l-L2{color:var(--hh-azure);border-color:var(--hh-azure)}
+.l-L4{color:var(--hh-gold);border-color:var(--hh-gold)}
+.l-L6{color:var(--hh-cinnabar);border-color:var(--hh-cinnabar)}
+
+/* card */
+.card{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:18px;
+  box-shadow:var(--hh-shadow);padding:20px 20px 18px;min-height:340px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hh-line)}
+.card.l-L1::before{background:var(--hh-jade)} .card.l-L2::before{background:var(--hh-azure)}
+.card.l-L4::before{background:var(--hh-gold)} .card.l-L6::before{background:var(--hh-cinnabar)}
+.cmeta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--hh-mono);font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;color:#fff}
+.badge.l-L1{background:var(--hh-jade)} .badge.l-L2{background:var(--hh-azure)}
+.badge.l-L4{background:var(--hh-gold)} .badge.l-L6{background:var(--hh-cinnabar)}
+.topic{font-size:12px;color:var(--hh-mut);font-weight:600}
+.src{font-family:var(--hh-mono);font-size:10.5px;color:var(--hh-faint);margin-left:auto}
+.front{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.5;color:var(--hh-ink)}
+.front .em{color:var(--hh-cinnabar)}
+.divider{height:1px;background:var(--hh-line2);margin:16px 0}
+.back{font-size:16.5px;line-height:1.62;color:var(--hh-ink);white-space:pre-wrap}
+.back .k{color:var(--hh-jade);font-weight:700}
+.back .x{color:var(--hh-cinnabar);font-weight:700}
+.trapribbon{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;
+  color:var(--hh-cinnabar);background:var(--hh-cinnabar-s);border:1px solid #e6bfb6;
+  border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.spacer{flex:1}
+
+/* reveal / rate */
+.reveal{margin-top:16px;width:100%;border:0;border-radius:12px;padding:13px;
+  background:var(--hh-ink);color:var(--hh-card);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.lkaxis{display:flex;justify-content:space-between;margin-top:16px;margin-bottom:6px;
+  font-size:10.5px;color:var(--hh-faint)}
+.lkaxis span:nth-child(2){color:var(--hh-mut);font-weight:600}
+.rate5{display:flex;gap:6px}
+.rate5 button{flex:1;border:1px solid var(--hh-line);border-radius:12px;padding:9px 3px 8px;
+  background:var(--hh-card);font:inherit;cursor:pointer;color:var(--hh-dim);
+  display:flex;flex-direction:column;align-items:center;gap:1px}
+.rate5 button b{font-family:var(--hh-mono);font-size:18px;line-height:1.05}
+.rate5 button .lab{font-size:12px;font-weight:700;margin-top:2px}
+.rate5 button .sub{font-size:9.5px;font-weight:600;color:var(--hh-faint);text-align:center}
+.rate5 button:active{transform:translateY(1px)}
+.lk1,.lk1 b{color:var(--hh-cinnabar)}
+.lk2,.lk2 b{color:#b0602a}
+.lk3,.lk3 b{color:var(--hh-mut)}
+.lk4,.lk4 b{color:#4d7f52}
+.lk5,.lk5 b{color:var(--hh-jade)}
+@media(hover:hover){
+  .lk1:hover{background:var(--hh-cinnabar-s);border-color:var(--hh-cinnabar)}
+  .lk2:hover{background:#f4e4d6;border-color:#b0602a}
+  .lk3:hover{background:var(--hh-pan)}
+  .lk4:hover{background:#e4efe1;border-color:#4d7f52}
+  .lk5:hover{background:var(--hh-jade-s);border-color:var(--hh-jade)}
+}
+@media(max-width:430px){ .rate5 button .sub{display:none} .rate5{gap:4px} }
+.guess{margin-top:11px;display:flex;align-items:center;gap:8px;justify-content:center;
+  font-size:12.5px;color:var(--hh-mut);cursor:pointer;user-select:none}
+.guess .box{width:17px;height:17px;border:1.5px solid var(--hh-faint);border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:12px;color:#fff}
+.guess.on .box{background:var(--hh-gold);border-color:var(--hh-gold)}
+.guess.on{color:var(--hh-gold);font-weight:700}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:var(--hh-mut);font-size:13px}
+.nav button{border:1px solid var(--hh-line);background:var(--hh-card);border-radius:9px;
+  width:36px;height:32px;font-size:15px;color:var(--hh-dim);cursor:pointer}
+.nav .pos{font-family:var(--hh-mono);font-size:12px}
+
+.done{text-align:center;padding:48px 16px}
+.done h2{color:var(--hh-jade);margin:0 0 6px}
+.done p{color:var(--hh-mut);font-size:14px;margin:4px 0}
+.done button{margin-top:16px;border:1px solid var(--hh-line);background:var(--hh-card);border-radius:10px;
+  padding:9px 16px;font:inherit;font-weight:700;color:var(--hh-ink);cursor:pointer}
+
+footer{margin-top:20px;color:var(--hh-faint);font-size:11.5px;line-height:1.6}
+footer .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+footer .legend span{font-family:var(--hh-mono);font-weight:700}
+footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:underline;
+  font:inherit;font-size:11.5px;cursor:pointer;padding:0;margin-top:6px}
+@media (hover:hover){
+  .reveal:hover{opacity:.92} .nav button:hover{border-color:var(--hh-faint)}
+  .seg button:hover{color:var(--hh-ink)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="u">10단원</span>열화학 · 카드덱</h1>
+    <p class="tagline">능동 인출 → 자가 채점 → 3·7·30일 간격반복 · 기본서·기출 그라운딩</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="row">
+      <div class="seg" id="mode">
+        <button data-mode="study" class="on">오늘 학습</button>
+        <button data-mode="all">전체</button>
+        <button data-mode="wrong">틀린 것만</button>
+      </div>
+      <select id="topic"></select>
+    </div>
+    <div class="row" id="layers">
+      <span class="lchip l-L1 on" data-l="L1">L1 사실</span>
+      <span class="lchip l-L2 on" data-l="L2">L2 방법</span>
+      <span class="lchip l-L4 on" data-l="L4">L4 변별</span>
+      <span class="lchip l-L6 on" data-l="L6">L6 함정</span>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+
+  <footer>
+    <div class="legend">
+      <span class="l-L1" style="color:var(--hh-jade)">L1 사실</span>
+      <span class="l-L2" style="color:var(--hh-azure)">L2 트리거→방법</span>
+      <span class="l-L4" style="color:var(--hh-gold)">L4 변별</span>
+      <span class="l-L6" style="color:var(--hh-cinnabar)">L6 함정</span>
+    </div>
+    이 덱은 <b>재인·인출</b>(사실·관계·변별·함정)만 다룹니다. 열량·헤스 법칙의 다단계 수치 계산은 의도적으로 제외 — 별도 문제풀이 트랙 권장(§5.4).
+    <br>진도는 이 브라우저에 저장됩니다(<code>chem_u10_thermochem_v1</code>). 5점 자가평가로 간격을 조절 — 1·2=리셋(즉시 다시), 3=유지, 4=한 단계↑, 5=두 단계↑. ‘찍음’ 표시 시 승급하지 않습니다.
+    <br><button class="reset" id="reset">↺ 진도 초기화</button>
+  </footer>
+</div>
+
+<script>
+/* ===================== 10단원 카드 데이터 (교재·기출 그라운딩) =====================
+   layer: L1 사실 / L2 트리거→방법 / L4 변별 / L6 함정
+   trap:true → 함정 카드(틀린 진술 적발). src: 모의고사 회-번 (있을 때) */
+const DECK = [
+  {t:"계와 주위", l:"L1", f:"계와 주위란?", b:"<span class='k'>계</span>는 관심의 대상이 되는 부분, <span class='k'>주위</span>는 그 바깥 전부"},
+  {t:"계와 주위", l:"L1", f:"열린계·닫힌계·고립계의 차이는?", b:"열린계 <span class='k'>물질·에너지 모두 출입</span> / 닫힌계 <span class='k'>에너지만</span> / 고립계 <span class='k'>둘 다 차단</span>"},
+  {t:"계와 주위", l:"L1", f:"반응열이란?", b:"화학 반응이 일어날 때 <span class='k'>흡수하거나 방출하는 열량</span>"},
+  {t:"계와 주위", l:"L1", f:"화학에서 표준 상태의 조건은?", b:"<span class='k'>25℃ · 1기압</span>"},
+  {t:"계와 주위", l:"L4", f:"기체의 몰 부피를 따질 때의 표준 상태는?", b:"<span class='k'>0℃ · 1기압</span>. 화학의 표준 상태(25℃)와 다른 유일한 예외"},
+  {t:"계와 주위", l:"L1", f:"표준 상태를 나타내는 기호는?", b:"위첨자 <span class='k'>°</span> (동그라미). ΔH°, ΔG° 등"},
+  {t:"계와 주위", l:"L6", trap:true, f:"“화학에서 표준 상태는 0℃, 1기압이다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>25℃, 1기압</span>이다. 0℃는 기체 몰 부피를 따질 때만"},
+  {t:"발열·흡열 반응", l:"L1", f:"발열 반응이란?", b:"반응하며 <span class='k'>열을 방출</span>하는 반응. 생성물의 에너지가 더 낮다"},
+  {t:"발열·흡열 반응", l:"L1", f:"흡열 반응이란?", b:"반응하며 <span class='k'>열을 흡수</span>하는 반응. 생성물의 에너지가 더 높다"},
+  {t:"발열·흡열 반응", l:"L1", f:"발열 반응에서 주위의 온도는?", b:"<span class='k'>올라간다</span>. 계가 열을 내주었기 때문"},
+  {t:"발열·흡열 반응", l:"L1", f:"흡열 반응에서 주위의 온도는?", b:"<span class='k'>내려간다</span>. 계가 열을 빼앗아 갔기 때문"},
+  {t:"발열·흡열 반응", l:"L4", f:"발열 반응에서 어느 쪽이 더 안정한가?", b:"<span class='k'>생성물</span>. 에너지가 낮은 쪽이 안정하다"},
+  {t:"발열·흡열 반응", l:"L4", f:"흡열 반응에서 어느 쪽이 더 안정한가?", b:"<span class='k'>반응물</span>. 에너지가 낮은 쪽이 안정하다"},
+  {t:"발열·흡열 반응", l:"L2", f:"열화학 반응식을 보면 가장 먼저 할 일은?", b:"<span class='k'>발/흡을 손으로 써넣는다</span>. 그리고 에너지 도표를 머릿속에 그린다"},
+  {t:"발열·흡열 반응", l:"L1", f:"연소·중화·금속과 산의 반응은 발열인가 흡열인가?", b:"모두 <span class='k'>발열</span>"},
+  {t:"발열·흡열 반응", l:"L1", f:"광합성·물의 전기분해·질산암모늄 용해는?", b:"모두 <span class='k'>흡열</span>"},
+  {t:"발열·흡열 반응", l:"L4", f:"정반응이 발열이면 역반응은?", b:"<span class='k'>반드시 흡열</span>이고 크기는 같다"},
+  {t:"발열·흡열 반응", l:"L6", trap:true, f:"“흡열 반응은 자연에서 일어나지 않는다.” — 옳은가?", b:"<span class='x'>아니다.</span> 엔트로피가 크게 증가하면 <span class='k'>흡열이어도 자발적</span>으로 일어난다"},
+  {t:"Q와 ΔH의 부호", l:"L1", f:"반응열 Q를 구하는 식은?", b:"<span class='k'>반응물의 에너지 합 − 생성물의 에너지 합</span>"},
+  {t:"Q와 ΔH의 부호", l:"L1", f:"엔탈피 변화 ΔH를 구하는 식은?", b:"<span class='k'>생성물의 에너지 합 − 반응물의 에너지 합</span>"},
+  {t:"Q와 ΔH의 부호", l:"L1", f:"Q와 ΔH의 관계는?", b:"<span class='k'>부호는 반대, 절대값은 같다</span>"},
+  {t:"Q와 ΔH의 부호", l:"L1", f:"발열 반응에서 Q와 ΔH의 부호는?", b:"<span class='k'>Q > 0, ΔH < 0</span>"},
+  {t:"Q와 ΔH의 부호", l:"L1", f:"흡열 반응에서 Q와 ΔH의 부호는?", b:"<span class='k'>Q < 0, ΔH > 0</span>"},
+  {t:"Q와 ΔH의 부호", l:"L1", f:"이 단원에서 Δ 기호의 기본 의미는?", b:"<span class='k'>생성물 − 반응물</span>. 반응열 Q가 그 예외다"},
+  {t:"Q와 ΔH의 부호", l:"L4", f:"총괄성에서 쓰는 Δ와 열화학의 Δ는 어떻게 다른가?", b:"총괄성은 <span class='k'>큰 값 − 작은 값</span>, 열화학은 <span class='k'>생성물 − 반응물</span>. Δ의 정의는 단원마다 확인해야 한다"},
+  {t:"Q와 ΔH의 부호", l:"L2", f:"‘+Q’로 쓰인 반응식을 보면?", b:"<span class='k'>발열</span>이다. Q 표기이므로 양수가 발열"},
+  {t:"Q와 ΔH의 부호", l:"L2", f:"‘ΔH = −’로 쓰인 반응식을 보면?", b:"<span class='k'>발열</span>이다. ΔH 표기이므로 음수가 발열"},
+  {t:"Q와 ΔH의 부호", l:"L4", f:"현대 화학에서 주로 쓰는 표기는?", b:"<span class='k'>ΔH</span>. 문제에서 Q 표기가 나오면 부호를 뒤집어 읽는다"},
+  {t:"Q와 ΔH의 부호", l:"L6", trap:true, f:"“발열 반응이므로 ΔH는 양수다.” — 옳은가?", b:"<span class='x'>아니다.</span> 발열은 <span class='k'>ΔH < 0</span>이다. Q가 양수인 것과 헷갈리게 만든 함정"},
+  {t:"Q와 ΔH의 부호", l:"L6", trap:true, f:"“Q와 ΔH는 값이 완전히 같다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>절대값만 같고 부호가 반대</span>다"},
+  {t:"열화학 반응식", l:"L1", f:"열화학 반응식이란?", b:"화학 반응식에 <span class='k'>흡수·방출하는 에너지</span>를 함께 나타낸 식"},
+  {t:"열화학 반응식", l:"L1", f:"열화학 반응식에 반드시 표시해야 하는 것은?", b:"<span class='k'>물질의 상태</span> (s, l, g, aq)"},
+  {t:"열화학 반응식", l:"L1", f:"상태를 표시해야 하는 이유는?", b:"물질이 가진 에너지가 <span class='k'>상태에 따라 다르기</span> 때문"},
+  {t:"열화학 반응식", l:"L4", f:"H2O(l)과 H2O(g) 중 에너지가 낮은 것은?", b:"<span class='k'>H2O(l)</span>. 그래서 액체가 생길 때 열이 더 많이 방출된다"},
+  {t:"열화학 반응식", l:"L2", f:"반응식에 H2O가 보이면?", b:"<span class='k'>(l)인지 (g)인지 즉시 확인</span>한다. 이것 하나로 답이 갈린다"},
+  {t:"열화학 반응식", l:"L1", f:"같은 반응에서 물이 액체로 생길 때와 기체로 생길 때 방출열의 차이는?", b:"<span class='k'>액체일 때 더 크다</span>. 차이가 물의 기화열"},
+  {t:"열화학 반응식", l:"L6", trap:true, f:"“열화학 반응식에서 상태 표시는 생략해도 된다.” — 옳은가?", b:"<span class='x'>아니다.</span> 상태가 다르면 <span class='k'>반응열이 달라진다</span>"},
+  {t:"엔탈피의 성질", l:"L1", f:"엔탈피란?", b:"물질이 가진 <span class='k'>고유한 총 에너지 함량</span>. 기호는 H"},
+  {t:"엔탈피의 성질", l:"L1", f:"엔탈피의 절대값은 측정 가능한가?", b:"<span class='k'>불가능하다</span>. 변화량 ΔH만 측정할 수 있다"},
+  {t:"엔탈피의 성질", l:"L4", f:"엔탈피의 절대값을 몰라도 되는 이유는?", b:"화학에서 필요한 것은 <span class='k'>반응 전후의 차이</span>뿐이기 때문"},
+  {t:"엔탈피의 성질", l:"L1", f:"엔탈피는 어떤 조건에서 정의되는가?", b:"<span class='k'>압력이 일정</span>할 때. 일정 압력에서 출입한 열이 곧 ΔH"},
+  {t:"엔탈피의 성질", l:"L1", f:"엔탈피는 크기 성질인가 세기 성질인가?", b:"<span class='k'>크기 성질</span>. 물질의 양에 비례한다"},
+  {t:"엔탈피의 성질", l:"L1", f:"반응식의 계수를 2배 하면 ΔH는?", b:"<span class='k'>2배</span>가 된다"},
+  {t:"엔탈피의 성질", l:"L1", f:"반응식을 뒤집으면 ΔH는?", b:"<span class='k'>부호가 반대</span>가 되고 크기는 같다"},
+  {t:"엔탈피의 성질", l:"L4", f:"엔탈피와 기전력의 성질 차이는?", b:"엔탈피는 <span class='k'>크기 성질</span>이라 계수에 따라 변하고, 기전력은 <span class='k'>세기 성질</span>이라 변하지 않는다"},
+  {t:"엔탈피의 성질", l:"L2", f:"반응식을 조작했을 때 ΔH를 어떻게 처리하나?", b:"<span class='k'>뒤집으면 부호, 배수하면 배수</span>. 두 조작을 함께 하면 둘 다 적용"},
+  {t:"엔탈피의 성질", l:"L6", trap:true, f:"“반응식에 2를 곱해도 ΔH는 변하지 않는다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>2배</span>가 된다. 크기 성질이기 때문"},
+  {t:"반응 엔탈피의 종류", l:"L1", f:"생성 엔탈피(생성열)란?", b:"<span class='k'>홑원소 물질로부터 화합물 1몰이 생성</span>될 때의 엔탈피 변화"},
+  {t:"반응 엔탈피의 종류", l:"L1", f:"홑원소 물질의 표준 생성 엔탈피는?", b:"<span class='k'>0</span>. 표준 상태의 가장 안정한 형태만 해당"},
+  {t:"반응 엔탈피의 종류", l:"L1", f:"연소 엔탈피란?", b:"물질 <span class='k'>1몰이 완전 연소</span>할 때의 엔탈피 변화. 항상 발열"},
+  {t:"반응 엔탈피의 종류", l:"L1", f:"중화 엔탈피란?", b:"산과 염기가 반응해 <span class='k'>물 1몰이 생성</span>될 때의 엔탈피 변화"},
+  {t:"반응 엔탈피의 종류", l:"L1", f:"강산과 강염기의 중화 엔탈피가 일정한 이유는?", b:"실제 반응이 <span class='k'>H⁺ + OH⁻ → H2O</span> 하나뿐이기 때문. 약 −57 kJ/mol"},
+  {t:"반응 엔탈피의 종류", l:"L1", f:"용해 엔탈피란?", b:"물질 1몰이 다량의 용매에 녹을 때의 엔탈피 변화. 발열일 수도 흡열일 수도 있다"},
+  {t:"반응 엔탈피의 종류", l:"L4", f:"각 반응 엔탈피의 공통 기준은?", b:"모두 <span class='k'>1몰</span> 기준이다. 어떤 물질 1몰인지 확인해야 한다"},
+  {t:"반응 엔탈피의 종류", l:"L4", f:"약산의 중화 엔탈피가 −57 kJ보다 작은 이유는?", b:"약산의 <span class='k'>이온화에 에너지가 쓰이기</span> 때문"},
+  {t:"반응 엔탈피의 종류", l:"L2", f:"‘연소 엔탈피’가 주어지면 무엇을 확인하나?", b:"<span class='k'>연소되는 물질 1몰</span> 기준인지, 생성된 물이 액체인지 기체인지"},
+  {t:"반응 엔탈피의 종류", l:"L6", trap:true, f:"“모든 홑원소 물질의 생성 엔탈피는 0이다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>표준 상태의 가장 안정한 형태</span>만 0이다. 오존이나 다이아몬드는 0이 아니다"},
+  {t:"상태 변화와 열", l:"L1", f:"융해·기화·승화는 흡열인가 발열인가?", b:"모두 <span class='k'>흡열</span>. 에너지가 높은 상태로 가는 방향"},
+  {t:"상태 변화와 열", l:"L1", f:"응고·액화·승화(기체→고체)는?", b:"모두 <span class='k'>발열</span>"},
+  {t:"상태 변화와 열", l:"L1", f:"융해열과 응고열의 관계는?", b:"<span class='k'>크기는 같고 부호가 반대</span>"},
+  {t:"상태 변화와 열", l:"L1", f:"같은 물질에서 기화열과 융해열 중 큰 것은?", b:"<span class='k'>기화열</span>. 분자 사이를 완전히 떼어놓아야 하므로"},
+  {t:"상태 변화와 열", l:"L1", f:"상태 변화가 일어나는 동안 온도는?", b:"<span class='k'>일정하다</span>. 흡수한 열이 전부 상태 변화에 쓰인다"},
+  {t:"상태 변화와 열", l:"L2", f:"가열 곡선에서 수평 구간이 뜻하는 것은?", b:"<span class='k'>상태 변화 중</span>. 그 구간의 열량이 융해열 또는 기화열"},
+  {t:"상태 변화와 열", l:"L4", f:"물의 기화열이 유난히 큰 이유는?", b:"<span class='k'>수소 결합</span>을 끊어야 하기 때문"},
+  {t:"상태 변화와 열", l:"L4", f:"땀이 나면 시원해지는 이유는?", b:"물이 증발하며 <span class='k'>기화열을 흡수</span>해 피부의 열을 빼앗기 때문"},
+  {t:"상태 변화와 열", l:"L6", trap:true, f:"“얼음이 녹는 동안 계속 열을 가하면 온도가 올라간다.” — 옳은가?", b:"<span class='x'>아니다.</span> 다 녹을 때까지 <span class='k'>0℃로 일정</span>하다"},
+  {t:"결합 에너지", l:"L1", f:"결합 에너지란?", b:"기체 상태에서 <span class='k'>결합 1몰을 끊는 데 필요한 에너지</span>"},
+  {t:"결합 에너지", l:"L1", f:"결합을 끊는 것은 흡열인가 발열인가?", b:"<span class='k'>흡열</span>. 에너지를 넣어야 끊어진다"},
+  {t:"결합 에너지", l:"L1", f:"결합이 생기는 것은?", b:"<span class='k'>발열</span>. 에너지가 방출된다"},
+  {t:"결합 에너지", l:"L1", f:"결합 에너지로 ΔH를 구하는 식은?", b:"<span class='k'>Σ(끊어지는 결합) − Σ(생기는 결합)</span>"},
+  {t:"결합 에너지", l:"L1", f:"생성 엔탈피로 ΔH를 구하는 식은?", b:"<span class='k'>Σ(생성물) − Σ(반응물)</span>"},
+  {t:"결합 에너지", l:"L4", f:"결합 에너지 식과 생성 엔탈피 식의 방향이 반대인 이유는?", b:"결합 에너지는 <span class='k'>끊는 데 드는 값</span>이라 반응물 쪽이 흡열(+)로 들어가기 때문"},
+  {t:"결합 에너지", l:"L1", f:"결합 에너지가 클수록 결합은?", b:"<span class='k'>강하고 짧다</span>"},
+  {t:"결합 에너지", l:"L4", f:"결합 에너지가 크면 끓는점도 높은가?", b:"<span class='k'>아니다</span>. 끓는점은 분자 사이의 힘이 결정한다. 결합 에너지는 분자 내부의 값"},
+  {t:"결합 에너지", l:"L2", f:"결합 에너지 문제에서 첫 단계는?", b:"<span class='k'>끊는 것과 생기는 것을 나눠 적는다</span>. 방향을 헷갈리면 부호가 통째로 뒤집힌다"},
+  {t:"결합 에너지", l:"L6", trap:true, f:"“N2는 결합 에너지가 매우 크므로 끓는점도 매우 높다.” — 옳은가?", b:"<span class='x'>아니다.</span> N2의 끓는점은 −196℃다. <span class='k'>분자 내 결합과 분자 간 힘은 별개</span>"},
+  {t:"헤스 법칙", l:"L1", f:"헤스 법칙이란?", b:"반응 엔탈피는 <span class='k'>경로에 관계없이 처음과 나중 상태로만</span> 결정된다"},
+  {t:"헤스 법칙", l:"L1", f:"헤스 법칙이 성립하는 이유는?", b:"엔탈피가 <span class='k'>상태 함수</span>이기 때문"},
+  {t:"헤스 법칙", l:"L2", f:"헤스 법칙 문제의 첫 단계는?", b:"<span class='k'>목표 반응식을 먼저 쓰고</span> 각 물질이 좌변인지 우변인지 표시한다"},
+  {t:"헤스 법칙", l:"L2", f:"주어진 식을 어떻게 손질하나?", b:"<span class='k'>뒤집으면 ΔH 부호 반전, 배수하면 ΔH도 배수</span>"},
+  {t:"헤스 법칙", l:"L2", f:"식을 다 합친 뒤 확인할 것은?", b:"<span class='k'>소거되어야 할 물질이 좌우에 같은 상태·같은 계수</span>로 있는지"},
+  {t:"헤스 법칙", l:"L4", f:"상태가 다른 같은 물질은 소거되는가?", b:"<span class='k'>되지 않는다</span>. H2O(l)과 H2O(g)는 서로 다른 물질로 취급한다"},
+  {t:"헤스 법칙", l:"L1", f:"헤스 법칙으로 구할 수 있는 것은?", b:"<span class='k'>직접 측정하기 어려운 반응의 엔탈피</span>. 예: C + 1/2 O2 → CO"},
+  {t:"헤스 법칙", l:"L4", f:"헤스 법칙과 본-하버 사이클의 관계는?", b:"본-하버 사이클은 <span class='k'>이온 결정 생성에 헤스 법칙을 적용</span>한 것"},
+  {t:"헤스 법칙", l:"L2", f:"‘생성열이 주어졌다’면 어느 식을 쓰나?", b:"<span class='k'>Σ생성물 − Σ반응물</span>. 반응식 조합을 하지 않아도 된다"},
+  {t:"헤스 법칙", l:"L6", trap:true, f:"“헤스 법칙은 반응 경로가 같을 때만 성립한다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>경로와 무관</span>하게 성립하는 것이 헤스 법칙의 핵심"},
+  {t:"열량과 에너지 도표", l:"L1", f:"비열이란?", b:"물질 <span class='k'>1 g의 온도를 1℃ 올리는 데 필요한 열량</span>"},
+  {t:"열량과 에너지 도표", l:"L1", f:"열량을 구하는 식은?", b:"<span class='k'>Q = c · m · Δt</span> (비열 × 질량 × 온도 변화)"},
+  {t:"열량과 에너지 도표", l:"L1", f:"열용량이란?", b:"<span class='k'>비열 × 질량</span>. 그 물체 전체의 온도를 1℃ 올리는 데 필요한 열량"},
+  {t:"열량과 에너지 도표", l:"L4", f:"물의 비열이 큰 것이 뜻하는 바는?", b:"<span class='k'>온도가 잘 변하지 않는다</span>. 해안 지방의 일교차가 작은 이유"},
+  {t:"열량과 에너지 도표", l:"L1", f:"에너지 도표에서 활성화 에너지란?", b:"반응이 일어나기 위해 넘어야 하는 <span class='k'>에너지 언덕의 높이</span>"},
+  {t:"열량과 에너지 도표", l:"L1", src:"5-51", f:"촉매는 에너지 도표에서 무엇을 바꾸나?", b:"<span class='k'>활성화 에너지만</span> 낮춘다. 반응열(ΔH)은 바꾸지 못한다"},
+  {t:"열량과 에너지 도표", l:"L4", f:"정반응과 역반응의 활성화 에너지 차이는?", b:"<span class='k'>ΔH</span>와 같다"},
+  {t:"열량과 에너지 도표", l:"L2", f:"에너지 도표를 그리라고 하면?", b:"<span class='k'>반응물과 생성물의 높이를 먼저</span> 정하고(발열이면 생성물이 낮다) 그 사이에 언덕을 그린다"},
+  {t:"열량과 에너지 도표", l:"L6", trap:true, src:"5-51", f:"“촉매를 쓰면 반응열이 줄어든다.” — 옳은가?", b:"<span class='x'>아니다.</span> 촉매는 <span class='k'>반응열을 바꾸지 못한다</span>"},
+  {t:"계와 주위", l:"L4", f:"커피가 든 보온병은 어떤 계에 가까운가?", b:"<span class='k'>고립계</span>에 가깝다. 물질도 열도 거의 오가지 않는다"},
+  {t:"계와 주위", l:"L4", f:"끓는 물이 담긴 열린 냄비는?", b:"<span class='k'>열린계</span>. 수증기(물질)와 열이 모두 빠져나간다"},
+  {t:"계와 주위", l:"L2", f:"‘주위의 온도가 올라갔다’는 서술을 보면?", b:"<span class='k'>발열 반응</span>으로 즉시 확정한다"},
+  {t:"발열·흡열 반응", l:"L2", f:"반응이 발열인지 흡열인지 판단하는 세 경로는?", b:"<span class='k'>Q·ΔH의 부호</span> / <span class='k'>주위 온도 변화</span> / <span class='k'>반응물·생성물의 에너지 높이</span>"},
+  {t:"발열·흡열 반응", l:"L4", f:"냉찜질 팩과 손난로는 각각 어떤 반응인가?", b:"냉찜질 팩은 <span class='k'>흡열</span>(질산암모늄 용해), 손난로는 <span class='k'>발열</span>(철의 산화)"},
+  {t:"발열·흡열 반응", l:"L1", f:"결합이 형성될 때 에너지는?", b:"<span class='k'>방출</span>된다. 그래서 화학 결합의 형성은 발열"},
+  {t:"발열·흡열 반응", l:"L4", f:"안정하다는 것과 에너지의 관계는?", b:"<span class='k'>에너지가 낮을수록 안정</span>하다"},
+  {t:"발열·흡열 반응", l:"L6", trap:true, f:"“발열 반응은 반응물이 생성물보다 안정하다.” — 옳은가?", b:"<span class='x'>아니다.</span> 발열은 <span class='k'>생성물이 더 안정</span>하다. 에너지가 낮은 쪽이 안정"},
+  {t:"Q와 ΔH의 부호", l:"L2", f:"반응식에 에너지가 항으로 들어 있으면?", b:"<span class='k'>오른쪽에 있으면 발열</span>, 왼쪽에 있으면 흡열. 생성물처럼 열이 나온 것"},
+  {t:"Q와 ΔH의 부호", l:"L4", f:"‘반응열을 구하시오’라는 문제에서 주의할 점은?", b:"<span class='k'>Q를 묻는지 ΔH를 묻는지</span>. 보기의 부호를 보고 판단한다"},
+  {t:"Q와 ΔH의 부호", l:"L1", f:"ΔH의 단위는?", b:"<span class='k'>kJ/mol</span> 또는 kJ. 몰 기준인지 확인해야 한다"},
+  {t:"열화학 반응식", l:"L1", f:"aq 표시는 무엇을 뜻하나?", b:"<span class='k'>수용액 상태</span>. 물에 녹아 있는 상태"},
+  {t:"열화학 반응식", l:"L2", f:"열화학 반응식을 쓸 때 빠뜨리기 쉬운 것 둘은?", b:"<span class='k'>물질의 상태</span>와 <span class='k'>계수에 맞는 ΔH 크기</span>"},
+  {t:"열화학 반응식", l:"L4", f:"같은 반응인데 ΔH 값이 다르게 주어졌다면?", b:"<span class='k'>계수가 다르거나 물의 상태가 다르다</span>. 둘 중 하나를 의심한다"},
+  {t:"열화학 반응식", l:"L1", f:"1/2 계수를 쓰는 이유는?", b:"<span class='k'>생성물 1몰</span> 기준으로 맞추기 위해. 생성 엔탈피 정의가 1몰 기준"},
+  {t:"열화학 반응식", l:"L2", f:"분수 계수가 보이면?", b:"<span class='k'>어떤 물질 1몰 기준</span>인지 확인한다. 생성열·연소열 문제의 신호"},
+  {t:"반응 엔탈피의 종류", l:"L1", f:"분해 엔탈피와 생성 엔탈피의 관계는?", b:"<span class='k'>크기는 같고 부호가 반대</span>"},
+  {t:"반응 엔탈피의 종류", l:"L1", f:"승화 엔탈피는 무엇의 합인가?", b:"<span class='k'>융해 엔탈피 + 기화 엔탈피</span>"},
+  {t:"반응 엔탈피의 종류", l:"L4", f:"연소 엔탈피가 항상 음수인 이유는?", b:"연소는 <span class='k'>언제나 발열</span>이기 때문"},
+  {t:"반응 엔탈피의 종류", l:"L2", f:"‘생성열이 주어졌다’는 신호를 보면?", b:"<span class='k'>Σ생성물 − Σ반응물</span>을 쓴다. 반응식을 조합할 필요가 없다"},
+  {t:"반응 엔탈피의 종류", l:"L4", f:"용해 엔탈피가 양수인 물질의 예는?", b:"<span class='k'>질산암모늄</span>. 녹으면서 주위가 차가워진다"},
+  {t:"반응 엔탈피의 종류", l:"L6", trap:true, f:"“중화 엔탈피는 산과 염기의 종류에 관계없이 항상 일정하다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>강산·강염기일 때만</span> 일정하다. 약산은 이온화에 에너지가 쓰여 작아진다"},
+  {t:"상태 변화와 열", l:"L2", f:"가열 곡선 문제에서 확인할 것은?", b:"<span class='k'>수평 구간의 개수와 위치</span>. 융해점과 끓는점을 알려준다"},
+  {t:"상태 변화와 열", l:"L4", f:"드라이아이스가 승화하며 주위를 차게 하는 이유는?", b:"<span class='k'>승화열을 흡수</span>하기 때문"},
+  {t:"상태 변화와 열", l:"L1", f:"냉매가 하는 일은?", b:"<span class='k'>기화하며 열을 흡수</span>하고 응축하며 열을 방출한다"},
+  {t:"상태 변화와 열", l:"L6", trap:true, f:"“기화열과 응축열은 부호까지 같다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>크기만 같고 부호가 반대</span>다"},
+  {t:"결합 에너지", l:"L1", f:"결합 에너지 값은 어떤 상태에서 정의되나?", b:"<span class='k'>기체 상태</span>"},
+  {t:"결합 에너지", l:"L4", f:"결합 에너지로 구한 ΔH가 실제와 조금 다른 이유는?", b:"결합 에너지가 <span class='k'>평균값</span>이기 때문"},
+  {t:"결합 에너지", l:"L2", f:"결합 에너지 문제에서 부호를 확인하는 방법은?", b:"<span class='k'>끊는 것은 흡열(+)</span>이라는 원리로 되짚는다. 식을 외우지 못해도 복원된다"},
+  {t:"결합 에너지", l:"L6", trap:true, f:"“결합 에너지가 큰 물질일수록 반응이 잘 일어난다.” — 옳은가?", b:"<span class='x'>아니다.</span> 결합이 강하면 오히려 <span class='k'>끊기 어려워</span> 반응성이 낮다"},
+  {t:"헤스 법칙", l:"L1", f:"헤스 법칙의 다른 이름은?", b:"<span class='k'>총열량 불변의 법칙</span>"},
+  {t:"헤스 법칙", l:"L2", f:"여러 식을 조합할 때 확인 순서는?", b:"<span class='k'>목표 좌우 배치 → 뒤집기·배수 → 소거 확인 → ΔH 합산</span>"},
+  {t:"헤스 법칙", l:"L4", f:"목표에 없는 물질이 남았다면?", b:"<span class='k'>조작이 틀렸다</span>. 소거되어야 할 물질이 짝을 못 찾은 것"},
+  {t:"헤스 법칙", l:"L2", f:"생성열·결합 에너지·반응식 조합 중 무엇을 쓸지 정하려면?", b:"<span class='k'>문제가 무엇을 주었는지</span>를 본다. 주어진 데이터가 방법을 결정한다"},
+  {t:"헤스 법칙", l:"L6", trap:true, f:"“여러 단계를 거치면 반응열이 커진다.” — 옳은가?", b:"<span class='x'>아니다.</span> 경로와 무관하게 <span class='k'>총 반응열은 같다</span>"},
+  {t:"열량과 에너지 도표", l:"L2", f:"열량계 문제에서 계산 순서는?", b:"<span class='k'>Q = cmΔt로 흡수·방출 열량 → 몰수로 나눠 몰당 값</span>"},
+  {t:"열량과 에너지 도표", l:"L4", f:"용액의 온도가 올라갔다면 반응은?", b:"<span class='k'>발열</span>. 용액이 주위 역할을 한다"},
+  {t:"열량과 에너지 도표", l:"L1", f:"활성화 에너지가 클수록 반응 속도는?", b:"<span class='k'>느리다</span>. 넘어야 할 언덕이 높다"},
+  {t:"열량과 에너지 도표", l:"L4", f:"활성화 에너지와 반응열은 관계가 있는가?", b:"<span class='k'>없다</span>. 활성화 에너지는 속도, 반응열은 자발성·열출입과 관련"},
+  {t:"열량과 에너지 도표", l:"L6", trap:true, f:"“활성화 에너지가 작을수록 발열량이 크다.” — 옳은가?", b:"<span class='x'>아니다.</span> 둘은 <span class='k'>무관</span>하다. 언덕의 높이와 양쪽 높이 차이는 별개"},
+];
+
+DECK.forEach((c,i)=>c.id="c"+i);
+
+/* ===================== 저장 (localStorage + in-memory 폴백) ===================== */
+const KEY="chem_u10_thermochem_v1", DAY=86400000, INTERVALS=[0,1*DAY,3*DAY,7*DAY,30*DAY];
+const mem={};
+function save(o){ const j=JSON.stringify(o); try{localStorage.setItem(KEY,j);}catch(e){} mem[KEY]=j; }
+function load(){ try{const j=localStorage.getItem(KEY); if(j)return JSON.parse(j);}catch(e){}
+  try{if(mem[KEY])return JSON.parse(mem[KEY]);}catch(e){} return {}; }
+let ST=load();                              // { id:{box,due,seen} }
+function cs(id){ return ST[id]||{box:0,due:0,seen:false}; }
+function schedule(id,grade,guessed){
+  let s=Object.assign({box:0,due:0,seen:false},ST[id]||{}); s.seen=true;
+  if(guessed || grade<=2) s.box=0;                    // 1·2 실패 / 찍음 → 리셋(즉시 재출제)
+  else if(grade===3) s.box=Math.max(1,s.box);         // 겨우 성공 → 유지·최소 1일
+  else if(grade===4) s.box=Math.min(4,s.box+1);       // 앎 → 한 단계 승급
+  else if(grade===5) s.box=Math.min(4,s.box+2);       // 완벽 → 두 단계 승급
+  s.due=Date.now()+INTERVALS[s.box]; ST[id]=s; save(ST); return s;
+}
+
+/* ===================== 상태 & 필터 ===================== */
+const UI={mode:"study", topic:"전체", layers:new Set(["L1","L2","L4","L6"])};
+const TOPICS=[...new Set(DECK.map(c=>c.t))];
+function passFilter(c){
+  if(!UI.layers.has(c.l)) return false;
+  if(UI.topic!=="전체" && c.t!==UI.topic) return false;
+  const s=cs(c.id), due=(!s.seen)||(s.due<=Date.now());
+  if(UI.mode==="study") return due;
+  if(UI.mode==="wrong") return s.seen && s.box===0;
+  return true;                               // all
+}
+let queue=[], qi=0, revealed=false, guessed=false;
+function buildQueue(){ queue=DECK.filter(passFilter).map(c=>c.id); qi=0; revealed=false; guessed=false; }
+
+/* ===================== 렌더 ===================== */
+const stage=document.getElementById("stage"), statsEl=document.getElementById("stats");
+function renderStats(){
+  const total=DECK.length;
+  const seen=DECK.filter(c=>cs(c.id).seen).length;
+  const mastered=DECK.filter(c=>cs(c.id).box>=3).length;
+  const due=DECK.filter(c=>{const s=cs(c.id);return (!s.seen)||(s.due<=Date.now());}).length;
+  statsEl.innerHTML=
+    `<span class="chip">오늘 학습 <b>${due}</b></span>`+
+    `<span class="chip">익힘 <b>${mastered}</b>/<b>${total}</b></span>`+
+    `<span class="chip">본 카드 <b>${seen}</b></span>`;
+}
+function renderCard(){
+  renderStats();
+  if(qi>=queue.length){
+    const label=UI.mode==="wrong"?"틀린 카드가 없어요":"이 범위 학습 완료";
+    stage.innerHTML=`<div class="done"><h2>✓ ${label}</h2>
+      <p>4·5로 넘긴 카드는 1·3·7·30일 간격으로 다시 나옵니다.</p>
+      <button id="again">처음부터 다시 돌기</button></div>`;
+    document.getElementById("again").onclick=()=>{buildQueue();renderCard();};
+    return;
+  }
+  const c=DECK.find(x=>x.id===queue[qi]);
+  const srcHtml=c.src?`<span class="src">모의 ${c.src}</span>`:`<span class="src"></span>`;
+  const trapHtml=(revealed&&c.trap)?`<div class="trapribbon">⚠ 함정 · 부정형("옳지 않은 것") 대비</div>`:"";
+  stage.innerHTML=`
+   <div class="card l-${c.l}">
+     <div class="cmeta">
+       <span class="badge l-${c.l}">${c.l}</span>
+       <span class="topic">${c.t}</span>${srcHtml}
+     </div>
+     <div class="front">${c.f}</div>
+     <div id="backwrap" style="display:${revealed?'block':'none'}">
+       <div class="divider"></div>${trapHtml}
+       <div class="back">${c.b}</div>
+     </div>
+     <div class="spacer"></div>
+     ${revealed?rateHtml():`<button class="reveal" id="reveal">정답 보기 · Space</button>`}
+     <div class="nav">
+       <button id="prev">‹</button>
+       <span class="pos">${qi+1} / ${queue.length}</span>
+       <button id="next">›</button>
+     </div>
+   </div>`;
+  wire(c);
+}
+function rateHtml(){
+  const L=[
+    {g:1,lab:"전혀",sub:"기억 안 남"},
+    {g:2,lab:"답보고",sub:"틀림·재인"},
+    {g:3,lab:"겨우",sub:"맞음·힘겹게"},
+    {g:4,lab:"앎",sub:"약간 주저"},
+    {g:5,lab:"완벽",sub:"즉시·확실"}
+  ];
+  const btns=L.map(x=>`<button class="lk${x.g}" data-g="${x.g}"><b>${x.g}</b><span class="lab">${x.lab}</span><span class="sub">${x.sub}</span></button>`).join("");
+  return `<div class="guess ${guessed?'on':''}" id="guess"><span class="box">${guessed?'✓':''}</span>찍음(운으로 맞음)</div>
+    <div class="lkaxis"><span>전혀 모름</span><span>얼마나 인출됐나?</span><span>완벽</span></div>
+    <div class="rate5">${btns}</div>`;
+}
+function wire(c){
+  const rev=document.getElementById("reveal");
+  if(rev) rev.onclick=doReveal;
+  const g=document.getElementById("guess");
+  if(g) g.onclick=()=>{guessed=!guessed; renderCard();};
+  stage.querySelectorAll(".rate5 button").forEach(b=>b.onclick=()=>rate(parseInt(b.dataset.g,10)));
+  document.getElementById("prev").onclick=()=>{ if(qi>0){qi--;revealed=false;guessed=false;renderCard();} };
+  document.getElementById("next").onclick=()=>{ if(qi<queue.length){qi++;revealed=false;guessed=false;renderCard();} };
+}
+function doReveal(){ revealed=true; renderCard(); }
+function rate(r){
+  const id=queue[qi];
+  const s=schedule(id,r,guessed);
+  const stillDue=(s.due<=Date.now());        // box0 → 이번 세션 재출제
+  revealed=false; guessed=false;
+  if(stillDue){ queue.push(id); }            // 뒤로 보내 다시 만나게
+  queue.splice(qi,1);                         // 현재 위치에서 제거
+  renderCard();
+}
+
+/* ===================== 컨트롤 배선 ===================== */
+const topicSel=document.getElementById("topic");
+topicSel.innerHTML=`<option>전체</option>`+TOPICS.map(t=>`<option>${t}</option>`).join("");
+topicSel.onchange=()=>{UI.topic=topicSel.value; buildQueue(); renderCard();};
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); UI.mode=b.dataset.mode; buildQueue(); renderCard();
+});
+document.querySelectorAll('#layers .lchip').forEach(ch=>ch.onclick=()=>{
+  const L=ch.dataset.l;
+  if(UI.layers.has(L)&&UI.layers.size>1){UI.layers.delete(L);ch.classList.remove('on');}
+  else{UI.layers.add(L);ch.classList.add('on');}
+  buildQueue(); renderCard();
+});
+document.getElementById("reset").onclick=()=>{
+  if(confirm("이 브라우저의 10단원 진도를 모두 초기화할까요?")){ ST={}; save(ST); buildQueue(); renderCard(); }
+};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){ e.preventDefault(); if(!revealed) doReveal(); }
+  else if(revealed && ["1","2","3","4","5"].includes(e.key)){ rate(parseInt(e.key,10)); }
+});
+
+/* ===================== 시작 ===================== */
+buildQueue(); renderCard();
+</script>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4efe4">
+<title>화학 16단원 · 환경화학 — 카드덱</title>
+<!--
+  화학 학습 허브 파일럿 (→ baeggman/hwahak 편입 대상)
+  · 단일 index.html · 외부 의존성 0 (완전 오프라인, GitHub Pages 배포용)
+  · 저장 키 격리: chem_u16_environment_v1  (localStorage; 차단 시 in-memory 폴백 — 절대 크래시 안 함)
+  · SRS-lite: 경락 허브의 3·7·30일 간격반복 계승 + "찍음(운으로 맞음)" 플래그
+  · §5.4 준수: 이 덱은 재인·인출(사실·관계·변별·함정)만. 다단계 계산은 의도적 제외.
+  · 색/변수는 --hh-* 이름으로 정의 → HubHome 편입 시 값만 오버라이드하면 됨.
+-->
+<style>
+:root{
+  --hh-bg:#f3eee2; --hh-card:#fbf8f0; --hh-pan:#f0e8d8; --hh-pan2:#efe6d3;
+  --hh-ink:#2c261e; --hh-dim:#6c6252; --hh-mut:#877c69; --hh-faint:#a89c86;
+  --hh-line:#ddd2be; --hh-line2:#eae2d3;
+  --hh-gold:#a9791f; --hh-gold-s:#f3e6c6;
+  --hh-jade:#3c7568; --hh-jade-s:#dcece7;
+  --hh-azure:#356388; --hh-azure-s:#dbe6ef;
+  --hh-cinnabar:#a83a2c; --hh-cinnabar-s:#f4dcd6;
+  --hh-ok:#3c7568; --hh-no:#a83a2c;
+  --hh-shadow:0 6px 22px rgba(44,38,30,.10), 0 1px 3px rgba(44,38,30,.08);
+  --hh-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
+  --hh-mono:ui-monospace,'SF Mono','Menlo','Consolas',monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--hh-bg);color:var(--hh-ink);font-family:var(--hh-sans);
+  line-height:1.6;font-size:16px;touch-action:manipulation}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+header{margin:2px 0 12px}
+h1{font-size:19px;letter-spacing:-.02em;margin:0}
+h1 .u{font-family:var(--hh-mono);color:var(--hh-gold);font-weight:800;margin-right:6px}
+.tagline{color:var(--hh-mut);font-size:12.5px;margin:3px 0 0}
+
+/* stat chips */
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 10px}
+.chip{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:999px;
+  padding:5px 11px;font-size:12px;color:var(--hh-dim);box-shadow:var(--hh-shadow)}
+.chip b{color:var(--hh-ink);font-family:var(--hh-mono)}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--hh-pan);border:1px solid var(--hh-line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--hh-dim);font:inherit;font-size:12.5px;
+  padding:6px 11px;cursor:pointer}
+.seg button.on{background:var(--hh-card);color:var(--hh-ink);font-weight:700;box-shadow:inset 0 0 0 1px var(--hh-line)}
+select{font:inherit;font-size:13px;color:var(--hh-ink);background:var(--hh-card);
+  border:1px solid var(--hh-line);border-radius:9px;padding:6px 9px}
+.lchip{font-family:var(--hh-mono);font-size:11px;font-weight:700;border:1px solid;border-radius:999px;
+  padding:3px 9px;cursor:pointer;background:var(--hh-card);opacity:.5}
+.lchip.on{opacity:1}
+.l-L1{color:var(--hh-jade);border-color:var(--hh-jade)}
+.l-L2{color:var(--hh-azure);border-color:var(--hh-azure)}
+.l-L4{color:var(--hh-gold);border-color:var(--hh-gold)}
+.l-L6{color:var(--hh-cinnabar);border-color:var(--hh-cinnabar)}
+
+/* card */
+.card{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:18px;
+  box-shadow:var(--hh-shadow);padding:20px 20px 18px;min-height:340px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hh-line)}
+.card.l-L1::before{background:var(--hh-jade)} .card.l-L2::before{background:var(--hh-azure)}
+.card.l-L4::before{background:var(--hh-gold)} .card.l-L6::before{background:var(--hh-cinnabar)}
+.cmeta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--hh-mono);font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;color:#fff}
+.badge.l-L1{background:var(--hh-jade)} .badge.l-L2{background:var(--hh-azure)}
+.badge.l-L4{background:var(--hh-gold)} .badge.l-L6{background:var(--hh-cinnabar)}
+.topic{font-size:12px;color:var(--hh-mut);font-weight:600}
+.src{font-family:var(--hh-mono);font-size:10.5px;color:var(--hh-faint);margin-left:auto}
+.front{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.5;color:var(--hh-ink)}
+.front .em{color:var(--hh-cinnabar)}
+.divider{height:1px;background:var(--hh-line2);margin:16px 0}
+.back{font-size:16.5px;line-height:1.62;color:var(--hh-ink);white-space:pre-wrap}
+.back .k{color:var(--hh-jade);font-weight:700}
+.back .x{color:var(--hh-cinnabar);font-weight:700}
+.trapribbon{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;
+  color:var(--hh-cinnabar);background:var(--hh-cinnabar-s);border:1px solid #e6bfb6;
+  border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.spacer{flex:1}
+
+/* reveal / rate */
+.reveal{margin-top:16px;width:100%;border:0;border-radius:12px;padding:13px;
+  background:var(--hh-ink);color:var(--hh-card);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.lkaxis{display:flex;justify-content:space-between;margin-top:16px;margin-bottom:6px;
+  font-size:10.5px;color:var(--hh-faint)}
+.lkaxis span:nth-child(2){color:var(--hh-mut);font-weight:600}
+.rate5{display:flex;gap:6px}
+.rate5 button{flex:1;border:1px solid var(--hh-line);border-radius:12px;padding:9px 3px 8px;
+  background:var(--hh-card);font:inherit;cursor:pointer;color:var(--hh-dim);
+  display:flex;flex-direction:column;align-items:center;gap:1px}
+.rate5 button b{font-family:var(--hh-mono);font-size:18px;line-height:1.05}
+.rate5 button .lab{font-size:12px;font-weight:700;margin-top:2px}
+.rate5 button .sub{font-size:9.5px;font-weight:600;color:var(--hh-faint);text-align:center}
+.rate5 button:active{transform:translateY(1px)}
+.lk1,.lk1 b{color:var(--hh-cinnabar)}
+.lk2,.lk2 b{color:#b0602a}
+.lk3,.lk3 b{color:var(--hh-mut)}
+.lk4,.lk4 b{color:#4d7f52}
+.lk5,.lk5 b{color:var(--hh-jade)}
+@media(hover:hover){
+  .lk1:hover{background:var(--hh-cinnabar-s);border-color:var(--hh-cinnabar)}
+  .lk2:hover{background:#f4e4d6;border-color:#b0602a}
+  .lk3:hover{background:var(--hh-pan)}
+  .lk4:hover{background:#e4efe1;border-color:#4d7f52}
+  .lk5:hover{background:var(--hh-jade-s);border-color:var(--hh-jade)}
+}
+@media(max-width:430px){ .rate5 button .sub{display:none} .rate5{gap:4px} }
+.guess{margin-top:11px;display:flex;align-items:center;gap:8px;justify-content:center;
+  font-size:12.5px;color:var(--hh-mut);cursor:pointer;user-select:none}
+.guess .box{width:17px;height:17px;border:1.5px solid var(--hh-faint);border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:12px;color:#fff}
+.guess.on .box{background:var(--hh-gold);border-color:var(--hh-gold)}
+.guess.on{color:var(--hh-gold);font-weight:700}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:var(--hh-mut);font-size:13px}
+.nav button{border:1px solid var(--hh-line);background:var(--hh-card);border-radius:9px;
+  width:36px;height:32px;font-size:15px;color:var(--hh-dim);cursor:pointer}
+.nav .pos{font-family:var(--hh-mono);font-size:12px}
+
+.done{text-align:center;padding:48px 16px}
+.done h2{color:var(--hh-jade);margin:0 0 6px}
+.done p{color:var(--hh-mut);font-size:14px;margin:4px 0}
+.done button{margin-top:16px;border:1px solid var(--hh-line);background:var(--hh-card);border-radius:10px;
+  padding:9px 16px;font:inherit;font-weight:700;color:var(--hh-ink);cursor:pointer}
+
+footer{margin-top:20px;color:var(--hh-faint);font-size:11.5px;line-height:1.6}
+footer .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+footer .legend span{font-family:var(--hh-mono);font-weight:700}
+footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:underline;
+  font:inherit;font-size:11.5px;cursor:pointer;padding:0;margin-top:6px}
+@media (hover:hover){
+  .reveal:hover{opacity:.92} .nav button:hover{border-color:var(--hh-faint)}
+  .seg button:hover{color:var(--hh-ink)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="u">16단원</span>환경화학 · 카드덱</h1>
+    <p class="tagline">능동 인출 → 자가 채점 → 3·7·30일 간격반복 · 기본서·기출 그라운딩</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="row">
+      <div class="seg" id="mode">
+        <button data-mode="study" class="on">오늘 학습</button>
+        <button data-mode="all">전체</button>
+        <button data-mode="wrong">틀린 것만</button>
+      </div>
+      <select id="topic"></select>
+    </div>
+    <div class="row" id="layers">
+      <span class="lchip l-L1 on" data-l="L1">L1 사실</span>
+      <span class="lchip l-L2 on" data-l="L2">L2 방법</span>
+      <span class="lchip l-L4 on" data-l="L4">L4 변별</span>
+      <span class="lchip l-L6 on" data-l="L6">L6 함정</span>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+
+  <footer>
+    <div class="legend">
+      <span class="l-L1" style="color:var(--hh-jade)">L1 사실</span>
+      <span class="l-L2" style="color:var(--hh-azure)">L2 트리거→방법</span>
+      <span class="l-L4" style="color:var(--hh-gold)">L4 변별</span>
+      <span class="l-L6" style="color:var(--hh-cinnabar)">L6 함정</span>
+    </div>
+    이 덱은 <b>재인·인출</b>(사실·관계·변별·함정)만 다룹니다. 농도·배출량의 다단계 수치 계산은 의도적으로 제외 — 별도 문제풀이 트랙 권장(§5.4).
+    <br>진도는 이 브라우저에 저장됩니다(<code>chem_u16_environment_v1</code>). 5점 자가평가로 간격을 조절 — 1·2=리셋(즉시 다시), 3=유지, 4=한 단계↑, 5=두 단계↑. ‘찍음’ 표시 시 승급하지 않습니다.
+    <br><button class="reset" id="reset">↺ 진도 초기화</button>
+  </footer>
+</div>
+
+<script>
+/* ===================== 16단원 카드 데이터 (교재·기출 그라운딩) =====================
+   layer: L1 사실 / L2 트리거→방법 / L4 변별 / L6 함정
+   trap:true → 함정 카드(틀린 진술 적발). src: 모의고사 회-번 (있을 때) */
+const DECK = [
+  {t:"대기의 조성과 구조", l:"L1", f:"공기의 3대 주성분은?", b:"<span class='k'>질소 78% · 산소 21% · 아르곤 0.9%</span>"},
+  {t:"대기의 조성과 구조", l:"L1", f:"대기 중 이산화탄소의 비율은?", b:"약 <span class='k'>0.04%</span>. 양은 적지만 온실 효과의 주범"},
+  {t:"대기의 조성과 구조", l:"L1", f:"대기권을 아래에서부터 나열하면?", b:"<span class='k'>대류권 → 성층권 → 중간권 → 열권</span>"},
+  {t:"대기의 조성과 구조", l:"L1", f:"높이 올라갈수록 온도가 올라가는 층은?", b:"<span class='k'>성층권과 열권</span>. 대류권과 중간권은 내려간다"},
+  {t:"대기의 조성과 구조", l:"L1", f:"오존층은 어느 층에 있는가?", b:"<span class='k'>성층권</span>"},
+  {t:"대기의 조성과 구조", l:"L1", f:"기상 현상이 일어나는 층은?", b:"<span class='k'>대류권</span>. 대류가 활발하고 수증기가 있다"},
+  {t:"대기의 조성과 구조", l:"L4", f:"N2와 O2가 물에 거의 녹지 않는 이유는?", b:"<span class='k'>무극성</span> 분자이기 때문"},
+  {t:"대기의 조성과 구조", l:"L4", f:"CO2가 N2·O2보다 물에 잘 녹는 이유는?", b:"무극성이지만 <span class='k'>극성을 띠는 결합 부분</span>이 있어 상대적으로 더 잘 녹는다"},
+  {t:"대기의 조성과 구조", l:"L2", f:"비가 내려도 대기 성분이 크게 변하지 않는 이유는?", b:"주성분인 <span class='k'>N2와 O2가 물에 거의 녹지 않기</span> 때문"},
+  {t:"대기의 조성과 구조", l:"L6", trap:true, f:"“오존층은 대류권에 있다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>성층권</span>에 있다. 두께도 매우 얇다"},
+  {t:"산성비", l:"L1", f:"산성비의 정의는?", b:"<span class='k'>pH 5.6 이하</span>의 비"},
+  {t:"산성비", l:"L1", f:"깨끗한 지역의 빗물 pH는?", b:"약 <span class='k'>5.6~5.8</span>. 이미 약한 산성이다"},
+  {t:"산성비", l:"L1", f:"오염되지 않은 빗물도 산성인 이유는?", b:"대기 중 <span class='k'>CO2가 녹아 탄산(H2CO3)</span>을 만들기 때문"},
+  {t:"산성비", l:"L4", src:"2-52", f:"pH 6인 빗물은 산성비인가?", b:"<span class='k'>아니다</span>. 기준은 5.6이며 그보다 낮아야 산성비"},
+  {t:"산성비", l:"L1", f:"산성비의 두 원인 물질은?", b:"<span class='k'>황산화물(SOx)</span>과 <span class='k'>질소산화물(NOx)</span>"},
+  {t:"산성비", l:"L1", f:"SO2가 대기 중에서 변하는 산은?", b:"<span class='k'>황산(H2SO4)</span>"},
+  {t:"산성비", l:"L1", f:"NO2가 대기 중에서 변하는 산은?", b:"<span class='k'>질산(HNO3)</span>"},
+  {t:"산성비", l:"L1", f:"황산화물의 주된 배출원은?", b:"<span class='k'>공장·화력 발전</span>. 황 함량이 높은 저급 연료를 쓰기 때문"},
+  {t:"산성비", l:"L1", f:"질소산화물의 주된 배출원은?", b:"<span class='k'>자동차 배기가스</span>"},
+  {t:"산성비", l:"L1", f:"산성비의 피해 셋은?", b:"<span class='k'>토양·호수 산성화</span> · <span class='k'>삼림 파괴</span> · <span class='k'>대리석·금속 구조물 부식</span>"},
+  {t:"산성비", l:"L1", f:"산성비 대책은?", b:"<span class='k'>탈황 장치</span> 설치, <span class='k'>저유황 연료</span> 사용, 자동차 <span class='k'>삼원 촉매 변환기</span>"},
+  {t:"산성비", l:"L2", f:"산성비 문제가 나오면 확인할 두 가지는?", b:"<span class='k'>pH 5.6 기준</span>과 <span class='k'>원인 물질이 SOx·NOx인지</span>"},
+  {t:"산성비", l:"L4", src:"2-59", f:"산성비 원인으로 Cl2를 든 보기는?", b:"<span class='k'>틀렸다</span>. 산성비는 황산화물·질소산화물이 원인"},
+  {t:"산성비", l:"L6", trap:true, f:"“빗물이 산성이면 모두 산성비다.” — 옳은가?", b:"<span class='x'>아니다.</span> 정상 빗물도 <span class='k'>CO2 때문에 약산성</span>이다. 기준은 pH 5.6"},
+  {t:"오존층과 오존", l:"L1", f:"오존의 분자식은?", b:"<span class='k'>O3</span> — 산소 원자 3개"},
+  {t:"오존층과 오존", l:"L1", f:"오존과 산소의 관계는?", b:"<span class='k'>동소체</span>"},
+  {t:"오존층과 오존", l:"L4", f:"산소와 오존이 동소체임을 확인하는 방법은?", b:"<span class='k'>분해</span>시켜 본다. 산소는 조연성 기체라 연소 생성물로는 확인할 수 없다"},
+  {t:"오존층과 오존", l:"L1", f:"오존층의 역할은?", b:"태양의 <span class='k'>강한 자외선(UV)</span>을 흡수해 지표 생명체를 보호한다"},
+  {t:"오존층과 오존", l:"L1", src:"2-59", f:"오존층을 파괴하는 물질은?", b:"<span class='k'>프레온 가스(CFC)</span>"},
+  {t:"오존층과 오존", l:"L1", f:"CFC는 어디에 쓰였는가?", b:"<span class='k'>냉매 · 헤어스프레이 분사제 · 발포제</span>"},
+  {t:"오존층과 오존", l:"L4", f:"CFC가 성층권까지 올라갈 수 있는 이유는?", b:"<span class='k'>매우 안정</span>해서 대류권에서 분해되지 않기 때문"},
+  {t:"오존층과 오존", l:"L1", f:"성층권에서 CFC가 분해되면 무엇이 나오는가?", b:"<span class='k'>염소 원자(Cl)</span>. 이것이 오존을 연쇄적으로 분해한다"},
+  {t:"오존층과 오존", l:"L4", f:"CFC가 인체에 직접 유해한가?", b:"<span class='k'>아니다</span>. 무독·무자극이라 널리 쓰였고, 문제는 성층권에서 드러났다"},
+  {t:"오존층과 오존", l:"L1", f:"오존층 파괴가 심한 지역은?", b:"<span class='k'>남극</span> 상공 — 오존 구멍"},
+  {t:"오존층과 오존", l:"L1", f:"오존층 보호를 위한 국제 협약은?", b:"<span class='k'>몬트리올 의정서</span>"},
+  {t:"오존층과 오존", l:"L1", f:"오존의 성질 셋은?", b:"<span class='k'>자극성 냄새</span> · <span class='k'>강한 산화력</span> · <span class='k'>살균 작용</span>"},
+  {t:"오존층과 오존", l:"L1", f:"오존은 어디서 발생하는가?", b:"<span class='k'>전기 스파크 · 복사기 · 번개 · 자외선 살균기</span>"},
+  {t:"오존층과 오존", l:"L4", f:"오존이 강한 산화제인 이유를 관상으로 판단하면?", b:"<span class='k'>산소가 많으면 산화제</span>. O3는 산소 3개라 산화력이 강하다"},
+  {t:"오존층과 오존", l:"L4", f:"성층권의 오존과 지표면의 오존은 같은가?", b:"물질은 같지만 역할이 정반대다. 성층권은 <span class='k'>보호막</span>, 지표면은 <span class='k'>오염 물질</span>"},
+  {t:"오존층과 오존", l:"L6", trap:true, f:"“오존은 인체에 무해하다.” — 옳은가?", b:"<span class='x'>아니다.</span> 살균력이 있다는 것은 <span class='k'>세포에 해롭다</span>는 뜻이다"},
+  {t:"온실 효과", l:"L1", f:"온실 효과란?", b:"대기가 지표에서 방출된 <span class='k'>적외선을 흡수해 열을 가두는</span> 현상"},
+  {t:"온실 효과", l:"L1", f:"대표적인 온실 기체는?", b:"<span class='k'>CO2 · CH4 · N2O · CFC · 수증기</span>"},
+  {t:"온실 효과", l:"L1", src:"2-59", f:"온실 효과 기여도가 가장 큰 배출 기체는?", b:"<span class='k'>이산화탄소</span>. 배출량이 압도적으로 많다"},
+  {t:"온실 효과", l:"L1", f:"CO2 농도가 증가하는 주된 원인은?", b:"<span class='k'>화석 연료 연소</span>와 <span class='k'>삼림 파괴</span>"},
+  {t:"온실 효과", l:"L4", f:"온실 효과 자체는 나쁜 것인가?", b:"<span class='k'>아니다</span>. 온실 효과가 없으면 지구 평균 기온이 −18℃ 정도로 떨어진다"},
+  {t:"온실 효과", l:"L1", f:"지구 온난화의 결과는?", b:"<span class='k'>해수면 상승</span> · <span class='k'>기상 이변</span> · <span class='k'>생태계 변화</span> · 사막화"},
+  {t:"온실 효과", l:"L1", f:"온실 기체 감축을 위한 국제 협약은?", b:"<span class='k'>교토 의정서</span>와 <span class='k'>파리 협정</span>"},
+  {t:"온실 효과", l:"L4", f:"메테인이 CO2보다 온실 효과가 강한데도 주범이 아닌 이유는?", b:"<span class='k'>대기 중 농도가 훨씬 낮기</span> 때문"},
+  {t:"온실 효과", l:"L2", src:"2-59", f:"환경 문제와 원인 물질을 짝짓는 문제는?", b:"<span class='k'>온실효과–CO2 / 산성비–SOx·NOx / 스모그–NOx / 오존층–CFC</span> 네 쌍을 고정해둔다"},
+  {t:"온실 효과", l:"L6", trap:true, f:"“온실 효과는 인간이 만들어낸 현상이다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>자연적인 현상</span>이며 지나치게 강해진 것이 문제다"},
+  {t:"스모그", l:"L1", f:"스모그란?", b:"<span class='k'>연기(smoke)와 안개(fog)</span>가 합쳐진 대기 오염 현상"},
+  {t:"스모그", l:"L1", f:"런던형 스모그의 원인 물질은?", b:"<span class='k'>황산화물(SO2)</span> — 석탄 연소"},
+  {t:"스모그", l:"L1", f:"런던형 스모그가 잘 생기는 조건은?", b:"<span class='k'>겨울 · 이른 아침 · 습하고 안개 낀 날</span>"},
+  {t:"스모그", l:"L1", src:"2-59", f:"LA형 스모그의 원인 물질은?", b:"<span class='k'>질소산화물과 탄화수소</span> — 자동차 배기가스"},
+  {t:"스모그", l:"L1", f:"LA형 스모그가 잘 생기는 조건은?", b:"<span class='k'>여름 · 한낮 · 자외선이 강한 맑은 날</span>"},
+  {t:"스모그", l:"L1", f:"LA형 스모그의 다른 이름은?", b:"<span class='k'>광화학 스모그</span>"},
+  {t:"스모그", l:"L1", f:"광화학 스모그로 생성되는 2차 오염 물질은?", b:"<span class='k'>오존(O3)</span>과 <span class='k'>PAN</span>"},
+  {t:"스모그", l:"L1", src:"3-58", f:"광화학 반응의 첫 단계는?", b:"<span class='k'>NO2가 자외선을 받아 NO와 산소 원자로 분해</span>된다"},
+  {t:"스모그", l:"L4", f:"런던형과 LA형은 화학적으로 어떻게 다른가?", b:"런던형은 <span class='k'>환원형</span>, LA형은 <span class='k'>산화형</span>"},
+  {t:"스모그", l:"L2", f:"스모그 종류를 판정하려면?", b:"<span class='k'>계절·시간·원인 물질</span> 세 가지를 본다. 겨울·석탄이면 런던형, 여름·자동차면 LA형"},
+  {t:"스모그", l:"L4", f:"광화학 스모그에서 오존이 ‘오염 물질’인 이유는?", b:"<span class='k'>지표면</span>에서 생성되어 호흡기와 식물에 직접 해를 주기 때문"},
+  {t:"스모그", l:"L6", trap:true, f:"“광화학 스모그는 겨울철 석탄 연소로 생긴다.” — 옳은가?", b:"<span class='x'>아니다.</span> 그것은 <span class='k'>런던형</span>이다. 광화학 스모그는 여름철 자동차 배기가스가 원인"},
+  {t:"주요 대기 오염 기체", l:"L1", f:"일산화탄소의 발생 원인은?", b:"<span class='k'>불완전 연소</span>"},
+  {t:"주요 대기 오염 기체", l:"L1", f:"일산화탄소가 위험한 이유는?", b:"헤모글로빈과의 결합력이 <span class='k'>산소보다 200배 이상</span> 커서 산소 운반을 막는다"},
+  {t:"주요 대기 오염 기체", l:"L1", f:"일산화탄소의 감각적 특징은?", b:"<span class='k'>무색·무취</span>. 그래서 알아채기 어렵다"},
+  {t:"주요 대기 오염 기체", l:"L1", f:"이산화황의 특징은?", b:"<span class='k'>자극성 냄새의 유독 기체</span>. 물에 녹아 아황산이 된다"},
+  {t:"주요 대기 오염 기체", l:"L1", f:"이산화질소의 색은?", b:"<span class='k'>적갈색</span>"},
+  {t:"주요 대기 오염 기체", l:"L1", f:"황화수소의 냄새와 성질은?", b:"<span class='k'>달걀 썩는 냄새</span>, 유독하며 물에 녹아 약산성. <span class='k'>환원성</span>이 있다"},
+  {t:"주요 대기 오염 기체", l:"L4", f:"H2S가 환원제인 이유를 관상으로 판단하면?", b:"<span class='k'>수소가 많으면 환원제</span>. H2S는 수소를 많이 가지고 있다"},
+  {t:"주요 대기 오염 기체", l:"L1", f:"미세먼지의 주된 발생원은?", b:"<span class='k'>화석 연료 연소 · 자동차 · 공장</span>. 2차 생성 물질도 상당하다"},
+  {t:"주요 대기 오염 기체", l:"L1", f:"대기 오염 물질 중 자동차에서 주로 나오는 것은?", b:"<span class='k'>CO · NOx · 탄화수소</span>"},
+  {t:"주요 대기 오염 기체", l:"L4", f:"삼원 촉매 변환기가 처리하는 세 가지는?", b:"<span class='k'>CO · NOx · 탄화수소</span>"},
+  {t:"주요 대기 오염 기체", l:"L2", f:"기체를 냄새와 색으로 식별하라면?", b:"<span class='k'>무색무취 = CO</span> / <span class='k'>적갈색 = NO2</span> / <span class='k'>달걀 썩은 냄새 = H2S</span> / <span class='k'>황록색 = Cl2</span>"},
+  {t:"주요 대기 오염 기체", l:"L6", trap:true, f:"“일산화탄소는 자극적인 냄새가 나므로 쉽게 알아챌 수 있다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>무색·무취</span>라 더 위험하다"},
+  {t:"수질 오염", l:"L1", f:"DO란?", b:"<span class='k'>용존 산소</span> — 물에 녹아 있는 산소량. 높을수록 깨끗하다"},
+  {t:"수질 오염", l:"L1", f:"BOD란?", b:"<span class='k'>생물화학적 산소 요구량</span> — 미생물이 유기물을 분해할 때 필요한 산소량"},
+  {t:"수질 오염", l:"L1", f:"COD란?", b:"<span class='k'>화학적 산소 요구량</span> — 산화제로 유기물을 산화시킬 때 필요한 산소량"},
+  {t:"수질 오염", l:"L4", f:"BOD가 높다는 것은?", b:"<span class='k'>유기물이 많다 = 오염이 심하다</span>"},
+  {t:"수질 오염", l:"L4", f:"DO와 BOD의 방향이 반대인 이유는?", b:"유기물이 많으면 미생물이 <span class='k'>산소를 많이 소모</span>해 용존 산소가 줄어든다"},
+  {t:"수질 오염", l:"L1", f:"부영양화란?", b:"<span class='k'>질소와 인</span> 등 영양염류가 과다하게 유입되어 플랑크톤이 급증하는 현상"},
+  {t:"수질 오염", l:"L1", f:"부영양화의 결과는?", b:"바다에서는 <span class='k'>적조</span>, 호수·강에서는 <span class='k'>녹조</span>"},
+  {t:"수질 오염", l:"L4", f:"적조가 물고기를 죽이는 이유는?", b:"플랑크톤이 죽어 분해되며 <span class='k'>용존 산소를 고갈</span>시키기 때문"},
+  {t:"수질 오염", l:"L1", f:"부영양화의 주된 원인은?", b:"<span class='k'>생활 하수의 세제(인)</span>, 농경지의 <span class='k'>비료</span>, 축산 폐수"},
+  {t:"수질 오염", l:"L1", f:"자정 작용이란?", b:"자연이 스스로 오염 물질을 <span class='k'>희석·침전·분해</span>해 정화하는 능력"},
+  {t:"수질 오염", l:"L1", f:"수은 중독으로 생기는 병은?", b:"<span class='k'>미나마타병</span>"},
+  {t:"수질 오염", l:"L1", f:"카드뮴 중독으로 생기는 병은?", b:"<span class='k'>이타이이타이병</span>"},
+  {t:"수질 오염", l:"L4", f:"중금속이 특히 위험한 이유는?", b:"<span class='k'>생물 농축</span>되어 먹이 사슬 상위로 갈수록 농도가 높아지기 때문"},
+  {t:"수질 오염", l:"L2", f:"수질 지표 문제가 나오면?", b:"<span class='k'>DO는 높을수록 좋고 BOD·COD는 낮을수록 좋다</span>는 방향만 확정하면 된다"},
+  {t:"수질 오염", l:"L6", trap:true, f:"“BOD가 높을수록 깨끗한 물이다.” — 옳은가?", b:"<span class='x'>아니다.</span> BOD가 높으면 <span class='k'>오염이 심한</span> 물이다"},
+  {t:"물의 경도와 정수", l:"L1", f:"센물(경수)이란?", b:"<span class='k'>Ca²⁺, Mg²⁺</span>가 많이 녹아 있는 물"},
+  {t:"물의 경도와 정수", l:"L1", f:"단물(연수)이란?", b:"Ca²⁺, Mg²⁺가 <span class='k'>적게</span> 녹아 있는 물"},
+  {t:"물의 경도와 정수", l:"L1", f:"센물에서 비누가 잘 안 풀리는 이유는?", b:"비누 성분이 Ca²⁺·Mg²⁺와 결합해 <span class='k'>물에 녹지 않는 앙금</span>을 만들기 때문"},
+  {t:"물의 경도와 정수", l:"L1", f:"일시적 센물이란?", b:"<span class='k'>탄산수소염</span> 때문에 생긴 센물"},
+  {t:"물의 경도와 정수", l:"L1", f:"일시적 센물을 단물로 만드는 방법은?", b:"<span class='k'>끓인다</span>. 탄산칼슘이 침전으로 빠져나간다"},
+  {t:"물의 경도와 정수", l:"L1", f:"영구적 센물이란?", b:"<span class='k'>황산염</span> 때문에 생긴 센물. 끓여도 제거되지 않는다"},
+  {t:"물의 경도와 정수", l:"L1", f:"영구적 센물을 처리하는 방법은?", b:"<span class='k'>이온 교환 수지</span>"},
+  {t:"물의 경도와 정수", l:"L1", f:"석회 동굴이 생기는 반응은?", b:"<span class='k'>CaCO3 + CO2 + H2O → Ca(HCO3)2</span> — 석회암이 녹아 나간다"},
+  {t:"물의 경도와 정수", l:"L4", f:"종유석·석순이 자라는 반응은?", b:"석회 동굴 반응의 <span class='k'>역반응</span>. Ca(HCO3)2가 다시 CaCO3로 석출된다"},
+  {t:"물의 경도와 정수", l:"L1", f:"정수 처리의 순서는?", b:"<span class='k'>침전 → 여과 → 살균</span>"},
+  {t:"물의 경도와 정수", l:"L1", f:"우리나라 상수도의 살균제는?", b:"<span class='k'>염소</span>"},
+  {t:"물의 경도와 정수", l:"L4", f:"염소 소독의 단점은?", b:"유기물과 반응해 <span class='k'>발암성 부산물</span>이 생길 수 있다. 그래서 오존 소독을 병용하기도 한다"},
+  {t:"물의 경도와 정수", l:"L2", f:"경수인지 연수인지 판정하려면?", b:"<span class='k'>비누 거품이 잘 나는지</span> 본다. 안 나면 센물"},
+  {t:"물의 경도와 정수", l:"L6", trap:true, f:"“모든 센물은 끓이면 단물이 된다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>일시적 센물</span>만 그렇다. 영구적 센물은 이온 교환이 필요하다"},
+  {t:"환경 대책과 협약", l:"L1", f:"몬트리올 의정서는 무엇에 관한 협약인가?", b:"<span class='k'>오존층 파괴 물질(CFC) 규제</span>"},
+  {t:"환경 대책과 협약", l:"L1", f:"교토 의정서와 파리 협정은?", b:"<span class='k'>온실 기체 감축</span>에 관한 협약"},
+  {t:"환경 대책과 협약", l:"L1", f:"람사르 협약은?", b:"<span class='k'>습지 보전</span>에 관한 협약"},
+  {t:"환경 대책과 협약", l:"L1", f:"바젤 협약은?", b:"<span class='k'>유해 폐기물의 국가 간 이동</span> 규제"},
+  {t:"환경 대책과 협약", l:"L1", f:"CFC의 대체 물질은?", b:"<span class='k'>HFC · HCFC</span>. 염소가 없거나 적어 오존층 파괴 지수가 낮다"},
+  {t:"환경 대책과 협약", l:"L1", f:"탈황 장치의 원리는?", b:"배기가스의 <span class='k'>SO2를 석회로 흡수</span>해 제거한다"},
+  {t:"환경 대책과 협약", l:"L4", f:"전기 자동차가 줄이는 오염 물질은?", b:"<span class='k'>CO · NOx · 탄화수소</span> 등 배기가스 성분"},
+  {t:"환경 대책과 협약", l:"L2", f:"환경 협약 문제가 나오면?", b:"<span class='k'>오존층은 몬트리올, 온실가스는 교토·파리, 습지는 람사르, 폐기물은 바젤</span> 네 쌍을 고정한다"},
+  {t:"환경 대책과 협약", l:"L1", f:"다이옥신은 언제 생기는가?", b:"염소가 포함된 물질을 <span class='k'>저온에서 소각</span>할 때"},
+  {t:"환경 대책과 협약", l:"L6", trap:true, f:"“몬트리올 의정서는 온실 기체를 규제하는 협약이다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>오존층 파괴 물질</span>을 규제한다. 온실 기체는 교토 의정서"},
+  {t:"대기의 조성과 구조", l:"L2", f:"대기권 문제에서 층을 판정하려면?", b:"<span class='k'>높이에 따른 온도 변화 방향</span>을 본다. 올라가며 더워지면 성층권 또는 열권"},
+  {t:"대기의 조성과 구조", l:"L6", trap:true, f:"“대기 중 가장 많은 기체는 산소다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>질소</span>가 78%로 가장 많다"},
+  {t:"산성비", l:"L2", src:"2-52", f:"‘빗물의 pH가 ○○와 같았다’는 보기를 만나면?", b:"그 물질의 pH가 <span class='k'>5.6보다 낮은지</span>만 판정한다. 레몬주스는 낮고 혈액은 높다"},
+  {t:"산성비", l:"L4", f:"공장과 자동차가 각각 만드는 산성비 원인은?", b:"공장은 <span class='k'>황산화물</span>(저급 연료의 황), 자동차는 <span class='k'>질소산화물</span>"},
+  {t:"산성비", l:"L6", trap:true, f:"“산성비는 대기 중 CO2가 주된 원인이다.” — 옳은가?", b:"<span class='x'>아니다.</span> CO2는 정상 빗물을 pH 5.6으로 만들 뿐이고, 산성비의 원인은 <span class='k'>SOx·NOx</span>다"},
+  {t:"오존층과 오존", l:"L2", f:"오존 관련 문제에서 먼저 확인할 것은?", b:"<span class='k'>성층권인지 지표면인지</span>. 같은 물질이 층에 따라 이로운 것과 해로운 것으로 갈린다"},
+  {t:"오존층과 오존", l:"L4", f:"CFC 한 분자가 오존을 여러 개 파괴하는 이유는?", b:"염소 원자가 <span class='k'>촉매처럼 재생</span>되어 연쇄 반응을 일으키기 때문"},
+  {t:"오존층과 오존", l:"L6", trap:true, f:"“오존층이 파괴되면 지구 온난화가 일어난다.” — 옳은가?", b:"<span class='x'>아니다.</span> 오존층 파괴는 <span class='k'>자외선 증가</span> 문제이고 온난화는 별개다"},
+  {t:"온실 효과", l:"L2", f:"온실 기체인지 판정하려면?", b:"<span class='k'>적외선을 흡수하는지</span> 본다. N2·O2 같은 이원자 무극성 분자는 온실 기체가 아니다"},
+  {t:"온실 효과", l:"L6", trap:true, f:"“질소와 산소도 대기의 대부분을 차지하므로 온실 기체다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>적외선을 흡수하지 못해</span> 온실 기체가 아니다"},
+  {t:"스모그", l:"L2", f:"스모그 문제에서 오존이 나오면?", b:"<span class='k'>LA형(광화학)</span>으로 확정한다. 런던형에는 오존이 생기지 않는다"},
+  {t:"스모그", l:"L6", trap:true, f:"“런던형 스모그와 LA형 스모그는 원인 물질이 같다.” — 옳은가?", b:"<span class='x'>아니다.</span> 런던형은 <span class='k'>황산화물</span>, LA형은 <span class='k'>질소산화물</span>이다"},
+  {t:"주요 대기 오염 기체", l:"L2", f:"기체의 산화·환원 성향을 빠르게 판단하려면?", b:"<span class='k'>산소가 많으면 산화제, 수소가 많으면 환원제</span>로 본다"},
+  {t:"주요 대기 오염 기체", l:"L4", f:"SO2가 산화제도 환원제도 될 수 있는 이유는?", b:"황의 산화수가 <span class='k'>+4로 중간값</span>이기 때문"},
+  {t:"주요 대기 오염 기체", l:"L6", trap:true, f:"“이산화질소는 무색 기체다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>적갈색</span>이다. 무색은 NO"},
+  {t:"수질 오염", l:"L2", f:"수질 오염 문제에서 지표가 여러 개 나오면?", b:"<span class='k'>DO만 방향이 반대</span>라는 것을 기준으로 나머지를 정리한다"},
+  {t:"수질 오염", l:"L4", f:"녹조와 적조의 차이는?", b:"발생 장소가 다르다. <span class='k'>녹조는 담수</span>, <span class='k'>적조는 해수</span>"},
+  {t:"수질 오염", l:"L6", trap:true, f:"“자정 작용이 있으므로 하수를 그대로 흘려보내도 된다.” — 옳은가?", b:"<span class='x'>아니다.</span> 자정 능력에는 <span class='k'>한계</span>가 있어 그 이상 유입되면 회복되지 않는다"},
+  {t:"물의 경도와 정수", l:"L2", f:"센물의 종류를 가르려면?", b:"<span class='k'>끓여서 앙금이 생기는지</span> 본다. 생기면 일시적 센물"},
+  {t:"물의 경도와 정수", l:"L6", trap:true, f:"“센물은 인체에 유해하므로 마시면 안 된다.” — 옳은가?", b:"<span class='x'>아니다.</span> 세척·보일러에 불리할 뿐 <span class='k'>음용 자체가 유해한 것은 아니다</span>"},
+  {t:"환경 대책과 협약", l:"L4", f:"CFC 대체 물질이 완전한 해결책이 아닌 이유는?", b:"HFC는 오존층은 덜 파괴하지만 <span class='k'>강력한 온실 기체</span>이기 때문"},
+  {t:"환경 대책과 협약", l:"L6", trap:true, f:"“다이옥신은 소각 온도를 낮출수록 적게 생긴다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>저온 소각</span>에서 더 많이 생긴다. 고온에서 완전 연소시켜야 한다"},
+];
+
+DECK.forEach((c,i)=>c.id="c"+i);
+
+/* ===================== 저장 (localStorage + in-memory 폴백) ===================== */
+const KEY="chem_u16_environment_v1", DAY=86400000, INTERVALS=[0,1*DAY,3*DAY,7*DAY,30*DAY];
+const mem={};
+function save(o){ const j=JSON.stringify(o); try{localStorage.setItem(KEY,j);}catch(e){} mem[KEY]=j; }
+function load(){ try{const j=localStorage.getItem(KEY); if(j)return JSON.parse(j);}catch(e){}
+  try{if(mem[KEY])return JSON.parse(mem[KEY]);}catch(e){} return {}; }
+let ST=load();                              // { id:{box,due,seen} }
+function cs(id){ return ST[id]||{box:0,due:0,seen:false}; }
+function schedule(id,grade,guessed){
+  let s=Object.assign({box:0,due:0,seen:false},ST[id]||{}); s.seen=true;
+  if(guessed || grade<=2) s.box=0;                    // 1·2 실패 / 찍음 → 리셋(즉시 재출제)
+  else if(grade===3) s.box=Math.max(1,s.box);         // 겨우 성공 → 유지·최소 1일
+  else if(grade===4) s.box=Math.min(4,s.box+1);       // 앎 → 한 단계 승급
+  else if(grade===5) s.box=Math.min(4,s.box+2);       // 완벽 → 두 단계 승급
+  s.due=Date.now()+INTERVALS[s.box]; ST[id]=s; save(ST); return s;
+}
+
+/* ===================== 상태 & 필터 ===================== */
+const UI={mode:"study", topic:"전체", layers:new Set(["L1","L2","L4","L6"])};
+const TOPICS=[...new Set(DECK.map(c=>c.t))];
+function passFilter(c){
+  if(!UI.layers.has(c.l)) return false;
+  if(UI.topic!=="전체" && c.t!==UI.topic) return false;
+  const s=cs(c.id), due=(!s.seen)||(s.due<=Date.now());
+  if(UI.mode==="study") return due;
+  if(UI.mode==="wrong") return s.seen && s.box===0;
+  return true;                               // all
+}
+let queue=[], qi=0, revealed=false, guessed=false;
+function buildQueue(){ queue=DECK.filter(passFilter).map(c=>c.id); qi=0; revealed=false; guessed=false; }
+
+/* ===================== 렌더 ===================== */
+const stage=document.getElementById("stage"), statsEl=document.getElementById("stats");
+function renderStats(){
+  const total=DECK.length;
+  const seen=DECK.filter(c=>cs(c.id).seen).length;
+  const mastered=DECK.filter(c=>cs(c.id).box>=3).length;
+  const due=DECK.filter(c=>{const s=cs(c.id);return (!s.seen)||(s.due<=Date.now());}).length;
+  statsEl.innerHTML=
+    `<span class="chip">오늘 학습 <b>${due}</b></span>`+
+    `<span class="chip">익힘 <b>${mastered}</b>/<b>${total}</b></span>`+
+    `<span class="chip">본 카드 <b>${seen}</b></span>`;
+}
+function renderCard(){
+  renderStats();
+  if(qi>=queue.length){
+    const label=UI.mode==="wrong"?"틀린 카드가 없어요":"이 범위 학습 완료";
+    stage.innerHTML=`<div class="done"><h2>✓ ${label}</h2>
+      <p>4·5로 넘긴 카드는 1·3·7·30일 간격으로 다시 나옵니다.</p>
+      <button id="again">처음부터 다시 돌기</button></div>`;
+    document.getElementById("again").onclick=()=>{buildQueue();renderCard();};
+    return;
+  }
+  const c=DECK.find(x=>x.id===queue[qi]);
+  const srcHtml=c.src?`<span class="src">모의 ${c.src}</span>`:`<span class="src"></span>`;
+  const trapHtml=(revealed&&c.trap)?`<div class="trapribbon">⚠ 함정 · 부정형("옳지 않은 것") 대비</div>`:"";
+  stage.innerHTML=`
+   <div class="card l-${c.l}">
+     <div class="cmeta">
+       <span class="badge l-${c.l}">${c.l}</span>
+       <span class="topic">${c.t}</span>${srcHtml}
+     </div>
+     <div class="front">${c.f}</div>
+     <div id="backwrap" style="display:${revealed?'block':'none'}">
+       <div class="divider"></div>${trapHtml}
+       <div class="back">${c.b}</div>
+     </div>
+     <div class="spacer"></div>
+     ${revealed?rateHtml():`<button class="reveal" id="reveal">정답 보기 · Space</button>`}
+     <div class="nav">
+       <button id="prev">‹</button>
+       <span class="pos">${qi+1} / ${queue.length}</span>
+       <button id="next">›</button>
+     </div>
+   </div>`;
+  wire(c);
+}
+function rateHtml(){
+  const L=[
+    {g:1,lab:"전혀",sub:"기억 안 남"},
+    {g:2,lab:"답보고",sub:"틀림·재인"},
+    {g:3,lab:"겨우",sub:"맞음·힘겹게"},
+    {g:4,lab:"앎",sub:"약간 주저"},
+    {g:5,lab:"완벽",sub:"즉시·확실"}
+  ];
+  const btns=L.map(x=>`<button class="lk${x.g}" data-g="${x.g}"><b>${x.g}</b><span class="lab">${x.lab}</span><span class="sub">${x.sub}</span></button>`).join("");
+  return `<div class="guess ${guessed?'on':''}" id="guess"><span class="box">${guessed?'✓':''}</span>찍음(운으로 맞음)</div>
+    <div class="lkaxis"><span>전혀 모름</span><span>얼마나 인출됐나?</span><span>완벽</span></div>
+    <div class="rate5">${btns}</div>`;
+}
+function wire(c){
+  const rev=document.getElementById("reveal");
+  if(rev) rev.onclick=doReveal;
+  const g=document.getElementById("guess");
+  if(g) g.onclick=()=>{guessed=!guessed; renderCard();};
+  stage.querySelectorAll(".rate5 button").forEach(b=>b.onclick=()=>rate(parseInt(b.dataset.g,10)));
+  document.getElementById("prev").onclick=()=>{ if(qi>0){qi--;revealed=false;guessed=false;renderCard();} };
+  document.getElementById("next").onclick=()=>{ if(qi<queue.length){qi++;revealed=false;guessed=false;renderCard();} };
+}
+function doReveal(){ revealed=true; renderCard(); }
+function rate(r){
+  const id=queue[qi];
+  const s=schedule(id,r,guessed);
+  const stillDue=(s.due<=Date.now());        // box0 → 이번 세션 재출제
+  revealed=false; guessed=false;
+  if(stillDue){ queue.push(id); }            // 뒤로 보내 다시 만나게
+  queue.splice(qi,1);                         // 현재 위치에서 제거
+  renderCard();
+}
+
+/* ===================== 컨트롤 배선 ===================== */
+const topicSel=document.getElementById("topic");
+topicSel.innerHTML=`<option>전체</option>`+TOPICS.map(t=>`<option>${t}</option>`).join("");
+topicSel.onchange=()=>{UI.topic=topicSel.value; buildQueue(); renderCard();};
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); UI.mode=b.dataset.mode; buildQueue(); renderCard();
+});
+document.querySelectorAll('#layers .lchip').forEach(ch=>ch.onclick=()=>{
+  const L=ch.dataset.l;
+  if(UI.layers.has(L)&&UI.layers.size>1){UI.layers.delete(L);ch.classList.remove('on');}
+  else{UI.layers.add(L);ch.classList.add('on');}
+  buildQueue(); renderCard();
+});
+document.getElementById("reset").onclick=()=>{
+  if(confirm("이 브라우저의 16단원 진도를 모두 초기화할까요?")){ ST={}; save(ST); buildQueue(); renderCard(); }
+};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){ e.preventDefault(); if(!revealed) doReveal(); }
+  else if(revealed && ["1","2","3","4","5"].includes(e.key)){ rate(parseInt(e.key,10)); }
+});
+
+/* ===================== 시작 ===================== */
+buildQueue(); renderCard();
+</script>
+</body>
+</html>

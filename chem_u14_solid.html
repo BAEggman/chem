@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4efe4">
+<title>화학 14단원 · 고체와 결정 — 카드덱</title>
+<!--
+  화학 학습 허브 파일럿 (→ baeggman/hwahak 편입 대상)
+  · 단일 index.html · 외부 의존성 0 (완전 오프라인, GitHub Pages 배포용)
+  · 저장 키 격리: chem_u14_solid_v1  (localStorage; 차단 시 in-memory 폴백 — 절대 크래시 안 함)
+  · SRS-lite: 경락 허브의 3·7·30일 간격반복 계승 + "찍음(운으로 맞음)" 플래그
+  · §5.4 준수: 이 덱은 재인·인출(사실·관계·변별·함정)만. 다단계 계산은 의도적 제외.
+  · 색/변수는 --hh-* 이름으로 정의 → HubHome 편입 시 값만 오버라이드하면 됨.
+-->
+<style>
+:root{
+  --hh-bg:#f3eee2; --hh-card:#fbf8f0; --hh-pan:#f0e8d8; --hh-pan2:#efe6d3;
+  --hh-ink:#2c261e; --hh-dim:#6c6252; --hh-mut:#877c69; --hh-faint:#a89c86;
+  --hh-line:#ddd2be; --hh-line2:#eae2d3;
+  --hh-gold:#a9791f; --hh-gold-s:#f3e6c6;
+  --hh-jade:#3c7568; --hh-jade-s:#dcece7;
+  --hh-azure:#356388; --hh-azure-s:#dbe6ef;
+  --hh-cinnabar:#a83a2c; --hh-cinnabar-s:#f4dcd6;
+  --hh-ok:#3c7568; --hh-no:#a83a2c;
+  --hh-shadow:0 6px 22px rgba(44,38,30,.10), 0 1px 3px rgba(44,38,30,.08);
+  --hh-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
+  --hh-mono:ui-monospace,'SF Mono','Menlo','Consolas',monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--hh-bg);color:var(--hh-ink);font-family:var(--hh-sans);
+  line-height:1.6;font-size:16px;touch-action:manipulation}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+header{margin:2px 0 12px}
+h1{font-size:19px;letter-spacing:-.02em;margin:0}
+h1 .u{font-family:var(--hh-mono);color:var(--hh-gold);font-weight:800;margin-right:6px}
+.tagline{color:var(--hh-mut);font-size:12.5px;margin:3px 0 0}
+
+/* stat chips */
+.stats{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 10px}
+.chip{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:999px;
+  padding:5px 11px;font-size:12px;color:var(--hh-dim);box-shadow:var(--hh-shadow)}
+.chip b{color:var(--hh-ink);font-family:var(--hh-mono)}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;background:var(--hh-pan);border:1px solid var(--hh-line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--hh-dim);font:inherit;font-size:12.5px;
+  padding:6px 11px;cursor:pointer}
+.seg button.on{background:var(--hh-card);color:var(--hh-ink);font-weight:700;box-shadow:inset 0 0 0 1px var(--hh-line)}
+select{font:inherit;font-size:13px;color:var(--hh-ink);background:var(--hh-card);
+  border:1px solid var(--hh-line);border-radius:9px;padding:6px 9px}
+.lchip{font-family:var(--hh-mono);font-size:11px;font-weight:700;border:1px solid;border-radius:999px;
+  padding:3px 9px;cursor:pointer;background:var(--hh-card);opacity:.5}
+.lchip.on{opacity:1}
+.l-L1{color:var(--hh-jade);border-color:var(--hh-jade)}
+.l-L2{color:var(--hh-azure);border-color:var(--hh-azure)}
+.l-L4{color:var(--hh-gold);border-color:var(--hh-gold)}
+.l-L6{color:var(--hh-cinnabar);border-color:var(--hh-cinnabar)}
+
+/* card */
+.card{background:var(--hh-card);border:1px solid var(--hh-line);border-radius:18px;
+  box-shadow:var(--hh-shadow);padding:20px 20px 18px;min-height:340px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hh-line)}
+.card.l-L1::before{background:var(--hh-jade)} .card.l-L2::before{background:var(--hh-azure)}
+.card.l-L4::before{background:var(--hh-gold)} .card.l-L6::before{background:var(--hh-cinnabar)}
+.cmeta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.badge{font-family:var(--hh-mono);font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;color:#fff}
+.badge.l-L1{background:var(--hh-jade)} .badge.l-L2{background:var(--hh-azure)}
+.badge.l-L4{background:var(--hh-gold)} .badge.l-L6{background:var(--hh-cinnabar)}
+.topic{font-size:12px;color:var(--hh-mut);font-weight:600}
+.src{font-family:var(--hh-mono);font-size:10.5px;color:var(--hh-faint);margin-left:auto}
+.front{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.5;color:var(--hh-ink)}
+.front .em{color:var(--hh-cinnabar)}
+.divider{height:1px;background:var(--hh-line2);margin:16px 0}
+.back{font-size:16.5px;line-height:1.62;color:var(--hh-ink);white-space:pre-wrap}
+.back .k{color:var(--hh-jade);font-weight:700}
+.back .x{color:var(--hh-cinnabar);font-weight:700}
+.trapribbon{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;
+  color:var(--hh-cinnabar);background:var(--hh-cinnabar-s);border:1px solid #e6bfb6;
+  border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.spacer{flex:1}
+
+/* reveal / rate */
+.reveal{margin-top:16px;width:100%;border:0;border-radius:12px;padding:13px;
+  background:var(--hh-ink);color:var(--hh-card);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.lkaxis{display:flex;justify-content:space-between;margin-top:16px;margin-bottom:6px;
+  font-size:10.5px;color:var(--hh-faint)}
+.lkaxis span:nth-child(2){color:var(--hh-mut);font-weight:600}
+.rate5{display:flex;gap:6px}
+.rate5 button{flex:1;border:1px solid var(--hh-line);border-radius:12px;padding:9px 3px 8px;
+  background:var(--hh-card);font:inherit;cursor:pointer;color:var(--hh-dim);
+  display:flex;flex-direction:column;align-items:center;gap:1px}
+.rate5 button b{font-family:var(--hh-mono);font-size:18px;line-height:1.05}
+.rate5 button .lab{font-size:12px;font-weight:700;margin-top:2px}
+.rate5 button .sub{font-size:9.5px;font-weight:600;color:var(--hh-faint);text-align:center}
+.rate5 button:active{transform:translateY(1px)}
+.lk1,.lk1 b{color:var(--hh-cinnabar)}
+.lk2,.lk2 b{color:#b0602a}
+.lk3,.lk3 b{color:var(--hh-mut)}
+.lk4,.lk4 b{color:#4d7f52}
+.lk5,.lk5 b{color:var(--hh-jade)}
+@media(hover:hover){
+  .lk1:hover{background:var(--hh-cinnabar-s);border-color:var(--hh-cinnabar)}
+  .lk2:hover{background:#f4e4d6;border-color:#b0602a}
+  .lk3:hover{background:var(--hh-pan)}
+  .lk4:hover{background:#e4efe1;border-color:#4d7f52}
+  .lk5:hover{background:var(--hh-jade-s);border-color:var(--hh-jade)}
+}
+@media(max-width:430px){ .rate5 button .sub{display:none} .rate5{gap:4px} }
+.guess{margin-top:11px;display:flex;align-items:center;gap:8px;justify-content:center;
+  font-size:12.5px;color:var(--hh-mut);cursor:pointer;user-select:none}
+.guess .box{width:17px;height:17px;border:1.5px solid var(--hh-faint);border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:12px;color:#fff}
+.guess.on .box{background:var(--hh-gold);border-color:var(--hh-gold)}
+.guess.on{color:var(--hh-gold);font-weight:700}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:var(--hh-mut);font-size:13px}
+.nav button{border:1px solid var(--hh-line);background:var(--hh-card);border-radius:9px;
+  width:36px;height:32px;font-size:15px;color:var(--hh-dim);cursor:pointer}
+.nav .pos{font-family:var(--hh-mono);font-size:12px}
+
+.done{text-align:center;padding:48px 16px}
+.done h2{color:var(--hh-jade);margin:0 0 6px}
+.done p{color:var(--hh-mut);font-size:14px;margin:4px 0}
+.done button{margin-top:16px;border:1px solid var(--hh-line);background:var(--hh-card);border-radius:10px;
+  padding:9px 16px;font:inherit;font-weight:700;color:var(--hh-ink);cursor:pointer}
+
+footer{margin-top:20px;color:var(--hh-faint);font-size:11.5px;line-height:1.6}
+footer .legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+footer .legend span{font-family:var(--hh-mono);font-weight:700}
+footer .reset{background:none;border:0;color:var(--hh-faint);text-decoration:underline;
+  font:inherit;font-size:11.5px;cursor:pointer;padding:0;margin-top:6px}
+@media (hover:hover){
+  .reveal:hover{opacity:.92} .nav button:hover{border-color:var(--hh-faint)}
+  .seg button:hover{color:var(--hh-ink)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="u">14단원</span>고체와 결정 · 카드덱</h1>
+    <p class="tagline">능동 인출 → 자가 채점 → 3·7·30일 간격반복 · 기본서·기출 그라운딩</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <div class="row">
+      <div class="seg" id="mode">
+        <button data-mode="study" class="on">오늘 학습</button>
+        <button data-mode="all">전체</button>
+        <button data-mode="wrong">틀린 것만</button>
+      </div>
+      <select id="topic"></select>
+    </div>
+    <div class="row" id="layers">
+      <span class="lchip l-L1 on" data-l="L1">L1 사실</span>
+      <span class="lchip l-L2 on" data-l="L2">L2 방법</span>
+      <span class="lchip l-L4 on" data-l="L4">L4 변별</span>
+      <span class="lchip l-L6 on" data-l="L6">L6 함정</span>
+    </div>
+  </div>
+
+  <div id="stage"></div>
+
+  <footer>
+    <div class="legend">
+      <span class="l-L1" style="color:var(--hh-jade)">L1 사실</span>
+      <span class="l-L2" style="color:var(--hh-azure)">L2 트리거→방법</span>
+      <span class="l-L4" style="color:var(--hh-gold)">L4 변별</span>
+      <span class="l-L6" style="color:var(--hh-cinnabar)">L6 함정</span>
+    </div>
+    이 덱은 <b>재인·인출</b>(사실·관계·변별·함정)만 다룹니다. 밀도·충전율 다단계 계산은 의도적으로 제외 — 별도 문제풀이 트랙 권장(§5.4).
+    <br>진도는 이 브라우저에 저장됩니다(<code>chem_u14_solid_v1</code>). 5점 자가평가로 간격을 조절 — 1·2=리셋(즉시 다시), 3=유지, 4=한 단계↑, 5=두 단계↑. ‘찍음’ 표시 시 승급하지 않습니다.
+    <br><button class="reset" id="reset">↺ 진도 초기화</button>
+  </footer>
+</div>
+
+<script>
+/* ===================== 14단원 카드 데이터 (교재·기출 그라운딩) =====================
+   layer: L1 사실 / L2 트리거→방법 / L4 변별 / L6 함정
+   trap:true → 함정 카드(틀린 진술 적발). src: 모의고사 회-번 (있을 때) */
+const DECK = [
+  {t:"결정형과 비결정형", l:"L1", f:"결정형 고체의 정의는?", b:"입자가 <span class='k'>입체적·규칙적으로 배열</span>된 고체"},
+  {t:"결정형과 비결정형", l:"L1", f:"비결정형 고체의 정의는?", b:"입자 배열이 <span class='k'>불규칙</span>한 고체. 무정형 고체라고도 한다"},
+  {t:"결정형과 비결정형", l:"L1", f:"결정형 고체의 녹는점은?", b:"<span class='k'>일정하다</span>. 규칙적 배열이라 결합력이 균일하다"},
+  {t:"결정형과 비결정형", l:"L1", f:"비결정형 고체의 녹는점은?", b:"<span class='k'>일정하지 않다</span>. 결합이 약한 부분부터 먼저 끊어진다"},
+  {t:"결정형과 비결정형", l:"L1", f:"결정형은 등방성인가 비등방성인가?", b:"<span class='k'>비등방성</span> — 방향에 따라 성질이 다르다 (등축정계는 예외)"},
+  {t:"결정형과 비결정형", l:"L1", f:"비결정형은 등방성인가 비등방성인가?", b:"<span class='k'>등방성</span> — 방향에 관계없이 성질이 같다"},
+  {t:"결정형과 비결정형", l:"L2", f:"등방성·비등방성이 헷갈릴 때는?", b:"<span class='k'>‘비’자를 한 번만</span> 넣는다 — 비결정형은 등방성, 결정형은 비등방성"},
+  {t:"결정형과 비결정형", l:"L1", f:"자연에서 얻어지는 고체는 주로 어느 쪽인가?", b:"<span class='k'>결정형</span>. 소금·석영·다이아몬드"},
+  {t:"결정형과 비결정형", l:"L1", f:"비결정형 고체의 예는?", b:"<span class='k'>유리 · 플라스틱 · 고무 · 엿</span> — 대부분 인위적으로 만든 것"},
+  {t:"결정형과 비결정형", l:"L4", f:"결정형과 비결정형을 가르는 두 기준은?", b:"<span class='k'>입자 배열의 규칙성</span>과 <span class='k'>녹는점의 일정함</span>"},
+  {t:"결정형과 비결정형", l:"L1", f:"비등방성이란 구체적으로 무엇인가?", b:"빛 등에 대한 성질이 <span class='k'>결정의 방향에 따라 다르게</span> 나타나는 것"},
+  {t:"결정형과 비결정형", l:"L6", trap:true, f:"“유리는 규칙적인 결정 구조를 가진 고체다.” — 옳은가?", b:"<span class='x'>아니다.</span> 유리는 <span class='k'>비결정형</span>이다. 녹는점도 일정하지 않다"},
+  {t:"결정형과 비결정형", l:"L6", trap:true, f:"“모든 결정은 비등방성이다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>등축정계</span>는 예외다. 그 외 모든 결정이 비등방성"},
+  {t:"결정의 4분류", l:"L1", f:"결정성 고체의 네 종류는?", b:"<span class='k'>이온 결정 · 분자 결정 · 공유(원자) 결정 · 금속 결정</span>"},
+  {t:"결정의 4분류", l:"L1", f:"각 결정의 구성 입자는?", b:"이온 결정 <span class='k'>양이온·음이온</span> / 분자 결정 <span class='k'>분자</span> / 공유 결정 <span class='k'>원자</span> / 금속 결정 <span class='k'>금속 양이온·자유 전자</span>"},
+  {t:"결정의 4분류", l:"L1", f:"각 결정의 결합력은?", b:"이온 <span class='k'>정전기적 인력</span> / 분자 <span class='k'>분자 간 힘</span> / 공유 <span class='k'>공유 결합</span> / 금속 <span class='k'>금속 결합</span>"},
+  {t:"결정의 4분류", l:"L1", src:"4-53", f:"녹는점이 가장 낮은 결정은?", b:"<span class='k'>분자 결정</span>. 약한 분자 간 힘만 작용한다"},
+  {t:"결정의 4분류", l:"L1", f:"녹는점이 가장 높은 결정은?", b:"<span class='k'>공유 결정</span>. 결정 전체가 하나의 거대한 공유 결합 덩어리"},
+  {t:"결정의 4분류", l:"L1", f:"고체 상태에서 전기가 통하는 결정은?", b:"<span class='k'>금속 결정</span>, 그리고 예외적으로 <span class='k'>흑연</span>"},
+  {t:"결정의 4분류", l:"L1", src:"4-25", f:"이온 결정의 전기 전도성은?", b:"고체는 <span class='k'>없고</span>, 용융 상태와 수용액에서는 <span class='k'>있다</span>"},
+  {t:"결정의 4분류", l:"L1", f:"분자 결정의 전기 전도성은?", b:"<span class='k'>고체·액체 모두 없다</span>. 이온도 자유 전자도 없다"},
+  {t:"결정의 4분류", l:"L2", f:"고체의 종류를 성질로 추론하려면?", b:"<span class='k'>전기 전도성 → 녹는점 → 물에 대한 용해성</span> 순으로 좁힌다"},
+  {t:"결정의 4분류", l:"L2", src:"5-40", f:"“단단하고 녹는점이 매우 높으며 전기가 안 통한다”면?", b:"<span class='k'>공유(원자) 결정</span>. 다이아몬드·SiO2"},
+  {t:"결정의 4분류", l:"L4", f:"이온 결정과 금속 결정의 전도성 차이의 원인은?", b:"금속은 <span class='k'>자유 전자</span>가 이미 움직이지만, 이온 결정은 <span class='k'>녹아야</span> 이온이 움직인다"},
+  {t:"결정의 4분류", l:"L4", f:"녹는점이 낮은 순서로 네 결정을 늘어놓으면?", b:"<span class='k'>분자 < 이온 ≒ 금속 < 공유</span>. 금속은 종류에 따라 편차가 크다"},
+  {t:"결정의 4분류", l:"L6", trap:true, src:"4-25", f:"“이온 결정은 액체 상태에서 전기가 통하지 않는다.” — 옳은가?", b:"<span class='x'>아니다.</span> 용융 상태에서는 이온이 자유로이 움직여 <span class='k'>통한다</span>"},
+  {t:"결정의 4분류", l:"L6", trap:true, f:"“공유 결정은 모두 전기가 통하지 않는다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>흑연</span>은 통한다. 플러렌·탄소 나노튜브도 마찬가지"},
+  {t:"이온 결정", l:"L1", f:"이온 결합의 세기를 나타내는 법칙은?", b:"<span class='k'>쿨롱 법칙 F = k·q₁q₂/r²</span>"},
+  {t:"이온 결정", l:"L1", f:"쿨롱 법칙에서 F가 커지는 조건은?", b:"<span class='k'>전하량이 클수록</span>, <span class='k'>이온 간 거리가 작을수록</span>"},
+  {t:"이온 결정", l:"L2", f:"두 이온 결정의 녹는점을 비교하려면?", b:"<span class='k'>전하량을 먼저</span> 보고, 같으면 <span class='k'>이온 간 거리</span>를 본다"},
+  {t:"이온 결정", l:"L1", f:"NaF와 CaO 중 녹는점이 높은 것은?", b:"<span class='k'>CaO</span>. 거리는 비슷하지만 전하가 ±2로 더 크다"},
+  {t:"이온 결정", l:"L1", src:"1-51", f:"NaF·NaCl·NaBr·NaI의 격자 에너지 순서는?", b:"<span class='k'>NaF > NaCl > NaBr > NaI</span>. 음이온이 커질수록 거리가 멀어져 작아진다"},
+  {t:"이온 결정", l:"L1", f:"격자 에너지란?", b:"기체 이온이 모여 <span class='k'>이온 결정을 만들 때 방출</span>되는 에너지"},
+  {t:"이온 결정", l:"L1", f:"이온 결정에 힘을 가하면 왜 부서지나?", b:"층이 밀리며 <span class='k'>같은 부호의 이온끼리 마주쳐 반발</span>하기 때문"},
+  {t:"이온 결정", l:"L1", f:"이온 결정의 물에 대한 용해성은?", b:"<span class='k'>극성 용매인 물에 잘 녹는 것이 많다</span>. 녹으면서 수화된다"},
+  {t:"이온 결정", l:"L1", f:"수화란?", b:"이온이 물 분자에 둘러싸이는 것. 양이온은 물의 <span class='k'>산소</span> 쪽, 음이온은 <span class='k'>수소</span> 쪽"},
+  {t:"이온 결정", l:"L1", f:"본-하버 사이클에서 흡열 과정은?", b:"<span class='k'>승화 에너지 · 결합 에너지 · 이온화 에너지</span>"},
+  {t:"이온 결정", l:"L1", f:"본-하버 사이클에서 발열 과정은?", b:"<span class='k'>전자 친화도 · 격자 에너지</span>"},
+  {t:"이온 결정", l:"L4", f:"이온 결정이 단단한데도 잘 부서지는 이유는?", b:"결합 자체는 강하지만 <span class='k'>층이 어긋나는 순간 반발</span>이 생기기 때문. 강도와 인성은 다르다"},
+  {t:"이온 결정", l:"L6", trap:true, f:"“이온 결정은 단단하므로 전성·연성이 크다.” — 옳은가?", b:"<span class='x'>아니다.</span> 전성·연성은 <span class='k'>금속</span>의 성질이다. 이온 결정은 부서진다"},
+  {t:"분자 결정", l:"L1", f:"분자 결정의 결합력은?", b:"<span class='k'>분자 간 힘</span> — 수소 결합, 쌍극자–쌍극자, 분산력"},
+  {t:"분자 결정", l:"L1", f:"얼음 결정을 유지하는 힘은?", b:"<span class='k'>수소 결합</span>"},
+  {t:"분자 결정", l:"L1", f:"드라이아이스 결정을 유지하는 힘은?", b:"<span class='k'>분산력</span>"},
+  {t:"분자 결정", l:"L1", f:"분자 결정의 대표적인 성질 셋은?", b:"<span class='k'>녹는점이 낮다</span> · <span class='k'>전기가 통하지 않는다</span> · <span class='k'>승화하는 것이 많다</span>"},
+  {t:"분자 결정", l:"L1", f:"승화성 물질의 예는?", b:"<span class='k'>드라이아이스 · 아이오딘 · 나프탈렌</span>"},
+  {t:"분자 결정", l:"L1", f:"얼음이 물보다 밀도가 작은 이유는?", b:"수소 결합으로 <span class='k'>빈 공간이 많은 육각 구조</span>를 이루기 때문"},
+  {t:"분자 결정", l:"L4", f:"분자 결정과 공유 결정의 결정적 차이는?", b:"분자 결정은 <span class='k'>분자 사이</span>가 약한 힘, 공유 결정은 <span class='k'>전체가 공유 결합</span>"},
+  {t:"분자 결정", l:"L4", f:"같은 분자 결정끼리 녹는점을 비교하려면?", b:"<span class='k'>분자 간 힘의 세기</span>. 수소 결합 > 쌍극자–쌍극자 > 분산력"},
+  {t:"분자 결정", l:"L2", src:"4-53", f:"“녹는점이 가장 낮은 물질”을 고르라면?", b:"보기 중 <span class='k'>분자 결정</span>을 찾는다. CO2·I2 같은 것"},
+  {t:"분자 결정", l:"L6", trap:true, f:"“드라이아이스는 공유 결합으로 이루어진 결정이다.” — 옳은가?", b:"<span class='x'>아니다.</span> 분자 내부는 공유 결합이지만 <span class='k'>결정을 이루는 힘은 분산력</span>이다"},
+  {t:"공유(원자) 결정", l:"L1", f:"공유 결정의 다른 이름은?", b:"<span class='k'>원자 결정</span>"},
+  {t:"공유(원자) 결정", l:"L1", f:"공유 결정의 예는?", b:"<span class='k'>다이아몬드 · 석영(SiO2) · 규소(Si) · 흑연</span>"},
+  {t:"공유(원자) 결정", l:"L1", src:"5-40", f:"공유 결정의 성질 셋은?", b:"<span class='k'>매우 단단하다</span> · <span class='k'>녹는점이 매우 높다</span> · <span class='k'>물에 잘 녹지 않는다</span>"},
+  {t:"공유(원자) 결정", l:"L1", f:"다이아몬드에서 탄소 하나는 몇 개와 결합하나?", b:"<span class='k'>4개</span>. sp3 정사면체 구조"},
+  {t:"공유(원자) 결정", l:"L1", f:"흑연에서 탄소 하나는 몇 개와 결합하나?", b:"<span class='k'>3개</span>. 남는 전자 1개가 자유 전자 역할을 한다"},
+  {t:"공유(원자) 결정", l:"L1", f:"흑연이 전기를 통하는 이유는?", b:"결합에 쓰이지 않은 <span class='k'>전자 1개가 층 안을 자유롭게 이동</span>하기 때문"},
+  {t:"공유(원자) 결정", l:"L1", src:"4-36", f:"흑연의 층과 층을 잡고 있는 힘은?", b:"<span class='k'>반데르발스 힘(분산력)</span>"},
+  {t:"공유(원자) 결정", l:"L1", f:"흑연이 무르고 미끄러운 이유는?", b:"층 사이 힘이 약해 <span class='k'>쉽게 미끄러지기</span> 때문. 연필심·윤활제로 쓴다"},
+  {t:"공유(원자) 결정", l:"L4", f:"다이아몬드와 흑연의 관계는?", b:"<span class='k'>동소체</span> — 같은 탄소인데 결정 구조가 다르다"},
+  {t:"공유(원자) 결정", l:"L4", f:"다이아몬드는 왜 전기가 통하지 않나?", b:"탄소의 원자가 전자 4개가 <span class='k'>모두 결합에 쓰여</span> 자유 전자가 없다"},
+  {t:"공유(원자) 결정", l:"L6", trap:true, f:"“흑연은 공유 결정이므로 전기가 통하지 않는다.” — 옳은가?", b:"<span class='x'>아니다.</span> 공유 결정의 <span class='k'>대표적 예외</span>로 전기가 통한다"},
+  {t:"금속 결정", l:"L1", f:"금속 결합이란?", b:"<span class='k'>금속 양이온과 자유 전자 사이의 정전기적 인력</span>"},
+  {t:"금속 결정", l:"L1", f:"금속의 전기·열 전도성이 큰 이유는?", b:"<span class='k'>자유 전자</span>가 자유롭게 이동하기 때문"},
+  {t:"금속 결정", l:"L1", f:"전성과 연성이란?", b:"<span class='k'>전성</span>은 얇게 펴지는 성질, <span class='k'>연성</span>은 길게 늘어나는 성질"},
+  {t:"금속 결정", l:"L1", f:"금속이 전성·연성을 갖는 이유는?", b:"층이 밀려도 <span class='k'>자유 전자가 결합을 유지</span>해 주기 때문"},
+  {t:"금속 결정", l:"L1", f:"금속 광택의 원인은?", b:"<span class='k'>자유 전자</span>가 빛을 흡수했다가 다시 방출하기 때문"},
+  {t:"금속 결정", l:"L1", f:"금속 결정의 녹는점을 결정하는 것은?", b:"<span class='k'>쿨롱 법칙</span> — 양이온의 전하가 크고 반지름이 작을수록 높다"},
+  {t:"금속 결정", l:"L4", f:"금속 결정과 이온 결정이 힘을 받을 때의 차이는?", b:"금속은 <span class='k'>펴지고</span>, 이온 결정은 <span class='k'>부서진다</span>. 자유 전자의 유무가 갈랐다"},
+  {t:"금속 결정", l:"L4", f:"수은이 상온에서 액체인 이유는?", b:"금속 결합이 유난히 <span class='k'>약하기</span> 때문. 금속이라고 모두 녹는점이 높지는 않다"},
+  {t:"금속 결정", l:"L2", f:"전기 전도성이 고체에서 이미 있다면?", b:"<span class='k'>금속 결정</span> 또는 <span class='k'>흑연</span>. 다른 선택지는 배제된다"},
+  {t:"금속 결정", l:"L6", trap:true, f:"“금속의 전기 전도성은 이온의 이동 때문이다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>자유 전자</span>의 이동 때문이다. 이온 이동은 전해질 용액의 이야기"},
+  {t:"탄소 동소체", l:"L1", f:"동소체란?", b:"<span class='k'>같은 원소로 이루어졌으나 구조와 성질이 다른</span> 물질"},
+  {t:"탄소 동소체", l:"L1", f:"탄소의 동소체 다섯 가지는?", b:"<span class='k'>다이아몬드 · 흑연 · 플러렌 · 탄소 나노튜브 · 그래핀</span>"},
+  {t:"탄소 동소체", l:"L1", f:"플러렌의 분자식은?", b:"<span class='k'>C60</span> — 축구공 모양"},
+  {t:"탄소 동소체", l:"L1", f:"그래핀이란?", b:"흑연에서 <span class='k'>한 층만 떼어낸</span> 2차원 탄소 판"},
+  {t:"탄소 동소체", l:"L1", f:"전기가 통하는 탄소 동소체는?", b:"<span class='k'>흑연 · 플러렌 · 탄소 나노튜브 · 그래핀</span>. 다이아몬드만 통하지 않는다"},
+  {t:"탄소 동소체", l:"L4", f:"산소의 동소체는?", b:"<span class='k'>산소(O2)와 오존(O3)</span>"},
+  {t:"탄소 동소체", l:"L4", f:"황의 동소체는?", b:"<span class='k'>사방황 · 단사황 · 고무상황</span>"},
+  {t:"탄소 동소체", l:"L2", f:"두 물질이 동소체인지 판정하려면?", b:"<span class='k'>구성 원소가 같은데 성질이 다른지</span> 본다. 화합물이면 동소체가 아니다"},
+  {t:"탄소 동소체", l:"L6", trap:true, f:"“다이아몬드와 흑연은 성질이 전혀 다르므로 다른 원소로 되어 있다.” — 옳은가?", b:"<span class='x'>아니다.</span> 둘 다 <span class='k'>탄소</span>로만 이루어진 동소체다"},
+  {t:"결정과 화학식", l:"L1", f:"실험식이란?", b:"물질을 이루는 원자·이온의 종류와 수를 <span class='k'>가장 간단한 정수비</span>로 나타낸 식"},
+  {t:"결정과 화학식", l:"L1", f:"실험식으로만 나타내는 물질 셋은?", b:"<span class='k'>이온 결정 · 금속 결정 · 공유 결정</span> — 분자가 아니기 때문"},
+  {t:"결정과 화학식", l:"L1", f:"NaCl이 분자식이 아닌 이유는?", b:"Na⁺와 Cl⁻가 <span class='k'>1 : 1 비율로 무수히 이어진 결정</span>이지 독립된 알갱이가 아니다"},
+  {t:"결정과 화학식", l:"L1", f:"SiO2가 뜻하는 것은?", b:"규소와 산소가 <span class='k'>1 : 2의 비율</span>로 결합했다는 뜻. SiO2 분자가 있는 것이 아니다"},
+  {t:"결정과 화학식", l:"L4", f:"분자식과 실험식을 모두 쓸 수 있는 물질은?", b:"<span class='k'>분자</span>로 이루어진 물질만. 독립된 알갱이가 존재해야 한다"},
+  {t:"결정과 화학식", l:"L2", f:"“분자식으로 나타낼 수 없는 물질”을 고르라면?", b:"<span class='k'>이온 화합물 · 금속 · 공유 결정</span>을 찾는다"},
+  {t:"결정과 화학식", l:"L6", trap:true, f:"“Fe라는 화학식은 철 원자 하나를 뜻한다.” — 옳은가?", b:"<span class='x'>아니다.</span> 금속 결정이므로 <span class='k'>철 덩어리</span>를 실험식으로 나타낸 것"},
+  {t:"단위 세포", l:"L1", f:"단위 세포란?", b:"결정 구조에서 <span class='k'>반복되는 최소 단위</span>"},
+  {t:"단위 세포", l:"L1", f:"단순 입방 구조의 배위수와 단위 세포당 원자 수는?", b:"배위수 <span class='k'>6</span>, 원자 수 <span class='k'>1</span>"},
+  {t:"단위 세포", l:"L1", f:"체심 입방 구조의 배위수와 원자 수는?", b:"배위수 <span class='k'>8</span>, 원자 수 <span class='k'>2</span>"},
+  {t:"단위 세포", l:"L1", f:"면심 입방 구조의 배위수와 원자 수는?", b:"배위수 <span class='k'>12</span>, 원자 수 <span class='k'>4</span>"},
+  {t:"단위 세포", l:"L1", f:"육방 조밀 구조의 배위수는?", b:"<span class='k'>12</span> — 면심 입방과 같다"},
+  {t:"단위 세포", l:"L1", f:"꼭짓점·면·모서리 원자의 기여분은?", b:"꼭짓점 <span class='k'>1/8</span>, 면 <span class='k'>1/2</span>, 모서리 <span class='k'>1/4</span>, 내부 <span class='k'>1</span>"},
+  {t:"단위 세포", l:"L2", f:"단위 세포당 원자 수를 세는 방법은?", b:"<span class='k'>위치별 기여분 × 개수</span>를 모두 더한다. 면심 입방은 8×1/8 + 6×1/2 = 4"},
+  {t:"단위 세포", l:"L1", f:"충전율이 가장 큰 구조는?", b:"<span class='k'>면심 입방과 육방 조밀 — 74%</span>"},
+  {t:"단위 세포", l:"L1", f:"단순 입방과 체심 입방의 충전율은?", b:"<span class='k'>52%</span>와 <span class='k'>68%</span>"},
+  {t:"단위 세포", l:"L4", f:"면심 입방과 육방 조밀의 차이는?", b:"배위수·충전율은 같고 <span class='k'>층의 쌓임 순서</span>가 다르다 (ABCABC vs ABAB)"},
+  {t:"단위 세포", l:"L1", f:"결정의 밀도를 구하는 식은?", b:"<span class='k'>(단위 세포 내 원자 수 × 원자량) ÷ (아보가드로 수 × 세포 부피)</span>"},
+  {t:"단위 세포", l:"L4", f:"NaCl 결정에서 각 이온의 배위수는?", b:"<span class='k'>6 : 6</span>. 면심 입방 배열"},
+  {t:"단위 세포", l:"L4", f:"CsCl 결정에서 각 이온의 배위수는?", b:"<span class='k'>8 : 8</span>"},
+  {t:"단위 세포", l:"L6", trap:true, f:"“면심 입방과 육방 조밀은 충전율이 다르다.” — 옳은가?", b:"<span class='x'>아니다.</span> 둘 다 <span class='k'>74%</span>로 같다. 쌓임 순서만 다르다"},
+  {t:"X선 회절", l:"L1", f:"결정 구조를 조사하는 방법은?", b:"<span class='k'>X선 회절(X선 결정학)</span>"},
+  {t:"X선 회절", l:"L1", f:"브래그 식은?", b:"<span class='k'>nλ = 2d sinθ</span>"},
+  {t:"X선 회절", l:"L1", f:"브래그 식에서 d는 무엇인가?", b:"<span class='k'>결정면 사이의 거리</span>"},
+  {t:"X선 회절", l:"L1", f:"브래그 식에서 θ는 무엇인가?", b:"X선이 결정면에 <span class='k'>입사하는 각</span>"},
+  {t:"X선 회절", l:"L2", f:"브래그 식 문제가 나오면?", b:"<span class='k'>식 자체를 고르는</span> 형태로 나온다. nλ = 2d sinθ를 그대로 외워둔다"},
+  {t:"X선 회절", l:"L4", f:"X선을 쓰는 이유는?", b:"파장이 <span class='k'>원자 사이 거리와 비슷</span>해 회절이 일어나기 때문"},
+  {t:"X선 회절", l:"L6", trap:true, f:"“브래그 식은 nλ = d sin2θ 이다.” — 옳은가?", b:"<span class='x'>아니다.</span> <span class='k'>nλ = 2d sinθ</span>. 2가 붙는 자리를 바꾼 함정"},
+  {t:"결정의 4분류", l:"L2", f:"고체 종류를 묻는 문제의 판정 순서는?", b:"<span class='k'>전기 전도성(고체/액체) → 녹는점 → 단단함·용해성</span>. 전도성 하나로 대개 절반이 걸러진다"},
+  {t:"결정의 4분류", l:"L2", f:"“고체에서는 안 통하고 액체에서는 통한다”면?", b:"<span class='k'>이온 결정</span>이 확정된다. 다른 결정은 이 패턴이 없다"},
+  {t:"결정의 4분류", l:"L4", f:"네 결정의 전기 전도성을 한 줄로 정리하면?", b:"금속 <span class='k'>고체·액체 모두</span> / 이온 <span class='k'>액체·수용액만</span> / 공유·분자 <span class='k'>없음</span> (흑연 예외)"},
+  {t:"이온 결정", l:"L2", f:"격자 에너지 크기를 비교하라면?", b:"<span class='k'>전하량 먼저, 같으면 이온 반지름</span>. 반지름이 작을수록 크다"},
+  {t:"이온 결정", l:"L4", f:"격자 에너지가 크면 녹는점은?", b:"<span class='k'>높다</span>. 이온을 떼어내는 데 더 많은 에너지가 필요하다"},
+  {t:"이온 결정", l:"L2", f:"본-하버 사이클 문제에서 부호를 정하려면?", b:"<span class='k'>결합을 끊거나 전자를 떼면 흡열(+)</span>, <span class='k'>결합이 생기거나 전자가 붙으면 발열(−)</span>"},
+  {t:"분자 결정", l:"L2", f:"분자 결정끼리 끓는점을 비교하라면?", b:"<span class='k'>수소 결합 여부 → 극성 → 분자량</span> 순으로 본다"},
+  {t:"분자 결정", l:"L4", f:"분자 결정이 승화하기 쉬운 이유는?", b:"분자 간 힘이 약해 <span class='k'>액체를 거치지 않고</span> 바로 기체가 될 수 있다"},
+  {t:"공유(원자) 결정", l:"L2", f:"다이아몬드와 흑연의 성질 차이를 설명하라면?", b:"<span class='k'>결합에 참여하는 탄소 수(4 vs 3)</span>에서 출발한다. 자유 전자와 층 구조가 여기서 갈린다"},
+  {t:"공유(원자) 결정", l:"L4", f:"석영(SiO2)과 이산화탄소(CO2)의 차이는?", b:"SiO2는 <span class='k'>공유 결정</span>으로 녹는점이 매우 높고, CO2는 <span class='k'>분자 결정</span>으로 승화한다"},
+  {t:"금속 결정", l:"L2", f:"금속의 녹는점을 비교하라면?", b:"<span class='k'>양이온의 전하와 반지름</span>을 본다. 전하가 크고 반지름이 작을수록 높다"},
+  {t:"금속 결정", l:"L4", f:"합금이 순금속보다 단단한 이유는?", b:"크기가 다른 원자가 섞여 <span class='k'>층이 미끄러지기 어렵기</span> 때문"},
+  {t:"탄소 동소체", l:"L2", f:"동소체 문제가 나오면 확인할 두 가지는?", b:"<span class='k'>같은 원소인가</span>, <span class='k'>성질이 다른가</span>. 둘 다 맞아야 동소체"},
+  {t:"탄소 동소체", l:"L4", f:"산소와 오존을 구별하는 방법은?", b:"동소체는 보통 연소 생성물로 비교하지만, <span class='k'>O2·O3는 연소가 아니라 분해</span>로 구별한다"},
+  {t:"단위 세포", l:"L2", f:"단위 세포 문제의 계산 순서는?", b:"<span class='k'>위치별 기여분으로 원자 수 → 배위수 → 부피와 반지름 관계 → 밀도</span>"},
+  {t:"단위 세포", l:"L1", f:"면심 입방에서 원자 반지름과 한 변의 관계는?", b:"<span class='k'>4r = √2 a</span> — 면 대각선을 따라 원자가 닿는다"},
+  {t:"단위 세포", l:"L1", f:"체심 입방에서 원자 반지름과 한 변의 관계는?", b:"<span class='k'>4r = √3 a</span> — 체대각선을 따라 원자가 닿는다"},
+  {t:"단위 세포", l:"L1", f:"단순 입방에서 원자 반지름과 한 변의 관계는?", b:"<span class='k'>a = 2r</span>"},
+  {t:"단위 세포", l:"L4", f:"같은 금속이라도 구조에 따라 밀도가 다른 이유는?", b:"<span class='k'>충전율</span>이 다르기 때문. 면심 입방이 가장 조밀하다"},
+  {t:"결정과 화학식", l:"L2", f:"실험식으로만 써야 하는지 판단하려면?", b:"<span class='k'>독립된 분자가 존재하는가</span>만 묻는다. 결정 전체가 이어져 있으면 실험식"},
+];
+
+DECK.forEach((c,i)=>c.id="c"+i);
+
+/* ===================== 저장 (localStorage + in-memory 폴백) ===================== */
+const KEY="chem_u14_solid_v1", DAY=86400000, INTERVALS=[0,1*DAY,3*DAY,7*DAY,30*DAY];
+const mem={};
+function save(o){ const j=JSON.stringify(o); try{localStorage.setItem(KEY,j);}catch(e){} mem[KEY]=j; }
+function load(){ try{const j=localStorage.getItem(KEY); if(j)return JSON.parse(j);}catch(e){}
+  try{if(mem[KEY])return JSON.parse(mem[KEY]);}catch(e){} return {}; }
+let ST=load();                              // { id:{box,due,seen} }
+function cs(id){ return ST[id]||{box:0,due:0,seen:false}; }
+function schedule(id,grade,guessed){
+  let s=Object.assign({box:0,due:0,seen:false},ST[id]||{}); s.seen=true;
+  if(guessed || grade<=2) s.box=0;                    // 1·2 실패 / 찍음 → 리셋(즉시 재출제)
+  else if(grade===3) s.box=Math.max(1,s.box);         // 겨우 성공 → 유지·최소 1일
+  else if(grade===4) s.box=Math.min(4,s.box+1);       // 앎 → 한 단계 승급
+  else if(grade===5) s.box=Math.min(4,s.box+2);       // 완벽 → 두 단계 승급
+  s.due=Date.now()+INTERVALS[s.box]; ST[id]=s; save(ST); return s;
+}
+
+/* ===================== 상태 & 필터 ===================== */
+const UI={mode:"study", topic:"전체", layers:new Set(["L1","L2","L4","L6"])};
+const TOPICS=[...new Set(DECK.map(c=>c.t))];
+function passFilter(c){
+  if(!UI.layers.has(c.l)) return false;
+  if(UI.topic!=="전체" && c.t!==UI.topic) return false;
+  const s=cs(c.id), due=(!s.seen)||(s.due<=Date.now());
+  if(UI.mode==="study") return due;
+  if(UI.mode==="wrong") return s.seen && s.box===0;
+  return true;                               // all
+}
+let queue=[], qi=0, revealed=false, guessed=false;
+function buildQueue(){ queue=DECK.filter(passFilter).map(c=>c.id); qi=0; revealed=false; guessed=false; }
+
+/* ===================== 렌더 ===================== */
+const stage=document.getElementById("stage"), statsEl=document.getElementById("stats");
+function renderStats(){
+  const total=DECK.length;
+  const seen=DECK.filter(c=>cs(c.id).seen).length;
+  const mastered=DECK.filter(c=>cs(c.id).box>=3).length;
+  const due=DECK.filter(c=>{const s=cs(c.id);return (!s.seen)||(s.due<=Date.now());}).length;
+  statsEl.innerHTML=
+    `<span class="chip">오늘 학습 <b>${due}</b></span>`+
+    `<span class="chip">익힘 <b>${mastered}</b>/<b>${total}</b></span>`+
+    `<span class="chip">본 카드 <b>${seen}</b></span>`;
+}
+function renderCard(){
+  renderStats();
+  if(qi>=queue.length){
+    const label=UI.mode==="wrong"?"틀린 카드가 없어요":"이 범위 학습 완료";
+    stage.innerHTML=`<div class="done"><h2>✓ ${label}</h2>
+      <p>4·5로 넘긴 카드는 1·3·7·30일 간격으로 다시 나옵니다.</p>
+      <button id="again">처음부터 다시 돌기</button></div>`;
+    document.getElementById("again").onclick=()=>{buildQueue();renderCard();};
+    return;
+  }
+  const c=DECK.find(x=>x.id===queue[qi]);
+  const srcHtml=c.src?`<span class="src">모의 ${c.src}</span>`:`<span class="src"></span>`;
+  const trapHtml=(revealed&&c.trap)?`<div class="trapribbon">⚠ 함정 · 부정형("옳지 않은 것") 대비</div>`:"";
+  stage.innerHTML=`
+   <div class="card l-${c.l}">
+     <div class="cmeta">
+       <span class="badge l-${c.l}">${c.l}</span>
+       <span class="topic">${c.t}</span>${srcHtml}
+     </div>
+     <div class="front">${c.f}</div>
+     <div id="backwrap" style="display:${revealed?'block':'none'}">
+       <div class="divider"></div>${trapHtml}
+       <div class="back">${c.b}</div>
+     </div>
+     <div class="spacer"></div>
+     ${revealed?rateHtml():`<button class="reveal" id="reveal">정답 보기 · Space</button>`}
+     <div class="nav">
+       <button id="prev">‹</button>
+       <span class="pos">${qi+1} / ${queue.length}</span>
+       <button id="next">›</button>
+     </div>
+   </div>`;
+  wire(c);
+}
+function rateHtml(){
+  const L=[
+    {g:1,lab:"전혀",sub:"기억 안 남"},
+    {g:2,lab:"답보고",sub:"틀림·재인"},
+    {g:3,lab:"겨우",sub:"맞음·힘겹게"},
+    {g:4,lab:"앎",sub:"약간 주저"},
+    {g:5,lab:"완벽",sub:"즉시·확실"}
+  ];
+  const btns=L.map(x=>`<button class="lk${x.g}" data-g="${x.g}"><b>${x.g}</b><span class="lab">${x.lab}</span><span class="sub">${x.sub}</span></button>`).join("");
+  return `<div class="guess ${guessed?'on':''}" id="guess"><span class="box">${guessed?'✓':''}</span>찍음(운으로 맞음)</div>
+    <div class="lkaxis"><span>전혀 모름</span><span>얼마나 인출됐나?</span><span>완벽</span></div>
+    <div class="rate5">${btns}</div>`;
+}
+function wire(c){
+  const rev=document.getElementById("reveal");
+  if(rev) rev.onclick=doReveal;
+  const g=document.getElementById("guess");
+  if(g) g.onclick=()=>{guessed=!guessed; renderCard();};
+  stage.querySelectorAll(".rate5 button").forEach(b=>b.onclick=()=>rate(parseInt(b.dataset.g,10)));
+  document.getElementById("prev").onclick=()=>{ if(qi>0){qi--;revealed=false;guessed=false;renderCard();} };
+  document.getElementById("next").onclick=()=>{ if(qi<queue.length){qi++;revealed=false;guessed=false;renderCard();} };
+}
+function doReveal(){ revealed=true; renderCard(); }
+function rate(r){
+  const id=queue[qi];
+  const s=schedule(id,r,guessed);
+  const stillDue=(s.due<=Date.now());        // box0 → 이번 세션 재출제
+  revealed=false; guessed=false;
+  if(stillDue){ queue.push(id); }            // 뒤로 보내 다시 만나게
+  queue.splice(qi,1);                         // 현재 위치에서 제거
+  renderCard();
+}
+
+/* ===================== 컨트롤 배선 ===================== */
+const topicSel=document.getElementById("topic");
+topicSel.innerHTML=`<option>전체</option>`+TOPICS.map(t=>`<option>${t}</option>`).join("");
+topicSel.onchange=()=>{UI.topic=topicSel.value; buildQueue(); renderCard();};
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); UI.mode=b.dataset.mode; buildQueue(); renderCard();
+});
+document.querySelectorAll('#layers .lchip').forEach(ch=>ch.onclick=()=>{
+  const L=ch.dataset.l;
+  if(UI.layers.has(L)&&UI.layers.size>1){UI.layers.delete(L);ch.classList.remove('on');}
+  else{UI.layers.add(L);ch.classList.add('on');}
+  buildQueue(); renderCard();
+});
+document.getElementById("reset").onclick=()=>{
+  if(confirm("이 브라우저의 14단원 진도를 모두 초기화할까요?")){ ST={}; save(ST); buildQueue(); renderCard(); }
+};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){ e.preventDefault(); if(!revealed) doReveal(); }
+  else if(revealed && ["1","2","3","4","5"].includes(e.key)){ rate(parseInt(e.key,10)); }
+});
+
+/* ===================== 시작 ===================== */
+buildQueue(); renderCard();
+</script>
+</body>
+</html>
